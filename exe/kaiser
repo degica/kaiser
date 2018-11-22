@@ -11,12 +11,11 @@ require 'kaiser'
 
 cli = Kaiser::KaiserCli.new(`pwd`.chomp)
 
-SUB_COMMANDS = %w{[init deinit up down shutdown]}.freeze
+SUB_COMMANDS = %w{[init deinit up down shutdown db_load db_save]}.freeze
 Optimist.options do
   banner "Kaiser v#{Kaiser::VERSION}"
-  # opt :dry_run, "Don't actually do anything", :short => "-n"
   stop_on SUB_COMMANDS
 end
 
-cmd = ARGV.shift # get the subcommand
+cmd = ARGV.shift
 cli.send(:"#{cmd}")

@@ -59,6 +59,43 @@ module Kaiser
       run_command "docker volume rm #{@config[:shared_names][:certs]}"
     end
 
+    def db_load
+      ensure_setup
+      name = ARGV.shift || '.default'
+      load_db(name)
+    end
+
+    def db_save
+      ensure_setup
+      name = ARGV.shift || '.default'
+      save_db(name)
+    end
+
+    def db_reset_hard
+      ensure_setup
+      FileUtils.rm db_image_path('.default')
+      setup_db
+    end
+
+    def attach
+      ensure_setup
+      cmd = ARGV.shift || ''
+      killrm app_container_name
+
+      system "docker run -ti
+        --name #{app_container_name}
+        --network #{network_name}
+        -p #{app_port}:#{app_expose}
+        -e DEV_APPLICATION_HOST=#{envname}.localhost.labs.degica.com
+        -e VIRTUAL_HOST=#{envname}.localhost.labs.degica.com
+        -e VIRTUAL_PORT=#{app_expose}
+        #{app_params}
+        kaiser:#{current_branch} #{cmd}".tr("\n", ' ')
+
+      @out.puts "Cleaning up..."
+      start_app
+    end
+
     private
 
     def largest_port
@@ -89,12 +126,18 @@ module Kaiser
     end
 
     def save_db(name)
-      run_command "docker kill #{db_container_name}"
+      killrm db_container_name
       save_db_state_from(container: db_volume_name, to_file: db_image_path(name))
+      start_db
     end
 
     def load_db(name)
+      Optimist.die 'No saved state exists with that name' unless File.exist?(db_image_path(name))
+      killrm db_container_name
+      run_command "docker volume rm #{db_volume_name}"
+      create_if_volume_not_exist db_volume_name
       load_db_state_from(file: db_image_path(name), to_container: db_volume_name)
+      start_db
     end
 
     def save_db_state_from(container:, to_file:)
@@ -113,7 +156,7 @@ module Kaiser
         -v #{to_container}:#{db_data_directory}
         -v #{file}:#{file}
         ruby:alpine
-        tar xvjf #{file} -C #{db_data_directory} --strip 1"
+        tar xvjf #{file} -C #{db_data_directory} --strip #{db_data_directory.scan(%r{\/}).count}"
     end
 
     def stop_db
