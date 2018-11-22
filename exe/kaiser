@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'optimist'
+require 'fileutils'
+require 'kaiser'
+
+# The commandline
+class KaiserCli
+  def initialize
+    @config_dir = "#{ENV['HOME']}/kaiser"
+    FileUtils.mkdir_p @config_dir
+    @config_file = "#{@config_dir}/.config.yml"
+    @config = {}
+    load_config
+  end
+
+  def save_config
+    File.write(@config_file, @config.to_yaml)
+  end
+
+  def load_config
+    @config = YAML.load_file(@config_file) if File.exist?(@config_file)
+  end
+end
+
+puts "hello"
