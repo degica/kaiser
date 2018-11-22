@@ -1,12 +1,7 @@
 require 'kaiser/version'
-require 'kaiser/environment'
+require 'kaiser/kaiserfile'
+require 'kaiser/kaiser_cli'
 
 # Kaiser
 module Kaiser
-  class Kaiser
-    def initialize(config)
-      @config = config
-    end
-  end
-
 end

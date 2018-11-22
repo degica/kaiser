@@ -2,25 +2,21 @@
 
 require 'optimist'
 require 'fileutils'
+require 'yaml'
+require 'json'
+require 'pty'
+require 'erb'
+
 require 'kaiser'
 
-# The commandline
-class KaiserCli
-  def initialize
-    @config_dir = "#{ENV['HOME']}/kaiser"
-    FileUtils.mkdir_p @config_dir
-    @config_file = "#{@config_dir}/.config.yml"
-    @config = {}
-    load_config
-  end
+cli = Kaiser::KaiserCli.new(`pwd`.chomp)
 
-  def save_config
-    File.write(@config_file, @config.to_yaml)
-  end
-
-  def load_config
-    @config = YAML.load_file(@config_file) if File.exist?(@config_file)
-  end
+SUB_COMMANDS = %w{[init deinit up down shutdown]}.freeze
+Optimist.options do
+  banner "Kaiser v#{Kaiser::VERSION}"
+  # opt :dry_run, "Don't actually do anything", :short => "-n"
+  stop_on SUB_COMMANDS
 end
 
-puts "hello"
+cmd = ARGV.shift # get the subcommand
+cli.send(:"#{cmd}")
