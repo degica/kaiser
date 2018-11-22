@@ -5,15 +5,21 @@ module Kaiser
                   :database,
                   :port,
                   :params,
-                  :database_reset_command
+                  :database_reset_command,
+                  :attach_mounts
 
     def initialize(filename)
       @databases = {}
+      @attach_mounts = []
       instance_eval File.read(filename), filename
     end
 
     def dockerfile(name)
       @docker_file_contents = File.read(name)
+    end
+
+    def attach_mount(from, to)
+      attach_mounts << [from, to]
     end
 
     def db(image,

@@ -84,6 +84,8 @@ module Kaiser
       cmd = ARGV.shift || ''
       killrm app_container_name
 
+      volumes = attach_mounts.map { |from, to| "-v #{`pwd`.chomp}/#{from}:#{to}" }.join(' ')
+
       system "docker run -ti
         --name #{app_container_name}
         --network #{network_name}
@@ -91,6 +93,7 @@ module Kaiser
         -e DEV_APPLICATION_HOST=#{envname}.localhost.labs.degica.com
         -e VIRTUAL_HOST=#{envname}.localhost.labs.degica.com
         -e VIRTUAL_PORT=#{app_expose}
+        #{volumes}
         #{app_params}
         kaiser:#{current_branch} #{cmd}".tr("\n", ' ')
 
@@ -309,6 +312,10 @@ module Kaiser
 
     def db_reset_command
       eval_template @kaiserfile.database_reset_command
+    end
+
+    def attach_mounts
+      @kaiserfile.attach_mounts
     end
 
     def eval_template(value)
