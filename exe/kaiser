@@ -9,13 +9,32 @@ require 'erb'
 
 require 'kaiser'
 
-cli = Kaiser::KaiserCli.new(`pwd`.chomp)
+SUB_COMMANDS = %w[init deinit up down shutdown db_load db_save logs].freeze
+opts = Optimist.options do
+  banner <<-BANNER
+Kaiser v#{Kaiser::VERSION}
 
-SUB_COMMANDS = %w{[init deinit up down shutdown db_load db_save]}.freeze
-Optimist.options do
-  banner "Kaiser v#{Kaiser::VERSION}"
+Subcommands:
+#{SUB_COMMANDS}
+  BANNER
+  opt :verbose, "Show Kaiser's debug output", short: '-v'
+  opt :quiet, 'Suppress all output', short: '-q'
   stop_on SUB_COMMANDS
 end
 
 cmd = ARGV.shift
+Optimist::die "Unknown command: #{cmd}" unless SUB_COMMANDS.include?(cmd)
+
+out = File.open(File::NULL, 'w')
+info_out = $stderr
+if opts[:quiet]
+  info_out = File.open(File::NULL, 'w')
+elsif opts[:verbose]
+  out = $stderr
+end
+cli = Kaiser::KaiserCli.new(
+  `pwd`.chomp,
+  debug_output: out,
+  info_output: info_out
+)
 cli.send(:"#{cmd}")

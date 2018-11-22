@@ -1,7 +1,7 @@
 module Kaiser
   # The commandline
   class KaiserCli
-    def initialize(work_dir)
+    def initialize(work_dir, debug_output:, info_output:)
       @work_dir = work_dir
       @config_dir = "#{ENV['HOME']}/.kaiser"
       FileUtils.mkdir_p @config_dir
@@ -19,7 +19,8 @@ module Kaiser
         },
         largest_port: 9000
       }
-      @out = $stderr
+      @out = debug_output
+      @info_out = info_output
       load_config
     end
 
@@ -48,6 +49,7 @@ module Kaiser
 
     def down
       stop_db
+      stop_app
       delete_db_volume
     end
 
@@ -96,6 +98,10 @@ module Kaiser
       start_app
     end
 
+    def logs
+      exec "docker logs -f #{app_container_name}"
+    end
+
     private
 
     def largest_port
@@ -111,6 +117,7 @@ module Kaiser
       start_db
       return if File.exist?(default_db_image)
 
+      @info_out.puts 'Provisioning database'
       status = run_command "docker run -ti
         --name #{envname}-apptemp
         --network #{@config[:networkname]}
@@ -141,7 +148,7 @@ module Kaiser
     end
 
     def save_db_state_from(container:, to_file:)
-      @out.puts 'Saving database state'
+      @info_out.puts 'Saving database state'
       File.write(to_file, '')
       run_command "docker run --rm
         -v #{container}:#{db_data_directory}
@@ -151,7 +158,7 @@ module Kaiser
     end
 
     def load_db_state_from(file:, to_container:)
-      @out.puts 'Loading database state'
+      @info_out.puts 'Loading database state'
       run_command "docker run --rm
         -v #{to_container}:#{db_data_directory}
         -v #{file}:#{file}
@@ -160,10 +167,12 @@ module Kaiser
     end
 
     def stop_db
+      @info_out.puts 'Stopping database'
       killrm db_container_name
     end
 
     def start_db
+      @info_out.puts 'Starting up database'
       run_if_dead db_container_name, "docker run -d
         -p #{db_port}:#{db_expose}
         -v #{db_volume_name}:#{db_data_directory}
@@ -180,6 +189,7 @@ module Kaiser
     end
 
     def setup_app
+      @info_out.puts 'Setting up application'
       File.write(tmp_dockerfile_name, docker_file_contents)
       run_command "docker build
         -t kaiser:#{current_branch}
@@ -201,6 +211,7 @@ module Kaiser
     end
 
     def start_app
+      @info_out.puts 'Starting up application'
       killrm app_container_name
       run_command "docker run -d
         --name #{app_container_name}
@@ -211,6 +222,11 @@ module Kaiser
         -e VIRTUAL_PORT=#{app_expose}
         #{app_params}
         kaiser:#{current_branch}"
+    end
+
+    def stop_app
+      @info_out.puts 'Stopping application'
+      killrm app_container_name
     end
 
     def tmp_waitscript_name
@@ -226,7 +242,7 @@ module Kaiser
     end
 
     def wait_for_db
-      @out.puts "Waiting for database to start..."
+      @info_out.puts "Waiting for database to start..."
 
       File.write(tmp_waitscript_name, db_waitscript)
 
@@ -240,7 +256,7 @@ module Kaiser
 
       FileUtils.rm(tmp_waitscript_name)
 
-      @out.puts "Started."
+      @info_out.puts "Started."
     end
 
     def config_dir
@@ -415,6 +431,7 @@ module Kaiser
 
     def run_if_dead(container, command)
       if_container_dead container do
+        @info_out.puts "Starting up #{container}"
         killrm container
         run_command command
       end
@@ -442,7 +459,7 @@ module Kaiser
     end
 
     def killrm(container)
-      x = JSON.parse(`docker inspect #{container}`)
+      x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
       return if x.length.zero?
       run_command "docker kill #{container}" if x[0]['State'] && x[0]['State']['Running'] == true
       run_command "docker rm #{container}" if x[0]['State']
