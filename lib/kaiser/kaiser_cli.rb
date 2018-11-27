@@ -29,7 +29,7 @@ module Kaiser
       name = ARGV.shift
       return Optimist.die 'Needs environment name' if name.nil?
 
-      init_config_for_env
+      init_config_for_env(name)
       save_config
     end
 
@@ -448,7 +448,7 @@ module Kaiser
       @config[:envnames][@work_dir]
     end
 
-    def init_config_for_env
+    def init_config_for_env(name)
       @config[:envnames][@work_dir] = name
       @config[:envs][name] = {
         app_port: (largest_port + 1).to_s,
