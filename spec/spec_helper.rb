@@ -7,6 +7,8 @@ RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = '.rspec_status'
   config.include FactoryBot::Syntax::Methods
+  config.include ArubaDoubles
+  config.include Aruba::Api
 
   config.before(:suite) do
     FactoryBot.find_definitions
@@ -19,15 +21,9 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.include ArubaDoubles
-  config.include Aruba::Api
-
-  config.before :each do
+  config.before :each do |example|
     Aruba::RSpec.setup
     setup_aruba
-  end
-
-  config.before :each do |example|
     fixture_dir = example.metadata[:fixture_dir]
     if fixture_dir
       subpath = example.description.downcase.gsub(/[^0-9a-z]+/, '_')
@@ -41,11 +37,8 @@ RSpec.configure do |config|
     end
   end
 
-  config.after do |example|
+  config.after :each do |example|
     remove 'app' if example.metadata[:fixture_dir]
-  end
-
-  config.after :each do
     Aruba::RSpec.teardown
   end
 end
