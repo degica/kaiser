@@ -9,7 +9,19 @@ require 'erb'
 
 require 'kaiser'
 
-SUB_COMMANDS = %w[init deinit up down shutdown db_load db_save db_reset db_reset_hard logs attach].freeze
+SUB_COMMANDS = %w[
+  init
+  deinit
+  up
+  down
+  shutdown
+  db_load
+  db_save
+  db_reset
+  db_reset_hard
+  logs attach
+].freeze
+
 opts = Optimist.options do
   banner <<-BANNER
 Kaiser v#{Kaiser::VERSION}
@@ -23,7 +35,7 @@ Subcommands:
 end
 
 cmd = ARGV.shift
-Optimist::die "Unknown command: #{cmd}" unless SUB_COMMANDS.include?(cmd)
+Optimist.die "Unknown command: #{cmd}" unless SUB_COMMANDS.include?(cmd)
 
 out = File.open(File::NULL, 'w')
 info_out = $stderr
