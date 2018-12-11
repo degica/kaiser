@@ -1,6 +1,10 @@
+require 'kaiser/command_runner'
+
 module Kaiser
   # The commandline
   class KaiserCli
+    attr_reader :config_dir
+
     def initialize(work_dir, debug_output:, info_output:)
       @work_dir = work_dir
       @config_dir = "#{ENV['HOME']}/.kaiser"
@@ -57,8 +61,8 @@ module Kaiser
       @config[:shared_names].each do |_, container_name|
         killrm container_name
       end
-      run_command "docker network rm #{@config[:networkname]}"
-      run_command "docker volume rm #{@config[:shared_names][:certs]}"
+      CommandRunner.run @out, "docker network rm #{@config[:networkname]}"
+      CommandRunner.run @out, "docker volume rm #{@config[:shared_names][:certs]}"
     end
 
     def db_load
@@ -75,7 +79,9 @@ module Kaiser
 
     def db_reset_hard
       ensure_setup
-      FileUtils.rm db_image_path('.default')
+      if File.exist?(db_image_path('.default'))
+        FileUtils.rm db_image_path('.default')
+      end
       setup_db
     end
 
@@ -95,9 +101,9 @@ module Kaiser
         -e VIRTUAL_PORT=#{app_expose}
         #{volumes}
         #{app_params}
-        kaiser:#{current_branch} #{cmd}".tr("\n", ' ')
+        kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
 
-      @out.puts "Cleaning up..."
+      @out.puts 'Cleaning up...'
       start_app
     end
 
@@ -121,39 +127,46 @@ module Kaiser
       return if File.exist?(default_db_image)
 
       @info_out.puts 'Provisioning database'
-      status = run_command "docker run -ti
+      killrm "#{envname}-apptemp"
+      status = CommandRunner.run @out, "docker run -ti
+        --rm
         --name #{envname}-apptemp
         --network #{@config[:networkname]}
         #{app_params}
-        kaiser:#{current_branch} #{db_reset_command}"
+        kaiser:#{envname}-#{current_branch} #{db_reset_command}"
 
       if status != 0
-        @infoout.puts "#{envname} db provision failed"
+        @info_out.puts "#{envname} db provision failed"
         exit!
       end
-      killrm "#{envname}-apptemp"
-      save_db(".default")
+      save_db('.default')
     end
 
     def save_db(name)
       killrm db_container_name
-      save_db_state_from(container: db_volume_name, to_file: db_image_path(name))
+      save_db_state_from container: db_volume_name, to_file: db_image_path(name)
       start_db
     end
 
     def load_db(name)
-      Optimist.die 'No saved state exists with that name' unless File.exist?(db_image_path(name))
+      check_db_image_exists(name)
       killrm db_container_name
-      run_command "docker volume rm #{db_volume_name}"
+      CommandRunner.run @out, "docker volume rm #{db_volume_name}"
+      delete_db_volume
       create_if_volume_not_exist db_volume_name
-      load_db_state_from(file: db_image_path(name), to_container: db_volume_name)
+      load_db_state_from file: db_image_path(name), to_container: db_volume_name
       start_db
+    end
+
+    def check_db_image_exists(name)
+      return if File.exist?(db_image_path(name))
+      Optimist.die 'No saved state exists with that name'
     end
 
     def save_db_state_from(container:, to_file:)
       @info_out.puts 'Saving database state'
       File.write(to_file, '')
-      run_command "docker run --rm
+      CommandRunner.run @out, "docker run --rm
         -v #{container}:#{db_data_directory}
         -v #{to_file}:#{to_file}
         ruby:alpine
@@ -162,11 +175,12 @@ module Kaiser
 
     def load_db_state_from(file:, to_container:)
       @info_out.puts 'Loading database state'
-      run_command "docker run --rm
+      CommandRunner.run @out, "docker run --rm
         -v #{to_container}:#{db_data_directory}
         -v #{file}:#{file}
         ruby:alpine
-        tar xvjf #{file} -C #{db_data_directory} --strip #{db_data_directory.scan(%r{\/}).count}"
+        tar xvjf #{file} -C #{db_data_directory}
+          --strip #{db_data_directory.scan(%r{\/}).count}"
     end
 
     def stop_db
@@ -188,14 +202,14 @@ module Kaiser
     end
 
     def delete_db_volume
-      run_command "docker volume rm #{db_volume_name}"
+      CommandRunner.run @out, "docker volume rm #{db_volume_name}"
     end
 
     def setup_app
       @info_out.puts 'Setting up application'
       File.write(tmp_dockerfile_name, docker_file_contents)
-      run_command "docker build
-        -t kaiser:#{current_branch}
+      CommandRunner.run @out, "docker build
+        -t kaiser:#{envname}-#{current_branch}
         -f #{tmp_dockerfile_name} #{@work_dir}"
       FileUtils.rm(tmp_dockerfile_name)
     end
@@ -216,7 +230,7 @@ module Kaiser
     def start_app
       @info_out.puts 'Starting up application'
       killrm app_container_name
-      run_command "docker run -d
+      CommandRunner.run @out, "docker run -d
         --name #{app_container_name}
         --network #{network_name}
         -p #{app_port}:#{app_expose}
@@ -224,7 +238,7 @@ module Kaiser
         -e VIRTUAL_HOST=#{envname}.localhost.labs.degica.com
         -e VIRTUAL_PORT=#{app_expose}
         #{app_params}
-        kaiser:#{current_branch}"
+        kaiser:#{envname}-#{current_branch}"
     end
 
     def stop_app
@@ -245,25 +259,21 @@ module Kaiser
     end
 
     def wait_for_db
-      @info_out.puts "Waiting for database to start..."
+      @info_out.puts 'Waiting for database to start...'
 
       File.write(tmp_waitscript_name, db_waitscript)
 
       killrm tmp_db_waiter
-      run_command "docker run --rm -ti
+      CommandRunner.run @out, "docker run --rm -ti
         --name #{tmp_db_waiter}
         --network #{network_name}
         -v #{tmp_waitscript_name}:/wait.sh
         #{db_waitscript_params}
-        #{db_image} bash /wait.sh"
+        #{db_image} sh /wait.sh"
 
       FileUtils.rm(tmp_waitscript_name)
 
-      @info_out.puts "Started."
-    end
-
-    def config_dir
-      @config_dir
+      @info_out.puts 'Started.'
     end
 
     def network_name
@@ -347,7 +357,8 @@ module Kaiser
     end
 
     def ensure_env
-      Optimist.die 'No environment? Please use kaiser init <name>' if envname.nil?
+      return unless envname.nil?
+      Optimist.die('No environment? Please use kaiser init <name>')
     end
 
     def ensure_setup
@@ -384,63 +395,33 @@ module Kaiser
       )
     end
 
-    def run_command(cmd, until_match:nil)
-      cmd.gsub! "\n", ' '
-      @out.puts "> #{cmd}"
-      begin
-        PTY.spawn("#{cmd} 2>&1") do |stdout, stdin, pid|
-          begin
-            # Do stuff with the output here. Just printing to show it works
-            stdout.each do |line|
-              @out.print line
-              if until_match
-                if until_match.match(line)
-                  `kill #{pid}`
-                end
-              end
-              @out.flush
-            end
-          rescue Errno::EIO
-            @out.puts "$? = 0"
-            @out.flush
-            return 0
-          end
-        end
-        return 0
-      rescue PTY::ChildExited => ex
-        @out.puts "The child process exited with code #{ex.status}"
-        @out.flush
-        return ex.status
-      end
-    end
-
     def network
-      `docker network inspect #{@config[:networkname]}`
+      `docker network inspect #{@config[:networkname]} 2>/dev/null`
     end
 
     def if_container_dead(container, &block)
-      x = JSON.parse(`docker inspect #{container}`)
+      x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
       return unless x.length.zero? || x[0]['State']['Running'] == false
       yield if block
     end
 
     def create_if_volume_not_exist(vol)
-      x = JSON.parse(`docker volume inspect #{vol}`)
+      x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
       return unless x.length.zero?
-      run_command "docker volume create #{vol}"
+      CommandRunner.run @out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
-      x = JSON.parse(`docker inspect #{net}`)
+      x = JSON.parse(`docker inspect #{net} 2>/dev/null`)
       return unless x.length.zero?
-      run_command "docker network create #{net}"
+      CommandRunner.run @out, "docker network create #{net}"
     end
 
     def run_if_dead(container, command)
       if_container_dead container do
         @info_out.puts "Starting up #{container}"
         killrm container
-        run_command command
+        CommandRunner.run @out, command
       end
     end
 
@@ -468,8 +449,10 @@ module Kaiser
     def killrm(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
       return if x.length.zero?
-      run_command "docker kill #{container}" if x[0]['State'] && x[0]['State']['Running'] == true
-      run_command "docker rm #{container}" if x[0]['State']
+      if x[0]['State'] && x[0]['State']['Running'] == true
+        CommandRunner.run @out, "docker kill #{container}"
+      end
+      CommandRunner.run @out, "docker rm #{container}" if x[0]['State']
     end
   end
 end
