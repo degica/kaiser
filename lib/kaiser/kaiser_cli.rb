@@ -111,6 +111,12 @@ module Kaiser
       exec "docker logs -f #{app_container_name}"
     end
 
+    def login
+      ensure_setup
+      cmd = ARGV.shift || 'sh'
+      exec "docker exec -ti #{app_container_name} #{cmd}"
+    end
+
     private
 
     def largest_port

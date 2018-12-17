@@ -19,7 +19,9 @@ SUB_COMMANDS = %w[
   db_save
   db_reset
   db_reset_hard
-  logs attach
+  logs
+  attach
+  login
 ].freeze
 
 opts = Optimist.options do
