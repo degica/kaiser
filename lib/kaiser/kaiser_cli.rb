@@ -87,7 +87,7 @@ module Kaiser
 
     def attach
       ensure_setup
-      cmd = ARGV.shift || ''
+      cmd = (ARGV || []).join(' ')
       killrm app_container_name
 
       volumes = attach_mounts.map { |from, to| "-v #{`pwd`.chomp}/#{from}:#{to}" }.join(' ')
@@ -113,8 +113,17 @@ module Kaiser
 
     def login
       ensure_setup
-      cmd = ARGV.shift || 'sh'
+      cmd = (ARGV || []).join(' ')
       exec "docker exec -ti #{app_container_name} #{cmd}"
+    end
+
+    def show
+      ensure_setup
+      cmd = ARGV.shift
+      return Optimist.die 'Available things to show: ports' unless cmd
+      return unless cmd == 'ports'
+      @info_out.puts "app: #{app_port}"
+      @info_out.puts "db: #{db_port}"
     end
 
     private
@@ -225,6 +234,11 @@ module Kaiser
     end
 
     def db_image_path(name)
+      if name.start_with?('./')
+        path = "#{`pwd`.chomp}/#{name.sub('./', '')}"
+        @info_out.puts "Database image path is: #{path}"
+        return path
+      end
       FileUtils.mkdir_p current_branch_db_image_dir
       "#{current_branch_db_image_dir}/#{name}.tar.bz"
     end
@@ -359,7 +373,7 @@ module Kaiser
     end
 
     def current_branch
-      `git branch | grep \\* | cut -d ' ' -f2`.chomp
+      `git branch | grep \\* | cut -d ' ' -f2`.chomp.gsub(/[^\-_0-9a-z]+/, '-')
     end
 
     def ensure_env
