@@ -381,11 +381,33 @@ module Kaiser
       Optimist.die('No environment? Please use kaiser init <name>')
     end
 
+    def copy_keyfile(file)
+      tmpfilename = "#{ENV['HOME']}/.kaiser/tmpfile"
+      CommandRunner.run @out, "wget https://localhost-certs.labs.degica.com/#{file}
+        -O #{tmpfilename}"
+      CommandRunner.run @out, "docker run
+        -v #{@config[:shared_names][:certs]}:/certs
+        -v #{tmpfilename}:#{tmpfilename}
+        alpine cp -f #{tmpfilename} /certs"
+    end
+
+    def prepare_cert_volume!
+      create_if_volume_not_exist @config[:shared_names][:certs]
+      %w[
+        localhost.labs.degica.com.chain.pem
+        localhost.labs.degica.com.crt
+        localhost.labs.degica.com.key
+      ].each do |file|
+        copy_keyfile(file)
+      end
+    end
+
     def ensure_setup
       ensure_env
 
       setup if network.nil?
-      create_if_volume_not_exist @config[:shared_names][:certs]
+      prepare_cert_volume!
+
       create_if_network_not_exist @config[:networkname]
       run_if_dead(
         @config[:shared_names][:redis],
