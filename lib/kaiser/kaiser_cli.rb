@@ -388,7 +388,7 @@ module Kaiser
       CommandRunner.run @out, "docker run
         -v #{@config[:shared_names][:certs]}:/certs
         -v #{tmpfilename}:#{tmpfilename}
-        alpine cp -f #{tmpfilename} /certs"
+        alpine cp -f #{tmpfilename} /certs/#{file}"
     end
 
     def prepare_cert_volume!
