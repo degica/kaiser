@@ -38,7 +38,8 @@ Subcommands:
 end
 
 cmd = ARGV.shift
-Optimist.die "Unknown command: #{cmd}" unless SUB_COMMANDS.include?(cmd)
+
+Optimist.educate unless SUB_COMMANDS.include?(cmd)
 
 out = Kaiser::Dotter.new
 info_out = Kaiser::AfterDotter.new(dotter: out)
@@ -49,6 +50,9 @@ if opts[:quiet]
 elsif opts[:verbose]
   out = $stderr
 end
+
+Optimist.die 'No Kaiserfile in current directory' unless File.exist? 'Kaiserfile'
+
 cli = Kaiser::KaiserCli.new(
   `pwd`.chomp,
   debug_output: out,

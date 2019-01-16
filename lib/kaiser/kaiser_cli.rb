@@ -259,6 +259,7 @@ module Kaiser
         -e VIRTUAL_PORT=#{app_expose}
         #{app_params}
         kaiser:#{envname}-#{current_branch}"
+      wait_for_app
     end
 
     def stop_app
@@ -278,21 +279,59 @@ module Kaiser
       "#{envname}-dbwait"
     end
 
-    def wait_for_db
-      @info_out.puts 'Waiting for database to start...'
+    def tmp_file_container
+      "#{envname}-tmpfiles"
+    end
 
-      File.write(tmp_waitscript_name, db_waitscript)
+    def tmp_file_volume
+      "#{envname}-tmpfiles-vol"
+    end
 
+    def run_blocking_script(image, params, script)
       killrm tmp_db_waiter
+
+      killrm tmp_file_container
+      create_if_volume_not_exist tmp_file_volume
+
+      CommandRunner.run @out, "docker create
+        -v #{tmp_file_volume}:/tmpvol
+        --name #{tmp_file_container} alpine"
+
+      File.write(tmp_waitscript_name, script)
+
+      CommandRunner.run @out, "docker cp
+        #{tmp_waitscript_name}
+        #{tmp_file_container}:/tmpvol/wait.sh"
+
       CommandRunner.run @out, "docker run --rm -ti
         --name #{tmp_db_waiter}
         --network #{network_name}
-        -v #{tmp_waitscript_name}:/wait.sh
-        #{db_waitscript_params}
-        #{db_image} sh /wait.sh"
+        -v #{tmp_file_volume}:/tmpvol
+        #{params}
+        #{image} sh /tmpvol/wait.sh"
+
+      killrm tmp_file_container
 
       FileUtils.rm(tmp_waitscript_name)
+    end
 
+    def wait_for_app
+      return unless server_type == :http
+      @info_out.puts 'Waiting for server to start...'
+      run_blocking_script('alpine', '', <<-SCRIPT)
+        apk update
+        apk add curl
+        until $(curl --output /dev/null --silent --head --fail http://#{app_container_name}:#{app_expose}); do
+            echo 'o'
+            sleep 1
+        done
+      SCRIPT
+      @info_out.puts 'Started.'
+    end
+
+    def wait_for_db
+      @info_out.puts 'Waiting for database to start...'
+      run_blocking_script(db_image, db_waitscript_params, db_waitscript)
       @info_out.puts 'Started.'
     end
 
@@ -322,6 +361,10 @@ module Kaiser
 
     def db_data_directory
       @kaiserfile.database[:data_dir]
+    end
+
+    def server_type
+      @kaiserfile.server_type
     end
 
     def db_waitscript
@@ -382,13 +425,10 @@ module Kaiser
     end
 
     def copy_keyfile(file)
-      tmpfilename = "#{ENV['HOME']}/.kaiser/tmpfile"
-      CommandRunner.run @out, "wget https://localhost-certs.labs.degica.com/#{file}
-        -O #{tmpfilename}"
       CommandRunner.run @out, "docker run
         -v #{@config[:shared_names][:certs]}:/certs
-        -v #{tmpfilename}:#{tmpfilename}
-        alpine cp -f #{tmpfilename} /certs/#{file}"
+        alpine wget https://localhost-certs.labs.degica.com/#{file}
+          -O /certs/#{file}"
     end
 
     def prepare_cert_volume!
