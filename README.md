@@ -4,7 +4,7 @@ Welcome to Kaiser! Kaiser will mind-control all your monsters and make them even
 
 Kaiser lets you define how an application starts, so trying out a web application simply reduces to a `kaiser up`
 
-## Installation
+## Installation (Traditional)
 
 Add this line to your application's Gemfile:
 
@@ -20,6 +20,23 @@ Or install it yourself as:
 
     $ gem install specific_install
     $ gem specific_install -l https://github.com/degica/kaiser
+
+## Installation (Docker)
+
+You can install Kaiser as a docker image on your machine too!
+
+Simply clone the repo and run 
+
+```
+cd kaiser
+docker build -t degica/kaiser . 
+```
+
+And then add the following line to your `.bashrc` or `.bash_profile`
+
+```
+alias kaiser='docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.kaiser:/root/.kaiser -v `pwd`:`pwd` -e CONTEXT_DIR="`pwd`" degica/kaiser'
+```
 
 ## Usage
 
