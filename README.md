@@ -6,20 +6,22 @@ Kaiser lets you define how an application starts, so trying out a web applicatio
 
 ## Installation (Traditional)
 
-Add this line to your application's Gemfile:
+1. Download and setup [Docker](https://www.docker.com/get-started)
+
+2. Add this line to your application's Gemfile:
 
 ```ruby
 gem 'kaiser', git: "https://github.com/degica/kaiser"
 ```
 
-And then execute:
+3. Execute:
 
-    $ bundle
+    ```$ bundle```
 
-Or install it yourself as:
+    Or install it yourself as:
 
-    $ gem install specific_install
-    $ gem specific_install -l https://github.com/degica/kaiser
+        $ gem install specific_install
+        $ gem specific_install -l https://github.com/degica/kaiser
 
 ## Installation (Docker)
 
