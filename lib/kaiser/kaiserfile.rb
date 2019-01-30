@@ -17,7 +17,7 @@ module Kaiser
       instance_eval File.read(filename), filename
     end
 
-    def dockerfile(name, options)
+    def dockerfile(name, options = {})
       @docker_file_contents = File.read(name)
       @docker_build_args = options[:args] || {}
     end
