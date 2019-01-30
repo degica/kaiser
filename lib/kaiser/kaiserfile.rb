@@ -2,6 +2,7 @@ module Kaiser
   # This class is responsible for parsing the Kaiserfile
   class Kaiserfile
     attr_accessor :docker_file_contents,
+                  :docker_build_args,
                   :database,
                   :port,
                   :params,
@@ -16,8 +17,9 @@ module Kaiser
       instance_eval File.read(filename), filename
     end
 
-    def dockerfile(name)
+    def dockerfile(name, options)
       @docker_file_contents = File.read(name)
+      @docker_build_args = options[:args] || {}
     end
 
     def attach_mount(from, to)

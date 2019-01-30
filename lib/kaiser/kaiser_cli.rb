@@ -223,9 +223,11 @@ module Kaiser
     def setup_app
       @info_out.puts 'Setting up application'
       File.write(tmp_dockerfile_name, docker_file_contents)
+      build_args = docker_build_args.map { |k, v| "--build-arg #{k}=#{v}" }
       CommandRunner.run @out, "docker build
         -t kaiser:#{envname}-#{current_branch}
-        -f #{tmp_dockerfile_name} #{@work_dir}"
+        -f #{tmp_dockerfile_name} #{@work_dir}
+        #{build_args.join(' ')}"
       FileUtils.rm(tmp_dockerfile_name)
     end
 
@@ -377,6 +379,10 @@ module Kaiser
 
     def docker_file_contents
       eval_template @kaiserfile.docker_file_contents
+    end
+
+    def docker_build_args
+      @kaiserfile.docker_build_args
     end
 
     def app_params
