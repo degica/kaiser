@@ -6,11 +6,13 @@ module Kaiser
                   :port,
                   :params,
                   :database_reset_command,
-                  :attach_mounts
+                  :attach_mounts,
+                  :server_type
 
     def initialize(filename)
       @databases = {}
       @attach_mounts = []
+      @server_type = :unknown
       instance_eval File.read(filename), filename
     end
 
@@ -50,6 +52,11 @@ module Kaiser
 
     def db_reset_command(value)
       @database_reset_command = value
+    end
+
+    def type(value)
+      raise 'Valid server types are: [:http]' if value != :http
+      @server_type = value
     end
   end
 end

@@ -9,7 +9,22 @@ require 'erb'
 
 require 'kaiser'
 
-SUB_COMMANDS = %w[init deinit up down shutdown db_load db_save db_reset db_reset_hard logs attach].freeze
+SUB_COMMANDS = %w[
+  init
+  deinit
+  up
+  down
+  shutdown
+  db_load
+  db_save
+  db_reset
+  db_reset_hard
+  logs
+  attach
+  login
+  show
+].freeze
+
 opts = Optimist.options do
   banner <<-BANNER
 Kaiser v#{Kaiser::VERSION}
@@ -23,18 +38,26 @@ Subcommands:
 end
 
 cmd = ARGV.shift
-Optimist::die "Unknown command: #{cmd}" unless SUB_COMMANDS.include?(cmd)
 
-out = File.open(File::NULL, 'w')
-info_out = $stderr
+Optimist.educate unless SUB_COMMANDS.include?(cmd)
+
+out = Kaiser::Dotter.new
+info_out = Kaiser::AfterDotter.new(dotter: out)
+
 if opts[:quiet]
+  out = File.open(File::NULL, 'w')
   info_out = File.open(File::NULL, 'w')
 elsif opts[:verbose]
   out = $stderr
 end
+
+Optimist.die 'No Kaiserfile in current directory' unless File.exist? 'Kaiserfile'
+
 cli = Kaiser::KaiserCli.new(
   `pwd`.chomp,
   debug_output: out,
   info_output: info_out
 )
 cli.send(:"#{cmd}")
+
+puts ''
