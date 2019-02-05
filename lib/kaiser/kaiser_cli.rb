@@ -457,9 +457,11 @@ module Kaiser
       ensure_env
 
       setup if network.nil?
-      prepare_cert_volume!
 
       create_if_network_not_exist @config[:networkname]
+      if_container_dead @config[:shared_names][:nginx] do
+        prepare_cert_volume!
+      end
       run_if_dead(
         @config[:shared_names][:redis],
         "docker run -d
