@@ -85,6 +85,11 @@ module Kaiser
       setup_db
     end
 
+    def db_reset
+      ensure_setup
+      load_db('.default')
+    end
+
     def attach
       ensure_setup
       cmd = (ARGV || []).join(' ')
