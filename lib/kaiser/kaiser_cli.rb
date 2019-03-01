@@ -30,6 +30,7 @@ module Kaiser
 
     def init
       return Optimist.die "Already initialized as #{envname}" if envname
+
       name = ARGV.shift
       return Optimist.die 'Needs environment name' if name.nil?
 
@@ -101,8 +102,8 @@ module Kaiser
         --name #{app_container_name}
         --network #{network_name}
         -p #{app_port}:#{app_expose}
-        -e DEV_APPLICATION_HOST=#{envname}.localhost.labs.degica.com
-        -e VIRTUAL_HOST=#{envname}.localhost.labs.degica.com
+        -e DEV_APPLICATION_HOST=#{app_container_name}
+        -e VIRTUAL_HOST=#{app_container_name}
         -e VIRTUAL_PORT=#{app_expose}
         #{volumes}
         #{app_params}
@@ -125,10 +126,82 @@ module Kaiser
     def show
       ensure_setup
       cmd = ARGV.shift
-      return Optimist.die 'Available things to show: ports' unless cmd
-      return unless cmd == 'ports'
-      @info_out.puts "app: #{app_port}"
-      @info_out.puts "db: #{db_port}"
+      valid_cmds = 'ports cert-source http-suffix'
+      return Optimist.die "Available things to show: #{valid_cmds}" unless cmd
+
+      if cmd == 'ports'
+        @info_out.puts "app: #{app_port}"
+        @info_out.puts "db: #{db_port}"
+      elsif cmd == 'cert-source'
+        unless @config[:cert_source]
+          Optimist.die 'No certificate source set.
+            see kaiser set help'
+        end
+
+        source = @config[:cert_source][:url] || @config[:cert_source][:folder]
+        @info_out.puts source
+      elsif cmd == 'http-suffix'
+        @info_out.puts http_suffix
+      end
+    end
+
+    def set
+      cmd = ARGV.shift
+      if cmd == 'cert-url'
+        @config[:cert_source] = {
+          url: ARGV.shift
+        }
+      elsif cmd == 'cert-folder'
+        @config[:cert_source] = {
+          folder: ARGV.shift
+        }
+      elsif cmd == 'http-suffix'
+        @config[:http_suffix] = ARGV.shift
+      elsif cmd == 'help-https'
+        Optimist.die <<-SET_HELP
+          Notes on HTTPS:
+
+          You need to set suffix and either cert-url or cert-folder to enable HTTPS.
+
+          cert-url and cert-folder are mutually exclusive. If you set one of them the other will be erased.
+
+          The cert-url and cert-folder must satisfy the following requirements to work:
+
+          The strings must be the root of certificates named after the suffix. For example,
+
+            if cert-url is https://mydomain.com/certs and your suffix is local.mydomain.com, the following
+            url need to be the certificate files:
+
+            https://mydomain.com/certs/local.mydomain.com.chain.pem
+            https://mydomain.com/certs/local.mydomain.com.crt
+            https://mydomain.com/certs/local.mydomain.com.key
+
+          Another example:
+
+            If you use suffix of localme.com and cert-folder is /home/me/https, The following files need to exist:
+
+            /home/me/https/localme.com.chain.pem
+            /home/me/https/localme.com.crt
+            /home/me/https/localme.com.key
+
+        SET_HELP
+      else
+        Optimist.die <<-SET_HELP
+          kaiser set <subcommand>
+
+          This command lets you set up special variables that configure kaiser's behavior for you.
+
+          Available subcommands:
+
+          http-suffix - Sets the domain suffix for the reverse proxy to use (defaults to lvh.me)
+          cert-url    - Sets up a URL from which HTTPS certificates can be downloaded.
+          cert-folder - Sets up a folder from which HTTPS certificates can be copied.
+          help        - Shows this help message.
+          help-https  - Shows the HTTPS notes.
+
+        SET_HELP
+      end
+      save_config
     end
 
     private
@@ -180,6 +253,7 @@ module Kaiser
 
     def check_db_image_exists(name)
       return if File.exist?(db_image_path(name))
+
       Optimist.die 'No saved state exists with that name'
     end
 
@@ -261,8 +335,8 @@ module Kaiser
         --name #{app_container_name}
         --network #{network_name}
         -p #{app_port}:#{app_expose}
-        -e DEV_APPLICATION_HOST=#{envname}.localhost.labs.degica.com
-        -e VIRTUAL_HOST=#{envname}.localhost.labs.degica.com
+        -e DEV_APPLICATION_HOST=#{app_container_name}
+        -e VIRTUAL_HOST=#{app_container_name}
         -e VIRTUAL_PORT=#{app_expose}
         #{app_params}
         kaiser:#{envname}-#{current_branch}"
@@ -324,6 +398,7 @@ module Kaiser
 
     def wait_for_app
       return unless server_type == :http
+
       @info_out.puts 'Waiting for server to start...'
       run_blocking_script('alpine', '', <<-SCRIPT)
         apk update
@@ -419,7 +494,7 @@ module Kaiser
     end
 
     def app_container_name
-      "#{envname}-app"
+      "#{envname}.#{http_suffix}"
     end
 
     def db_container_name
@@ -432,24 +507,39 @@ module Kaiser
 
     def ensure_env
       return unless envname.nil?
+
       Optimist.die('No environment? Please use kaiser init <name>')
     end
 
+    def http_suffix
+      @config[:http_suffix] || 'lvh.me'
+    end
+
     def copy_keyfile(file)
-      CommandRunner.run @out, "docker run
-        -v #{@config[:shared_names][:certs]}:/certs
-        alpine wget https://localhost-certs.labs.degica.com/#{file}
-          -O /certs/#{file}"
+      if @config[:cert_source][:folder]
+        CommandRunner.run @out, "docker run --rm
+          -v #{@config[:shared_names][:certs]}:/certs
+          -v #{@config[:cert_source][:folder]}:/cert_source
+          alpine cp /cert_source/#{file} /certs/#{file}"
+
+      elsif @config[:cert_source][:url]
+        CommandRunner.run @out, "docker run --rm
+          -v #{@config[:shared_names][:certs]}:/certs
+          alpine wget #{@config[:cert_source][:url]}/#{file}
+            -O /certs/#{file}"
+      end
     end
 
     def prepare_cert_volume!
       create_if_volume_not_exist @config[:shared_names][:certs]
+      return unless @config[:cert_source]
+
       %w[
-        localhost.labs.degica.com.chain.pem
-        localhost.labs.degica.com.crt
-        localhost.labs.degica.com.key
-      ].each do |file|
-        copy_keyfile(file)
+        chain.pem
+        crt
+        key
+      ].each do |file_ext|
+        copy_keyfile("#{http_suffix}.#{file_ext}")
       end
     end
 
@@ -497,18 +587,21 @@ module Kaiser
     def if_container_dead(container, &block)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
       return unless x.length.zero? || x[0]['State']['Running'] == false
+
       yield if block
     end
 
     def create_if_volume_not_exist(vol)
       x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
       return unless x.length.zero?
+
       CommandRunner.run @out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
       x = JSON.parse(`docker inspect #{net} 2>/dev/null`)
       return unless x.length.zero?
+
       CommandRunner.run @out, "docker network create #{net}"
     end
 
@@ -544,6 +637,7 @@ module Kaiser
     def killrm(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
       return if x.length.zero?
+
       if x[0]['State'] && x[0]['State']['Running'] == true
         CommandRunner.run @out, "docker kill #{container}"
       end

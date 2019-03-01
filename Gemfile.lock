@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kaiser (0.1.5)
+    kaiser (0.2.0)
       optimist
 
 GEM
@@ -84,7 +84,6 @@ PLATFORMS
 DEPENDENCIES
   aruba
   aruba-rspec
-  bundler (~> 1.16)
   factory_bot (~> 4.0)
   kaiser!
   rake (~> 10.0)

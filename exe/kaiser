@@ -23,6 +23,7 @@ SUB_COMMANDS = %w[
   attach
   login
   show
+  set
 ].freeze
 
 opts = Optimist.options do
