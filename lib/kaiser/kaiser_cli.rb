@@ -102,8 +102,8 @@ module Kaiser
         --name #{app_container_name}
         --network #{network_name}
         -p #{app_port}:#{app_expose}
-        -e DEV_APPLICATION_HOST=#{app_container_name}
-        -e VIRTUAL_HOST=#{app_container_name}
+        -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
+        -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
         #{volumes}
         #{app_params}
@@ -335,8 +335,8 @@ module Kaiser
         --name #{app_container_name}
         --network #{network_name}
         -p #{app_port}:#{app_expose}
-        -e DEV_APPLICATION_HOST=#{app_container_name}
-        -e VIRTUAL_HOST=#{app_container_name}
+        -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
+        -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
         #{app_params}
         kaiser:#{envname}-#{current_branch}"
@@ -494,7 +494,7 @@ module Kaiser
     end
 
     def app_container_name
-      "#{envname}.#{http_suffix}"
+      "#{envname}-app"
     end
 
     def db_container_name
