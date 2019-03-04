@@ -216,6 +216,8 @@ module Kaiser
 
     def setup_db
       ensure_db_volume
+      stop_db
+      delete_db_volume
       start_db
       return if File.exist?(default_db_image)
 
