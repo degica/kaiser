@@ -30,14 +30,15 @@ opts = Optimist.options do
 Kaiser v#{Kaiser::VERSION}
 
 Subcommands:
-#{SUB_COMMANDS}
+#{SUB_COMMANDS.join ' '}
   BANNER
   opt :verbose, "Show Kaiser's debug output", short: '-v'
   opt :quiet, 'Suppress all output', short: '-q'
-  stop_on SUB_COMMANDS
 end
 
-cmd = ARGV.shift
+commands = SUB_COMMANDS & ARGV
+cmd = commands.first
+ARGV.shift
 
 Optimist.educate unless SUB_COMMANDS.include?(cmd)
 
