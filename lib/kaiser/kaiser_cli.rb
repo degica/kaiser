@@ -19,6 +19,7 @@ module Kaiser
           redis: 'kaiser-redis',
           nginx: 'kaiser-nginx',
           chrome: 'kaiser-chrome',
+          dns: 'kaiser-dns',
           certs: 'kaiser-certs'
         },
         largest_port: 9000
@@ -216,10 +217,13 @@ module Kaiser
 
     def setup_db
       ensure_db_volume
+      start_db
+      return if File.exist?(default_db_image)
+
+      # Some databases keep state around, best to clean it.
       stop_db
       delete_db_volume
       start_db
-      return if File.exist?(default_db_image)
 
       @info_out.puts 'Provisioning database'
       killrm "#{envname}-apptemp"
@@ -336,6 +340,8 @@ module Kaiser
       CommandRunner.run @out, "docker run -d
         --name #{app_container_name}
         --network #{network_name}
+        --dns #{ip_of_container(@config[:shared_names][:dns])}
+        --dns-search #{http_suffix}
         -p #{app_port}:#{app_expose}
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
@@ -580,6 +586,21 @@ module Kaiser
           --network #{@config[:networkname]}
           jwilder/nginx-proxy"
       )
+      run_if_dead(
+        @config[:shared_names][:dns],
+        "docker run -d
+          --name #{@config[:shared_names][:dns]}
+          --network #{@config[:networkname]}
+          -v /var/run/docker.sock:/docker.sock:ro
+          davidsiaw/docker-dns
+          --domain #{http_suffix}
+          --record :#{ip_of_container(@config[:shared_names][:nginx])}"
+      )
+    end
+
+    def ip_of_container(containername)
+      networkname = ".NetworkSettings.Networks.#{@config[:networkname]}.IPAddress"
+      `docker inspect -f '{{#{networkname}}}' #{containername}`.chomp
     end
 
     def network
@@ -633,7 +654,12 @@ module Kaiser
     end
 
     def load_config
-      @config = YAML.load_file(@config_file) if File.exist?(@config_file)
+      loaded = YAML.load_file(@config_file) if File.exist?(@config_file)
+      @config = {
+        **@config,
+        **loaded,
+        shared_names: { **@config[:shared_names], **loaded[:shared_names] }
+      }
     end
 
     def killrm(container)
