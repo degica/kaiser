@@ -11,6 +11,8 @@ module Kaiser
                   :server_type
 
     def initialize(filename)
+      Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
+
       @databases = {}
       @attach_mounts = []
       @server_type = :unknown

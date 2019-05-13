@@ -53,8 +53,6 @@ elsif opts[:verbose]
   out = $stderr
 end
 
-Optimist.die 'No Kaiserfile in current directory' unless File.exist? 'Kaiserfile'
-
 cli = Kaiser::KaiserCli.new(
   `pwd`.chomp,
   debug_output: out,
