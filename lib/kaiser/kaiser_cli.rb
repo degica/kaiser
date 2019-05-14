@@ -656,8 +656,8 @@ module Kaiser
     def load_config
       loaded = YAML.load_file(@config_file) if File.exist?(@config_file)
       @config = {
-        **@config,
-        **loaded,
+        **(@config || {}),
+        **(loaded || {}),
         shared_names: { **@config[:shared_names], **loaded[:shared_names] }
       }
     end
