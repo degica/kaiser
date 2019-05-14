@@ -582,6 +582,7 @@ module Kaiser
           -p 443:443
           -v #{@config[:shared_names][:certs]}:/etc/nginx/certs
           -v /var/run/docker.sock:/tmp/docker.sock:ro
+          --privileged
           --name #{@config[:shared_names][:nginx]}
           --network #{@config[:networkname]}
           jwilder/nginx-proxy"
