@@ -591,6 +591,7 @@ module Kaiser
         "docker run -d
           --name #{@config[:shared_names][:dns]}
           --network #{@config[:networkname]}
+          --privileged
           -v /var/run/docker.sock:/docker.sock:ro
           davidsiaw/docker-dns
           --domain #{http_suffix}
