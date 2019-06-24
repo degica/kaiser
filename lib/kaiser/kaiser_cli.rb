@@ -102,6 +102,8 @@ module Kaiser
       system "docker run -ti
         --name #{app_container_name}
         --network #{network_name}
+        --dns #{ip_of_container(@config[:shared_names][:dns])}
+        --dns-search #{http_suffix}
         -p #{app_port}:#{app_expose}
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
