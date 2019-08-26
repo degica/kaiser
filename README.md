@@ -40,6 +40,14 @@ And then add the following line to your `.bashrc` or `.bash_profile`
 alias kaiser='docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.kaiser:/root/.kaiser -v `pwd`:`pwd` -e CONTEXT_DIR="`pwd`" degica/kaiser'
 ```
 
+Or if you use fish
+
+```
+function kaiser
+  docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.kaiser:/root/.kaiser -v (pwd):(pwd) -e CONTEXT_DIR=(pwd) degica/kaiser $argv
+end
+```
+
 ## Usage
 
 You will need to provide a Kaiserfile, and write a Dockerfile for your app (in the app repo's root dir) like so:
