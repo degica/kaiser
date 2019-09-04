@@ -311,7 +311,7 @@ module Kaiser
       @info_out.puts 'Setting up application'
       File.write(tmp_dockerfile_name, docker_file_contents)
       build_args = docker_build_args.map { |k, v| "--build-arg #{k}=#{v}" }
-      CommandRunner.run @out, "docker build
+      CommandRunner.run! @out, "docker build
         -t kaiser:#{envname}-#{current_branch}
         -f #{tmp_dockerfile_name} #{@work_dir}
         #{build_args.join(' ')}"
@@ -339,7 +339,7 @@ module Kaiser
     def start_app
       @info_out.puts 'Starting up application'
       killrm app_container_name
-      CommandRunner.run @out, "docker run -d
+      CommandRunner.run! @out, "docker run -d
         --name #{app_container_name}
         --network #{network_name}
         --dns #{ip_of_container(@config[:shared_names][:dns])}
@@ -384,17 +384,17 @@ module Kaiser
       killrm tmp_file_container
       create_if_volume_not_exist tmp_file_volume
 
-      CommandRunner.run @out, "docker create
+      CommandRunner.run! @out, "docker create
         -v #{tmp_file_volume}:/tmpvol
         --name #{tmp_file_container} alpine"
 
       File.write(tmp_waitscript_name, script)
 
-      CommandRunner.run @out, "docker cp
+      CommandRunner.run! @out, "docker cp
         #{tmp_waitscript_name}
         #{tmp_file_container}:/tmpvol/wait.sh"
 
-      CommandRunner.run @out, "docker run --rm -ti
+      CommandRunner.run! @out, "docker run --rm -ti
         --name #{tmp_db_waiter}
         --network #{network_name}
         -v #{tmp_file_volume}:/tmpvol
@@ -527,13 +527,13 @@ module Kaiser
 
     def copy_keyfile(file)
       if @config[:cert_source][:folder]
-        CommandRunner.run @out, "docker run --rm
+        CommandRunner.run! @out, "docker run --rm
           -v #{@config[:shared_names][:certs]}:/certs
           -v #{@config[:cert_source][:folder]}:/cert_source
           alpine cp /cert_source/#{file} /certs/#{file}"
 
       elsif @config[:cert_source][:url]
-        CommandRunner.run @out, "docker run --rm
+        CommandRunner.run! @out, "docker run --rm
           -v #{@config[:shared_names][:certs]}:/certs
           alpine wget #{@config[:cert_source][:url]}/#{file}
             -O /certs/#{file}"
@@ -622,14 +622,14 @@ module Kaiser
       x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
       return unless x.length.zero?
 
-      CommandRunner.run @out, "docker volume create #{vol}"
+      CommandRunner.run! @out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
       x = JSON.parse(`docker inspect #{net} 2>/dev/null`)
       return unless x.length.zero?
 
-      CommandRunner.run @out, "docker network create #{net}"
+      CommandRunner.run! @out, "docker network create #{net}"
     end
 
     def run_if_dead(container, command)
