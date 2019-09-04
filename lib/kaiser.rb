@@ -1,3 +1,4 @@
+require 'kaiser/error'
 require 'kaiser/version'
 require 'kaiser/kaiserfile'
 require 'kaiser/kaiser_cli'

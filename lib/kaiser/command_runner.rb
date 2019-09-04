@@ -4,9 +4,6 @@ require 'English'
 module Kaiser
   # Make running easy
   class CommandRunner
-    class Error < StandardError
-    end
-
     def self.run(out, cmd)
       out.puts "> #{cmd}"
       CommandRunner.new(out, cmd).run_command
@@ -14,7 +11,13 @@ module Kaiser
 
     def self.run!(out, cmd)
       status = run(out, cmd)
-      raise Error, "ERROR\n#{command}\n- exited with code #{status}" if status.to_s != '0'
+      if status.to_s != '0'
+        raise Kaiser::Error, "ERROR\n#{command}\n- exited with code #{status}"
+      end
+    end
+
+    def self.run_async(out, cmd)
+      CommandRunner.new(out, cmd).run_command_async
     end
 
     def initialize(out, cmd)
@@ -44,6 +47,10 @@ module Kaiser
       print_and_return_status $CHILD_STATUS.exitstatus
     rescue PTY::ChildExited => ex
       print_and_return_status(ex.status)
+    end
+
+    def run_command_async
+      PTY.spawn("#{@cmd} 2>&1")
     end
   end
 end
