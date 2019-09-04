@@ -12,7 +12,7 @@ module Kaiser
     def self.run!(out, cmd)
       status = run(out, cmd)
       if status.to_s != '0'
-        raise Kaiser::Error, "ERROR\n#{command}\n- exited with code #{status}"
+        raise Kaiser::Error, "ERROR\n#{cmd}\n- exited with code #{status}"
       end
     end
 
