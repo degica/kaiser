@@ -4,14 +4,14 @@ require 'English'
 module Kaiser
   # Make running easy
   class CommandRunner
-    def self.run(out, cmd)
+    def self.run(out, cmd, &block)
       out.puts "> #{cmd}"
-      CommandRunner.new(out, cmd).run_command
+      CommandRunner.new(out, cmd).run_command(&block)
     end
 
-    def self.run!(out, cmd)
-      status = run(out, cmd)
-      if status.to_s != '0'
+    def self.run!(out, cmd, &block)
+      status = run(out, cmd, &block)
+      if status.to_s != '0' # rubocop:disable Style/GuardClause
         raise Kaiser::Error, "ERROR\n#{cmd}\n- exited with code #{status}"
       end
     end
@@ -35,22 +35,19 @@ module Kaiser
       lines.each do |line|
         @out.print line
         @out.flush
+        yield line.chomp if block_given?
       end
     rescue Errno::EIO # rubocop:disable Lint/HandleExceptions
     end
 
-    def run_command
+    def run_command(&block)
       PTY.spawn("#{@cmd} 2>&1") do |stdout, _stdin, pid|
-        print_lines(stdout)
+        print_lines(stdout, &block)
         Process.wait(pid)
       end
       print_and_return_status $CHILD_STATUS.exitstatus
     rescue PTY::ChildExited => ex
       print_and_return_status(ex.status)
-    end
-
-    def run_command_async
-      PTY.spawn("#{@cmd} 2>&1")
     end
   end
 end

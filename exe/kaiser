@@ -61,8 +61,8 @@ cli = Kaiser::KaiserCli.new(
 begin
   cli.send(:"#{cmd}")
 rescue Kaiser::Error => err
-  puts err.message
   puts
+  puts err.message
   exit 1
 end
 

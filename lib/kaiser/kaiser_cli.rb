@@ -378,10 +378,10 @@ module Kaiser
       "#{envname}-tmpfiles-vol"
     end
 
-    def run_blocking_script(image, params, script)
+    def create_script_container(script)
       killrm tmp_db_waiter
-
       killrm tmp_file_container
+
       create_if_volume_not_exist tmp_file_volume
 
       CommandRunner.run! @out, "docker create
@@ -394,44 +394,24 @@ module Kaiser
         #{tmp_waitscript_name}
         #{tmp_file_container}:/tmpvol/wait.sh"
 
-      CommandRunner.run! @out, "docker run --rm -ti
-        --name #{tmp_db_waiter}
-        --network #{network_name}
-        -v #{tmp_file_volume}:/tmpvol
-        #{params}
-        #{image} sh /tmpvol/wait.sh"
-
+      yield
+    ensure
       killrm tmp_file_container
-
       FileUtils.rm(tmp_waitscript_name)
     end
 
-    def run_nonblocking_script(image, params, script)
-      killrm tmp_db_waiter
-
-      killrm tmp_file_container
-      create_if_volume_not_exist tmp_file_volume
-
-      CommandRunner.run! @out, "docker create
-        -v #{tmp_file_volume}:/tmpvol
-        --name #{tmp_file_container} alpine"
-
-      File.write(tmp_waitscript_name, script)
-
-      CommandRunner.run! @out, "docker cp
-        #{tmp_waitscript_name}
-        #{tmp_file_container}:/tmpvol/wait.sh"
-
-      begin
-        yield(*CommandRunner.run_async(@out, "docker run --rm -ti
-          --name #{tmp_db_waiter}
-          --network #{network_name}
-          -v #{tmp_file_volume}:/tmpvol
-          #{params}
-          #{image} sh /tmpvol/wait.sh"))
-      ensure
-        killrm tmp_file_container
-        FileUtils.rm(tmp_waitscript_name)
+    def run_blocking_script(image, params, script, &block)
+      create_script_container script do
+        CommandRunner.run!(
+          @out,
+          "docker run --rm -ti
+            --name #{tmp_db_waiter}
+            --network #{network_name}
+            -v #{tmp_file_volume}:/tmpvol
+            #{params}
+            #{image} sh /tmpvol/wait.sh",
+          &block
+        )
       end
     end
 
@@ -439,7 +419,7 @@ module Kaiser
       return unless server_type == :http
 
       @info_out.puts 'Waiting for server to start...'
-      script = <<-SCRIPT
+      wait_script = <<-SCRIPT
         apk update
         apk add curl
         until $(curl --output /dev/null --silent --head --fail http://#{app_container_name}:#{app_expose}); do
@@ -448,12 +428,10 @@ module Kaiser
         done
         echo '!'
       SCRIPT
-      run_nonblocking_script('alpine', '', script) do |stdout, _stdin, _pid|
-        until stdout.gets.chomp == '!'
-          if container_dead?(app_container_name)
-            raise Kaiser::Error, "App container died. " \
-              "Run `docker logs #{app_container_name}` to see why."
-          end
+      run_blocking_script('alpine', '', wait_script) do |line|
+        if line != '!' && container_dead?(app_container_name)
+          raise Kaiser::Error, 'App container died. ' \
+            "Run `docker logs #{app_container_name}` to see why."
         end
       end
       @info_out.puts 'Started.'
