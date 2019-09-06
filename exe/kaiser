@@ -56,15 +56,25 @@ Usage: kaiser down
 EOS
 
 db_save_usage <<EOS
-Shuts down the database docker container, backs up the database and brings the container back up. The database will be saved as a tarball to `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/<DB_BACKUP_FILENAME>.tar.bz`
+Shuts down the database docker container, backs up the database and brings the container back up.
 
-Alternatively you can also save it to our current directory.
+The database will be saved as a tarball to `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/<DB_BACKUP_FILENAME>.tar.bz`
+
+Alternatively you can also save it to your current directory.
 
 Usage: kaiser db_save DB_BACKUP_FILENAME
        kaiser db_save ./my_database.tar.bz
 EOS
 
 db_load_usage <<EOS
+Shuts down the database docker container, *replaces* the database with the backup provided and brings the container up again.
+
+The database will be restored from a tarball saved as `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/<DB_BACKUP_FILENAME>.tar.bz`
+
+Alternatively you can also load it from your current directory.
+
+Usage: kaiser db_load DB_BACKUP_FILENAME
+       kaiser db_load ./my_database.tar.bz
 EOS
 
 SUB_COMMANDS = %w[
