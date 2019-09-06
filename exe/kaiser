@@ -27,6 +27,8 @@ kaiser attach
 ```
 
 This will boot up your application in docker and bind mount your local source directory so you can start doing development. Happy coding!
+
+If any of these commands are giving you trouble, please run them with the `-v` flag set. They will show you what exactly is happening so you can debug.
 EOS
 
 init_usage <<EOS
@@ -39,6 +41,18 @@ deinit_usage <<EOS
 Removes the Kaiser environment from `~/.kaiser/.config.yml`. This however does not delete the `~/.kaiser/databases/<ENV_NAME>` directory.
 
 Usage: kaiser init ENV_NAME
+EOS
+
+up_usage <<EOS
+Boots up the application in docker as defined in the `Kaiserfile` in its source code. Often this will create two docker containers `<ENV_NAME>-db` and `<ENV_NAME>-app` running your database and application respectively.
+
+Usage: kaiser up
+EOS
+
+down_usage <<EOS
+Shuts down and *deletes* the containers that were started using `kaiser up`.
+
+Usage: kaiser down
 EOS
 
 SUB_COMMANDS = %w[
