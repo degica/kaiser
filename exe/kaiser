@@ -44,7 +44,9 @@ Usage: kaiser init ENV_NAME
 EOS
 
 up_usage <<EOS
-Boots up the application in docker as defined in the `Kaiserfile` in its source code. Often this will create two docker containers `<ENV_NAME>-db` and `<ENV_NAME>-app` running your database and application respectively.
+Boots up the application in docker as defined in the `Kaiserfile` in its source code. Usually this will create two docker containers `<ENV_NAME>-db` and `<ENV_NAME>-app` running your database and application respectively.
+
+A backup of the default database is created and saved to `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz`. This can be restored at any time using the `db_reset` command.
 
 Usage: kaiser up
 EOS
@@ -75,6 +77,18 @@ Alternatively you can also load it from your current directory.
 
 Usage: kaiser db_load DB_BACKUP_FILENAME
        kaiser db_load ./my_database.tar.bz
+EOS
+
+db_reset_usage <<EOS
+Shuts down the database docker container, *replaces* the database with the default database image stored at `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz` and brings the container up again.
+
+Usage: kaiser db_reset
+EOS
+
+db_reset_hard_usage <<EOS
+Shuts down the database docker container, deletes the docker volume on which the db was stored, deletes the default database image stored at `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz`, rebuilds the docker volume and the default database image from scratch and then brings the container up again.
+
+Usage: kaiser db_reset_hard
 EOS
 
 SUB_COMMANDS = %w[
