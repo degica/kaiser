@@ -55,14 +55,26 @@ Shuts down and *deletes* the containers that were started using `kaiser up`.
 Usage: kaiser down
 EOS
 
+db_save_usage <<EOS
+Shuts down the database docker container, backs up the database and brings the container back up. The database will be saved as a tarball to `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/<DB_BACKUP_FILENAME>.tar.bz`
+
+Alternatively you can also save it to our current directory.
+
+Usage: kaiser db_save DB_BACKUP_FILENAME
+       kaiser db_save ./my_database.tar.bz
+EOS
+
+db_load_usage <<EOS
+EOS
+
 SUB_COMMANDS = %w[
   init
   deinit
   up
   down
   shutdown
-  db_load
   db_save
+  db_load
   db_reset
   db_reset_hard
   logs
