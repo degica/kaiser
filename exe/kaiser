@@ -9,6 +9,38 @@ require 'erb'
 
 require 'kaiser'
 
+main_usage <<EOS
+Kaiser is a tool to make development a lot easier by defining how an application starts using a `Kaiserfile` in the source code's root directory.
+
+### Prerequisites
+
+Install docker on your system and make sure the current user have all the rights required to spin up docker containers.
+
+### Usage
+
+For typical usuage you'll want to do the following three commands.
+
+```
+kaiser init ENV_NAME
+kaiser up
+kaiser attach
+```
+
+This will boot up your application in docker and bind mount your local source directory so you can start doing development. Happy coding!
+EOS
+
+init_usage <<EOS
+Initializes a Kaiser environment and assigns ports for it in `~/.kaiser/.config.yml`. When running `kaiser up` later the directory `~/.kaiser/databases/<ENV_NAME>`  will get created.
+
+Usage: kaiser init ENV_NAME
+EOS
+
+deinit_usage <<EOS
+Removes the Kaiser environment from `~/.kaiser/.config.yml`. This however does not delete the `~/.kaiser/databases/<ENV_NAME>` directory.
+
+Usage: kaiser init ENV_NAME
+EOS
+
 SUB_COMMANDS = %w[
   init
   deinit
