@@ -27,8 +27,10 @@ SUB_COMMANDS = %w[
 ].freeze
 
 opts = Optimist.options do
+  version "Kaiser v#{Kaiser::VERSION}"
+
   banner <<-BANNER
-Kaiser v#{Kaiser::VERSION}
+#{version}
 
 Subcommands:
 #{SUB_COMMANDS.join ' '}
