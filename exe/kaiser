@@ -117,6 +117,18 @@ Usage: kaiser show ports
        kaiser show http-suffix
 EOS
 
+#TODO: Explain in more detail.
+#TODO: Incorp help messages already defined in kaiser_cli.rb
+set_usage <<EOS
+Subcommand to help you set up https. Run the `help` or `help-https` subcommands for more information.
+
+Usage: kaiser set cert-url
+       kaiser set cert-folder
+       kaiser set http-suffix
+       kaiser set help
+       kaiser set help-https
+EOS
+
 SUB_COMMANDS = %w[
   init
   deinit
