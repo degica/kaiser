@@ -64,6 +64,7 @@ cli = Kaiser::Config.load(
 )
 
 Kaiser::KaiserCli.register(:init, Kaiser::CMD::Init)
+Kaiser::KaiserCli.register(:deinit, Kaiser::CMD::Deinit)
 
 Kaiser::KaiserCli.run_command(:"#{cmd}")
 

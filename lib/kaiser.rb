@@ -6,8 +6,8 @@ require 'kaiser/dotter'
 
 require 'kaiser/config'
 
-require 'kaiser/cmds/base'
 require 'kaiser/cmds/init'
+require 'kaiser/cmds/deinit'
 
 # Kaiser
 module Kaiser

@@ -26,24 +26,11 @@ module Kaiser
       cmd.execute
     end
 
-    def deinit
-      down
-      @config[:envs].delete(envname)
-      @config[:envnames].delete(@work_dir)
-      save_config
-    end
-
     def up
       ensure_setup
       setup_app
       setup_db
       start_app
-    end
-
-    def down
-      stop_db
-      stop_app
-      delete_db_volume
     end
 
     def shutdown
@@ -269,7 +256,7 @@ module Kaiser
     end
 
     def stop_db
-      @info_out.puts 'Stopping database'
+      Config.info_out.puts 'Stopping database'
       killrm db_container_name
     end
 
@@ -287,7 +274,7 @@ module Kaiser
     end
 
     def delete_db_volume
-      CommandRunner.run @out, "docker volume rm #{db_volume_name}"
+      CommandRunner.run Config.out, "docker volume rm #{db_volume_name}"
     end
 
     def setup_app
@@ -334,11 +321,6 @@ module Kaiser
         #{app_params}
         kaiser:#{envname}-#{current_branch}"
       wait_for_app
-    end
-
-    def stop_app
-      @info_out.puts 'Stopping application'
-      killrm app_container_name
     end
 
     def tmp_waitscript_name
