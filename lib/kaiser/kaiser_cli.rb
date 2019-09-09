@@ -1,42 +1,23 @@
 require 'kaiser/command_runner'
 
 module Kaiser
+
   # The commandline
   class KaiserCli
-    attr_reader :config_dir
+    @@subcommands = {}
 
-    def initialize(work_dir, debug_output:, info_output:)
-      @work_dir = work_dir
-      @config_dir = "#{ENV['HOME']}/.kaiser"
-      FileUtils.mkdir_p @config_dir
-      @config_file = "#{@config_dir}/.config.yml"
-      @kaiserfile = Kaiserfile.new("#{@work_dir}/Kaiserfile")
-      @config = {
-        envnames: {},
-        envs: {},
-        networkname: 'kaiser_net',
-        shared_names: {
-          redis: 'kaiser-redis',
-          nginx: 'kaiser-nginx',
-          chrome: 'kaiser-chrome',
-          dns: 'kaiser-dns',
-          certs: 'kaiser-certs'
-        },
-        largest_port: 9000
-      }
-      @out = debug_output
-      @info_out = info_output
-      load_config
+    def initialize()
     end
 
-    def init
-      return Optimist.die "Already initialized as #{envname}" if envname
+    def self.register(name, klass)
+      @subcommands ||= {}
+      @subcommands[name] = klass.new
+    end
 
-      name = ARGV.shift
-      return Optimist.die 'Needs environment name' if name.nil?
+    def self.run_command(name)
+      cmd = @subcommands[name] || Kaiser::CMD::Base.new
 
-      init_config_for_env(name)
-      save_config
+      cmd.execute
     end
 
     def deinit
@@ -208,10 +189,6 @@ module Kaiser
     end
 
     private
-
-    def largest_port
-      @config[:largest_port]
-    end
 
     def ensure_db_volume
       create_if_volume_not_exist db_volume_name
@@ -641,34 +618,13 @@ module Kaiser
     end
 
     def envname
-      @config[:envnames][@work_dir]
-    end
-
-    def init_config_for_env(name)
-      @config[:envnames][@work_dir] = name
-      @config[:envs][name] = {
-        app_port: (largest_port + 1).to_s,
-        db_port: (largest_port + 2).to_s
-      }
-      @config[:largest_port] = @config[:largest_port] + 2
+      Config.config[:envnames][Config.work_dir]
     end
 
     def save_config
-      File.write(@config_file, @config.to_yaml)
+      File.write(Config.config_file, Config.config.to_yaml)
     end
 
-    def load_config
-      loaded = YAML.load_file(@config_file) if File.exist?(@config_file)
-
-      config_shared_names = @config[:shared_names] if @config
-      loaded_shared_names = loaded[:shared_names] if loaded
-
-      @config = {
-        **(@config || {}),
-        **(loaded || {}),
-        shared_names: { **(config_shared_names || {}), **(loaded_shared_names || {}) }
-      }
-    end
 
     def killrm(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)

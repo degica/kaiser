@@ -7,127 +7,9 @@ require 'json'
 require 'pty'
 require 'erb'
 
-require 'kaiser'
+$LOAD_PATH << "#{__dir__}/../lib"
 
-main_usage <<EOS
-Kaiser is a tool to make development a lot easier by defining how an application starts using a `Kaiserfile` in the source code's root directory.
-
-### Prerequisites
-
-Install docker on your system and make sure the current user have all the rights required to spin up docker containers.
-
-### Usage
-
-For typical usuage you'll want to do the following three commands.
-
-```
-kaiser init ENV_NAME
-kaiser up
-kaiser attach
-```
-
-This will boot up your application in docker and bind mount your local source directory so you can start doing development. Happy coding!
-
-If any of these commands are giving you trouble, please run them with the `-v` flag set. They will show you what exactly is happening so you can debug.
-EOS
-
-init_usage <<EOS
-Initializes a Kaiser environment and assigns ports for it in `~/.kaiser/.config.yml`. When running `kaiser up` later the directory `~/.kaiser/databases/<ENV_NAME>`  will get created.
-
-Usage: kaiser init ENV_NAME
-EOS
-
-deinit_usage <<EOS
-Removes the Kaiser environment from `~/.kaiser/.config.yml`. This however does not delete the `~/.kaiser/databases/<ENV_NAME>` directory.
-
-Usage: kaiser init ENV_NAME
-EOS
-
-up_usage <<EOS
-Boots up the application in docker as defined in the `Kaiserfile` in its source code. Usually this will create two docker containers `<ENV_NAME>-db` and `<ENV_NAME>-app` running your database and application respectively.
-
-A backup of the default database is created and saved to `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz`. This can be restored at any time using the `db_reset` command.
-
-Usage: kaiser up
-EOS
-
-down_usage <<EOS
-Shuts down and *deletes* the containers that were started using `kaiser up`.
-
-Usage: kaiser down
-EOS
-
-db_save_usage <<EOS
-Shuts down the database docker container, backs up the database and brings the container back up.
-
-The database will be saved as a tarball to `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/<DB_BACKUP_FILENAME>.tar.bz`
-
-Alternatively you can also save it to your current directory.
-
-Usage: kaiser db_save DB_BACKUP_FILENAME
-       kaiser db_save ./my_database.tar.bz
-EOS
-
-db_load_usage <<EOS
-Shuts down the database docker container, *replaces* the database with the backup provided and brings the container up again.
-
-The database will be restored from a tarball saved as `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/<DB_BACKUP_FILENAME>.tar.bz`
-
-Alternatively you can also load it from your current directory.
-
-Usage: kaiser db_load DB_BACKUP_FILENAME
-       kaiser db_load ./my_database.tar.bz
-EOS
-
-db_reset_usage <<EOS
-Shuts down the database docker container, *replaces* the database with the default database image stored at `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz` and brings the container up again.
-
-Usage: kaiser db_reset
-EOS
-
-db_reset_hard_usage <<EOS
-Shuts down the database docker container, deletes the docker volume on which the db was stored, deletes the default database image stored at `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz`, rebuilds the docker volume and the default database image from scratch and then brings the container up again.
-
-Usage: kaiser db_reset_hard
-EOS
-
-logs_usage <<EOS
-Continuously monitors the application container's logs.
-
-Usage: kaiser logs
-EOS
-
-attach_usage <<EOS
-Shuts down the application container and starts it up again with the current directory bind mounted inside. This way the application will run from the source code in the current directory and any edits you make will immediately show up inside the contianer. This is ideal for development.
-
-Usage: kaiser attach
-EOS
-
-login_usage <<EOS
-Executes a command on the application docker container. By executing the command `sh` you can get a login shell.
-
-Usage:kaiser login COMMAND
-EOS
-
-show_usage <<EOS
-Subcommand that shows information about the environment such as the TCP ports or the certificate used for HTTPS.
-
-Usage: kaiser show ports
-       kaiser show cert-source
-       kaiser show http-suffix
-EOS
-
-#TODO: Explain in more detail.
-#TODO: Incorp help messages already defined in kaiser_cli.rb
-set_usage <<EOS
-Subcommand to help you set up https. Run the `help` or `help-https` subcommands for more information.
-
-Usage: kaiser set cert-url
-       kaiser set cert-folder
-       kaiser set http-suffix
-       kaiser set help
-       kaiser set help-https
-EOS
+require "kaiser"
 
 SUB_COMMANDS = %w[
   init
@@ -163,8 +45,6 @@ commands = SUB_COMMANDS & ARGV
 cmd = commands.first
 ARGV.shift
 
-Optimist.educate unless SUB_COMMANDS.include?(cmd)
-
 out = Kaiser::Dotter.new
 info_out = Kaiser::AfterDotter.new(dotter: out)
 
@@ -175,11 +55,14 @@ elsif opts[:verbose]
   out = $stderr
 end
 
-cli = Kaiser::KaiserCli.new(
+cli = Kaiser::Config.load(
   `pwd`.chomp,
   debug_output: out,
   info_output: info_out
 )
-cli.send(:"#{cmd}")
+
+Kaiser::KaiserCli.register(:init, Kaiser::CMD::Init)
+
+Kaiser::KaiserCli.run_command(:"#{cmd}")
 
 puts ''
