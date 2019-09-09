@@ -103,6 +103,20 @@ Shuts down the application container and starts it up again with the current dir
 Usage: kaiser attach
 EOS
 
+login_usage <<EOS
+Executes a command on the application docker container. By executing the command `sh` you can get a login shell.
+
+Usage:kaiser login COMMAND
+EOS
+
+show_usage <<EOS
+Subcommand that shows information about the environment such as the TCP ports or the certificate used for HTTPS.
+
+Usage: kaiser show ports
+       kaiser show cert-source
+       kaiser show http-suffix
+EOS
+
 SUB_COMMANDS = %w[
   init
   deinit
