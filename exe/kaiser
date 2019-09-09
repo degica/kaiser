@@ -91,6 +91,12 @@ Shuts down the database docker container, deletes the docker volume on which the
 Usage: kaiser db_reset_hard
 EOS
 
+logs_usage <<EOS
+Continuously monitors the application container's logs.
+
+Usage: kaiser logs
+EOS
+
 SUB_COMMANDS = %w[
   init
   deinit
