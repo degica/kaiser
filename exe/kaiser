@@ -39,6 +39,8 @@ Subcommands:
   BANNER
   opt :verbose, "Show Kaiser's debug output", short: '-v'
   opt :quiet, 'Suppress all output', short: '-q'
+
+  stop_on SUB_COMMANDS
 end
 
 commands = SUB_COMMANDS & ARGV
