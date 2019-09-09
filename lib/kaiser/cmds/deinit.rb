@@ -1,6 +1,6 @@
 module Kaiser
   module CMD
-    class Deinit < KaiserCli
+    class Deinit < Cli
 
       def usage
       <<EOS

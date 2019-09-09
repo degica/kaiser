@@ -3,13 +3,13 @@ require 'kaiser/command_runner'
 module Kaiser
 
   # The commandline
-  class KaiserCli
+  class Cli
     @@subcommands = {}
 
     def initialize
       # We can't just call usage within the options block because that actually shifts
       # the scope to Optimist::Parser. We can still reference variables but we can't
-      # call instance methods of a Kaiser::KaiserCli class.
+      # call instance methods of a Kaiser::Cli class.
       u = usage
       Optimist::options {
         banner u

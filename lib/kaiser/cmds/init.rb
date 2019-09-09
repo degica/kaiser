@@ -1,7 +1,7 @@
 
 module Kaiser
   module CMD
-    class Init < KaiserCli
+    class Init < Cli
       def usage
         <<EOS
 Initializes a Kaiser environment and assigns ports for it in `~/.kaiser/.config.yml`. When running `kaiser up` later the directory `~/.kaiser/databases/<ENV_NAME>`  will get created.
