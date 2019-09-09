@@ -6,7 +6,14 @@ module Kaiser
   class Cli
     @@subcommands = {}
 
-    def initialize
+    # At first I did this in the constructor but the problem with that is Optimist
+    # will parse the entire commandline for the first Cli command registered.
+    # That means no matter what you call -h on, it will always return the help
+    # for the first subcommand. Fixed this by only running define_options when
+    # a command is run. We can't just run the constructor at that point because
+    # we need each Cli class to be constructed in the beginning so we can add their
+    # usage text to the output of `kaiser -h`.
+    def define_options
       # We can't just call usage within the options block because that actually shifts
       # the scope to Optimist::Parser. We can still reference variables but we can't
       # call instance methods of a Kaiser::Cli class.
@@ -22,7 +29,8 @@ module Kaiser
     end
 
     def self.run_command(name)
-      cmd = @subcommands[name] || Kaiser::CMD::Base.new
+      cmd = @subcommands[name]
+      cmd.define_options
       cmd.execute
     end
 
