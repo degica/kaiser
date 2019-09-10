@@ -36,16 +36,30 @@ module Kaiser
     end
 
     def self.register(name, klass)
-      puts "#{name}: #{klass}"
       @subcommands ||= {}
       @subcommands[name] = klass.new
     end
 
     def self.run_command(name)
       cmd = @subcommands[name]
-      #TODO: Fail gracefully if this command doesn't exist.
       cmd.define_options
       cmd.execute
+    end
+
+    def self.all_subcommands_usage
+      output = ""
+
+      @subcommands.each { |name, klass|
+        name_s = name.to_s
+
+        output += name_s + "\n"
+        output += name_s.gsub(/./, '-')
+        output += "\n"
+        output += klass.usage
+        output += "\n\n"
+      }
+
+      output
     end
 
     def down

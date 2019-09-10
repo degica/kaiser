@@ -29,15 +29,42 @@ SUB_COMMANDS = {
 
 sub_command_strings = SUB_COMMANDS.keys.map { |cmd| cmd.to_s }
 
+SUB_COMMANDS.each { |k,v| Kaiser::Cli.register(k,v) }
+
 opts = Optimist.options do
   version "Kaiser v#{Kaiser::VERSION}"
 
   banner <<-BANNER
 #{version}
 
-Subcommands:
-#{sub_command_strings.join ' '}
-  BANNER
+Kaiser is a tool to make development a lot easier by defining how an application starts using a `Kaiserfile` in the source code's root directory.
+
+Prerequisites
+=============
+
+Install docker on your system and make sure the current user has all the rights required to spin up docker containers.
+
+Usage
+=====
+
+For typical usuage you'll want to do the following three commands.
+
+```
+kaiser init ENV_NAME
+kaiser up
+kaiser attach
+```
+
+This will boot up your application in docker and bind mount your local source directory so you can start doing development. Happy coding!
+If any of these commands are giving you trouble, please run them with the `-v` flag set. They will show you what exactly is happening so you can debug.
+
+Subcommands
+===========
+
+#{Kaiser::Cli.all_subcommands_usage}
+Global Parameters
+=================
+BANNER
   opt :verbose, "Show Kaiser's debug output", short: '-v'
   opt :quiet, 'Suppress all output', short: '-q'
 
@@ -65,8 +92,6 @@ cli = Kaiser::Config.load(
   debug_output: out,
   info_output: info_out
 )
-
-SUB_COMMANDS.each { |k,v| Kaiser::Cli.register(k,v) }
 
 Kaiser::Cli.run_command(:"#{cmd}")
 
