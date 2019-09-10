@@ -6,6 +6,18 @@ module Kaiser
   class Cli
     @@subcommands = {}
 
+    def initialize
+      # This is here for backwards compatibility since it can be used in Kaiserfiles.
+      # It would be a good idea to deprecate this and make it more abstract.
+      @work_dir = Config.work_dir
+      @config_dir = Config.work_dir
+      @config_file = Config.config_file
+      @kaiserfile = Config.kaiserfile
+      @config = Config.config
+      @out = Config.out
+      @info_out = Config.info_out
+    end
+
     # At first I did this in the constructor but the problem with that is Optimist
     # will parse the entire commandline for the first Cli command registered.
     # That means no matter what you call -h on, it will always return the help
