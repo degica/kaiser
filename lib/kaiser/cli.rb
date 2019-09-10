@@ -57,24 +57,10 @@ module Kaiser
       killrm app_container_name
     end
 
-    def shutdown
-      Config.config[:shared_names].each do |_, container_name|
-        killrm container_name
-      end
-      CommandRunner.run Config.out, "docker network rm #{Config.config[:networkname]}"
-      CommandRunner.run Config.out, "docker volume rm #{Config.config[:shared_names][:certs]}"
-    end
-
     def db_load
       ensure_setup
       name = ARGV.shift || '.default'
       load_db(name)
-    end
-
-    def db_save
-      ensure_setup
-      name = ARGV.shift || '.default'
-      save_db(name)
     end
 
     def db_reset_hard

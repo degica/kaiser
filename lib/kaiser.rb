@@ -10,6 +10,8 @@ require 'kaiser/cmds/init'
 require 'kaiser/cmds/deinit'
 require 'kaiser/cmds/up'
 require 'kaiser/cmds/down'
+require 'kaiser/cmds/shutdown'
+require 'kaiser/cmds/db_save'
 
 # Kaiser
 module Kaiser
