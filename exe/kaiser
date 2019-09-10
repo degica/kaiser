@@ -69,6 +69,7 @@ Kaiser::Cli.register(:up, Kaiser::CMD::Up)
 Kaiser::Cli.register(:shutdown, Kaiser::CMD::Shutdown)
 Kaiser::Cli.register(:db_save, Kaiser::CMD::DbSave)
 Kaiser::Cli.register(:db_load, Kaiser::CMD::DbLoad)
+Kaiser::Cli.register(:db_reset, Kaiser::CMD::DbReset)
 
 Kaiser::Cli.run_command(:"#{cmd}")
 

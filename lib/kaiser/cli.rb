@@ -42,6 +42,7 @@ module Kaiser
 
     def self.run_command(name)
       cmd = @subcommands[name]
+      #TODO: Fail gracefully if this command doesn't exist.
       cmd.define_options
       cmd.execute
     end
@@ -63,11 +64,6 @@ module Kaiser
         FileUtils.rm db_image_path('.default')
       end
       setup_db
-    end
-
-    def db_reset
-      ensure_setup
-      load_db('.default')
     end
 
     def attach
