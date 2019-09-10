@@ -4,8 +4,6 @@ module Kaiser
 
   # The commandline
   class Cli
-    @@subcommands = {}
-
     def initialize
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
       # It would be a good idea to deprecate this and make it more abstract.
@@ -40,9 +38,30 @@ module Kaiser
       @subcommands[name] = klass.new
     end
 
-    def self.run_command(name)
+    def self.run_command(name, opts)
       cmd = @subcommands[name]
       cmd.define_options
+
+      # We do all this work in here instead of the exe/kaiser file because we
+      # want -h options to output before we check if a Kaiserfile exists.
+      # If we do it in exe/kaiser, people won't be able to check help messages
+      # unless they create a Kaiserfile firest.
+      out = Kaiser::Dotter.new
+      info_out = Kaiser::AfterDotter.new(dotter: out)
+
+      if opts[:quiet]
+        out = File.open(File::NULL, 'w')
+        info_out = File.open(File::NULL, 'w')
+      elsif opts[:verbose]
+        out = $stderr
+      end
+
+      Kaiser::Config.load(
+        `pwd`.chomp,
+        debug_output: out,
+        info_output: info_out
+      )
+
       cmd.execute
     end
 
