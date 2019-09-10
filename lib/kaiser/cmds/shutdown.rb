@@ -3,6 +3,8 @@ module Kaiser
     class Shutdown < Cli
 
       def usage
+      #TODO: Explain a bit more about what these containers do and what shutting
+      #      them down really means for an end user.
       <<EOS
 Shuts down all the containers used internally by Kaiser.
 
