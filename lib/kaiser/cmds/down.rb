@@ -3,7 +3,7 @@ module Kaiser
     class Down < Cli
 
       def usage
-           <<EOS
+      <<EOS
 Shuts down and *deletes* the containers that were started using `kaiser up`.
 
 USAGE: kaiser down

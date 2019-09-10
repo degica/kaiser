@@ -36,7 +36,6 @@ opts = Optimist.options do
 
   banner <<-BANNER
 #{version}
-
 Kaiser is a tool to make development a lot easier by defining how an application starts using a `Kaiserfile` in the source code's root directory.
 
 Prerequisites
@@ -47,7 +46,7 @@ Install docker on your system and make sure the current user has all the rights 
 Usage
 =====
 
-For typical usuage you'll want to do the following three commands.
+For typical usage you'll want to do the following three commands.
 
 ```
 kaiser init ENV_NAME
@@ -56,6 +55,7 @@ kaiser attach
 ```
 
 This will boot up your application in docker and bind mount your local source directory so you can start doing development. Happy coding!
+
 If any of these commands are giving you trouble, please run them with the `-v` flag set. They will show you what exactly is happening so you can debug.
 
 Subcommands

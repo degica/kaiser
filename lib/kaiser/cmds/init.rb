@@ -4,7 +4,7 @@ module Kaiser
     class Init < Cli
       #TODO: Add explanation for the Already initialized error.
       def usage
-        <<EOS
+      <<EOS
 Initializes a Kaiser environment and assigns ports for it in `~/.kaiser/.config.yml`. When running `kaiser up` later the directory `~/.kaiser/databases/<ENV_NAME>`  will get created.
 
 USAGE: kaiser init ENV_NAME
