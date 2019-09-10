@@ -34,13 +34,6 @@ module Kaiser
       cmd.execute
     end
 
-    def up
-      ensure_setup
-      setup_app
-      setup_db
-      start_app
-    end
-
     def shutdown
       @config[:shared_names].each do |_, container_name|
         killrm container_name
@@ -205,17 +198,17 @@ module Kaiser
       delete_db_volume
       start_db
 
-      @info_out.puts 'Provisioning database'
+      Config.info_out.puts 'Provisioning database'
       killrm "#{envname}-apptemp"
-      status = CommandRunner.run @out, "docker run -ti
+      status = CommandRunner.run Config.out, "docker run -ti
         --rm
         --name #{envname}-apptemp
-        --network #{@config[:networkname]}
+        --network #{Config.config[:networkname]}
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{db_reset_command}"
 
       if status != 0
-        @info_out.puts "#{envname} db provision failed"
+        Config.info_out.puts "#{envname} db provision failed"
         exit!
       end
       save_db('.default')
@@ -285,17 +278,6 @@ module Kaiser
       CommandRunner.run Config.out, "docker volume rm #{db_volume_name}"
     end
 
-    def setup_app
-      @info_out.puts 'Setting up application'
-      File.write(tmp_dockerfile_name, docker_file_contents)
-      build_args = docker_build_args.map { |k, v| "--build-arg #{k}=#{v}" }
-      CommandRunner.run @out, "docker build
-        -t kaiser:#{envname}-#{current_branch}
-        -f #{tmp_dockerfile_name} #{@work_dir}
-        #{build_args.join(' ')}"
-      FileUtils.rm(tmp_dockerfile_name)
-    end
-
     def current_branch_db_image_dir
       "#{config_dir}/databases/#{envname}/#{current_branch}"
     end
@@ -315,12 +297,12 @@ module Kaiser
     end
 
     def start_app
-      @info_out.puts 'Starting up application'
+      Config.info_out.puts 'Starting up application'
       killrm app_container_name
-      CommandRunner.run @out, "docker run -d
+      CommandRunner.run Config.out, "docker run -d
         --name #{app_container_name}
         --network #{network_name}
-        --dns #{ip_of_container(@config[:shared_names][:dns])}
+        --dns #{ip_of_container(Config.config[:shared_names][:dns])}
         --dns-search #{http_suffix}
         -p #{app_port}:#{app_expose}
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
@@ -531,47 +513,47 @@ module Kaiser
 
       setup if network.nil?
 
-      create_if_network_not_exist @config[:networkname]
-      if_container_dead @config[:shared_names][:nginx] do
+      create_if_network_not_exist Config.config[:networkname]
+      if_container_dead Config.config[:shared_names][:nginx] do
         prepare_cert_volume!
       end
       run_if_dead(
-        @config[:shared_names][:redis],
+        Config.config[:shared_names][:redis],
         "docker run -d
-          --name #{@config[:shared_names][:redis]}
-          --network #{@config[:networkname]}
+          --name #{Config.config[:shared_names][:redis]}
+          --network #{Config.config[:networkname]}
           redis:alpine"
       )
       run_if_dead(
-        @config[:shared_names][:chrome],
+        Config.config[:shared_names][:chrome],
         "docker run -d
           -p 5900:5900
-          --name #{@config[:shared_names][:chrome]}
-          --network #{@config[:networkname]}
+          --name #{Config.config[:shared_names][:chrome]}
+          --network #{Config.config[:networkname]}
           selenium/standalone-chrome-debug"
       )
       run_if_dead(
-        @config[:shared_names][:nginx],
+        Config.config[:shared_names][:nginx],
         "docker run -d
           -p 80:80
           -p 443:443
-          -v #{@config[:shared_names][:certs]}:/etc/nginx/certs
+          -v #{Config.config[:shared_names][:certs]}:/etc/nginx/certs
           -v /var/run/docker.sock:/tmp/docker.sock:ro
           --privileged
-          --name #{@config[:shared_names][:nginx]}
-          --network #{@config[:networkname]}
+          --name #{Config.config[:shared_names][:nginx]}
+          --network #{Config.config[:networkname]}
           jwilder/nginx-proxy"
       )
       run_if_dead(
-        @config[:shared_names][:dns],
+        Config.config[:shared_names][:dns],
         "docker run -d
-          --name #{@config[:shared_names][:dns]}
-          --network #{@config[:networkname]}
+          --name #{Config.config[:shared_names][:dns]}
+          --network #{Config.config[:networkname]}
           --privileged
           -v /var/run/docker.sock:/docker.sock:ro
           davidsiaw/docker-dns
           --domain #{http_suffix}
-          --record :#{ip_of_container(@config[:shared_names][:nginx])}"
+          --record :#{ip_of_container(Config.config[:shared_names][:nginx])}"
       )
     end
 
