@@ -57,12 +57,6 @@ module Kaiser
       killrm app_container_name
     end
 
-    def db_load
-      ensure_setup
-      name = ARGV.shift || '.default'
-      load_db(name)
-    end
-
     def db_reset_hard
       ensure_setup
       if File.exist?(db_image_path('.default'))

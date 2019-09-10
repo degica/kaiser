@@ -12,6 +12,7 @@ require 'kaiser/cmds/up'
 require 'kaiser/cmds/down'
 require 'kaiser/cmds/shutdown'
 require 'kaiser/cmds/db_save'
+require 'kaiser/cmds/db_load'
 
 # Kaiser
 module Kaiser
