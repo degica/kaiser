@@ -75,7 +75,7 @@ commands = sub_command_strings & ARGV
 cmd = commands.first
 ARGV.shift
 
-Optimist.educate unless SUB_COMMANDS.keys.include?(cmd)
+Optimist.educate unless SUB_COMMANDS.keys.include?(cmd.to_sym)
 
 out = Kaiser::Dotter.new
 info_out = Kaiser::AfterDotter.new(dotter: out)
