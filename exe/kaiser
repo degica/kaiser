@@ -87,7 +87,7 @@ elsif opts[:verbose]
   out = $stderr
 end
 
-cli = Kaiser::Config.load(
+Kaiser::Config.load(
   `pwd`.chomp,
   debug_output: out,
   info_output: info_out
