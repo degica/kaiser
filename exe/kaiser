@@ -74,6 +74,7 @@ Kaiser::Cli.register(:db_reset_hard, Kaiser::CMD::DbResetHard)
 Kaiser::Cli.register(:logs, Kaiser::CMD::Logs)
 Kaiser::Cli.register(:attach, Kaiser::CMD::Attach)
 Kaiser::Cli.register(:login, Kaiser::CMD::Login)
+Kaiser::Cli.register(:show, Kaiser::CMD::Show)
 
 Kaiser::Cli.run_command(:"#{cmd}")
 

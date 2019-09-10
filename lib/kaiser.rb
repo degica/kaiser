@@ -18,6 +18,7 @@ require 'kaiser/cmds/db_reset_hard'
 require 'kaiser/cmds/logs'
 require 'kaiser/cmds/attach'
 require 'kaiser/cmds/login'
+require 'kaiser/cmds/show'
 
 # Kaiser
 module Kaiser
