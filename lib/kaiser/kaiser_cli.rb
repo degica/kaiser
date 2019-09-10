@@ -35,11 +35,11 @@ module Kaiser
     end
 
     def shutdown
-      @config[:shared_names].each do |_, container_name|
+      Config.config[:shared_names].each do |_, container_name|
         killrm container_name
       end
-      CommandRunner.run @out, "docker network rm #{@config[:networkname]}"
-      CommandRunner.run @out, "docker volume rm #{@config[:shared_names][:certs]}"
+      CommandRunner.run Config.out, "docker network rm #{Config.config[:networkname]}"
+      CommandRunner.run Config.out, "docker volume rm #{Config.config[:shared_names][:certs]}"
     end
 
     def db_load
@@ -77,7 +77,7 @@ module Kaiser
       system "docker run -ti
         --name #{app_container_name}
         --network #{network_name}
-        --dns #{ip_of_container(@config[:shared_names][:dns])}
+        --dns #{ip_of_container(Config.config[:shared_names][:dns])}
         --dns-search #{http_suffix}
         -p #{app_port}:#{app_expose}
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
@@ -87,7 +87,7 @@ module Kaiser
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
 
-      @out.puts 'Cleaning up...'
+      Config.out.puts 'Cleaning up...'
       start_app
     end
 
@@ -108,33 +108,33 @@ module Kaiser
       return Optimist.die "Available things to show: #{valid_cmds}" unless cmd
 
       if cmd == 'ports'
-        @info_out.puts "app: #{app_port}"
-        @info_out.puts "db: #{db_port}"
+        Config.info_out.puts "app: #{app_port}"
+        Config.info_out.puts "db: #{db_port}"
       elsif cmd == 'cert-source'
-        unless @config[:cert_source]
+        unless Config.config[:cert_source]
           Optimist.die 'No certificate source set.
             see kaiser set help'
         end
 
-        source = @config[:cert_source][:url] || @config[:cert_source][:folder]
-        @info_out.puts source
+        source = Config.config[:cert_source][:url] || Config.config[:cert_source][:folder]
+        Config.info_out.puts source
       elsif cmd == 'http-suffix'
-        @info_out.puts http_suffix
+        Config.info_out.puts http_suffix
       end
     end
 
     def set
       cmd = ARGV.shift
       if cmd == 'cert-url'
-        @config[:cert_source] = {
+        Config.config[:cert_source] = {
           url: ARGV.shift
         }
       elsif cmd == 'cert-folder'
-        @config[:cert_source] = {
+        Config.config[:cert_source] = {
           folder: ARGV.shift
         }
       elsif cmd == 'http-suffix'
-        @config[:http_suffix] = ARGV.shift
+        Config.config[:http_suffix] = ARGV.shift
       elsif cmd == 'help-https'
         Optimist.die <<-SET_HELP
           Notes on HTTPS:
@@ -223,7 +223,7 @@ module Kaiser
     def load_db(name)
       check_db_image_exists(name)
       killrm db_container_name
-      CommandRunner.run @out, "docker volume rm #{db_volume_name}"
+      CommandRunner.run Config.out, "docker volume rm #{db_volume_name}"
       delete_db_volume
       create_if_volume_not_exist db_volume_name
       load_db_state_from file: db_image_path(name), to_container: db_volume_name
@@ -237,9 +237,9 @@ module Kaiser
     end
 
     def save_db_state_from(container:, to_file:)
-      @info_out.puts 'Saving database state'
+      Config.info_out.puts 'Saving database state'
       File.write(to_file, '')
-      CommandRunner.run @out, "docker run --rm
+      CommandRunner.run Config.out, "docker run --rm
         -v #{container}:#{db_data_directory}
         -v #{to_file}:#{to_file}
         ruby:alpine
@@ -247,8 +247,8 @@ module Kaiser
     end
 
     def load_db_state_from(file:, to_container:)
-      @info_out.puts 'Loading database state'
-      CommandRunner.run @out, "docker run --rm
+      Config.info_out.puts 'Loading database state'
+      CommandRunner.run Config.out, "docker run --rm
         -v #{to_container}:#{db_data_directory}
         -v #{file}:#{file}
         ruby:alpine
@@ -262,7 +262,7 @@ module Kaiser
     end
 
     def start_db
-      @info_out.puts 'Starting up database'
+      Config.info_out.puts 'Starting up database'
       run_if_dead db_container_name, "docker run -d
         -p #{db_port}:#{db_expose}
         -v #{db_volume_name}:#{db_data_directory}
@@ -279,13 +279,13 @@ module Kaiser
     end
 
     def current_branch_db_image_dir
-      "#{config_dir}/databases/#{envname}/#{current_branch}"
+      "#{Config.config_dir}/databases/#{envname}/#{current_branch}"
     end
 
     def db_image_path(name)
       if name.start_with?('./')
         path = "#{`pwd`.chomp}/#{name.sub('./', '')}"
-        @info_out.puts "Database image path is: #{path}"
+        Config.info_out.puts "Database image path is: #{path}"
         return path
       end
       FileUtils.mkdir_p current_branch_db_image_dir
@@ -314,11 +314,11 @@ module Kaiser
     end
 
     def tmp_waitscript_name
-      "#{config_dir}/.#{envname}-dbwaitscript"
+      "#{Config.config_dir}/.#{envname}-dbwaitscript"
     end
 
     def tmp_dockerfile_name
-      "#{config_dir}/.#{envname}-dockerfile"
+      "#{Config.config_dir}/.#{envname}-dockerfile"
     end
 
     def tmp_db_waiter
@@ -339,17 +339,17 @@ module Kaiser
       killrm tmp_file_container
       create_if_volume_not_exist tmp_file_volume
 
-      CommandRunner.run @out, "docker create
+      CommandRunner.run Config.out, "docker create
         -v #{tmp_file_volume}:/tmpvol
         --name #{tmp_file_container} alpine"
 
       File.write(tmp_waitscript_name, script)
 
-      CommandRunner.run @out, "docker cp
+      CommandRunner.run Config.out, "docker cp
         #{tmp_waitscript_name}
         #{tmp_file_container}:/tmpvol/wait.sh"
 
-      CommandRunner.run @out, "docker run --rm -ti
+      CommandRunner.run Config.out, "docker run --rm -ti
         --name #{tmp_db_waiter}
         --network #{network_name}
         -v #{tmp_file_volume}:/tmpvol
@@ -364,7 +364,7 @@ module Kaiser
     def wait_for_app
       return unless server_type == :http
 
-      @info_out.puts 'Waiting for server to start...'
+      Config.info_out.puts 'Waiting for server to start...'
       run_blocking_script('alpine', '', <<-SCRIPT)
         apk update
         apk add curl
@@ -373,73 +373,74 @@ module Kaiser
             sleep 1
         done
       SCRIPT
-      @info_out.puts 'Started.'
+      Config.info_out.puts 'Started.'
     end
 
     def wait_for_db
-      @info_out.puts 'Waiting for database to start...'
+      Config.info_out.puts 'Waiting for database to start...'
       run_blocking_script(db_image, db_waitscript_params, db_waitscript)
-      @info_out.puts 'Started.'
+      Config.info_out.puts 'Started.'
     end
 
     def network_name
-      @config[:networkname]
+      Config.config[:networkname]
     end
 
     def db_port
-      @config[:envs][envname][:db_port]
+      Config.config[:envs][envname][:db_port]
     end
 
     def db_expose
-      @kaiserfile.database[:port]
+      Config.kaiserfile.database[:port]
     end
 
     def db_params
-      eval_template @kaiserfile.database[:params]
+      eval_template Config.kaiserfile.database[:params]
     end
 
     def db_image
-      @kaiserfile.database[:image]
+      Config.kaiserfile.database[:image]
     end
 
     def db_commands
-      eval_template @kaiserfile.database[:commands]
+      eval_template Config.kaiserfile.database[:commands]
     end
 
     def db_data_directory
-      @kaiserfile.database[:data_dir]
+      Config.kaiserfile.database[:data_dir]
     end
 
     def server_type
-      @kaiserfile.server_type
+      Config.kaiserfile.server_type
     end
 
     def db_waitscript
-      eval_template @kaiserfile.database[:waitscript]
+      eval_template Config.kaiserfile.database[:waitscript]
     end
 
     def db_waitscript_params
-      eval_template @kaiserfile.database[:waitscript_params]
+      eval_template Config.kaiserfile.database[:waitscript_params]
     end
 
     def docker_file_contents
-      eval_template @kaiserfile.docker_file_contents
+      eval_template Config.kaiserfile.docker_file_contents
     end
 
     def docker_build_args
-      @kaiserfile.docker_build_args
+      Config.kaiserfile.docker_build_args
     end
 
     def app_params
-      eval_template @kaiserfile.params
+      p Config.kaiserfile.params
+      eval_template Config.kaiserfile.params
     end
 
     def db_reset_command
-      eval_template @kaiserfile.database_reset_command
+      eval_template Config.kaiserfile.database_reset_command
     end
 
     def attach_mounts
-      @kaiserfile.attach_mounts
+      Config.kaiserfile.attach_mounts
     end
 
     def eval_template(value)
@@ -447,11 +448,11 @@ module Kaiser
     end
 
     def app_port
-      @config[:envs][envname][:app_port]
+      Config.config[:envs][envname][:app_port]
     end
 
     def app_expose
-      @kaiserfile.port
+      Config.kaiserfile.port
     end
 
     def db_volume_name
@@ -477,27 +478,27 @@ module Kaiser
     end
 
     def http_suffix
-      @config[:http_suffix] || 'lvh.me'
+      Config.config[:http_suffix] || 'lvh.me'
     end
 
     def copy_keyfile(file)
-      if @config[:cert_source][:folder]
-        CommandRunner.run @out, "docker run --rm
-          -v #{@config[:shared_names][:certs]}:/certs
-          -v #{@config[:cert_source][:folder]}:/cert_source
+      if Config.config[:cert_source][:folder]
+        CommandRunner.run Config.out, "docker run --rm
+          -v #{Config.config[:shared_names][:certs]}:/certs
+          -v #{Config.config[:cert_source][:folder]}:/cert_source
           alpine cp /cert_source/#{file} /certs/#{file}"
 
-      elsif @config[:cert_source][:url]
-        CommandRunner.run @out, "docker run --rm
-          -v #{@config[:shared_names][:certs]}:/certs
-          alpine wget #{@config[:cert_source][:url]}/#{file}
+      elsif Config.config[:cert_source][:url]
+        CommandRunner.run Config.out, "docker run --rm
+          -v #{Config.config[:shared_names][:certs]}:/certs
+          alpine wget #{Config.config[:cert_source][:url]}/#{file}
             -O /certs/#{file}"
       end
     end
 
     def prepare_cert_volume!
-      create_if_volume_not_exist @config[:shared_names][:certs]
-      return unless @config[:cert_source]
+      create_if_volume_not_exist Config.config[:shared_names][:certs]
+      return unless Config.config[:cert_source]
 
       %w[
         chain.pem
@@ -558,12 +559,12 @@ module Kaiser
     end
 
     def ip_of_container(containername)
-      networkname = ".NetworkSettings.Networks.#{@config[:networkname]}.IPAddress"
+      networkname = ".NetworkSettings.Networks.#{Config.config[:networkname]}.IPAddress"
       `docker inspect -f '{{#{networkname}}}' #{containername}`.chomp
     end
 
     def network
-      `docker network inspect #{@config[:networkname]} 2>/dev/null`
+      `docker network inspect #{Config.config[:networkname]} 2>/dev/null`
     end
 
     def if_container_dead(container, &block)
@@ -577,21 +578,21 @@ module Kaiser
       x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
       return unless x.length.zero?
 
-      CommandRunner.run @out, "docker volume create #{vol}"
+      CommandRunner.run Config.out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
       x = JSON.parse(`docker inspect #{net} 2>/dev/null`)
       return unless x.length.zero?
 
-      CommandRunner.run @out, "docker network create #{net}"
+      CommandRunner.run Config.out, "docker network create #{net}"
     end
 
     def run_if_dead(container, command)
       if_container_dead container do
-        @info_out.puts "Starting up #{container}"
+        Config.info_out.puts "Starting up #{container}"
         killrm container
-        CommandRunner.run @out, command
+        CommandRunner.run Config.out, command
       end
     end
 
