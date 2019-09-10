@@ -58,12 +58,6 @@ module Kaiser
       killrm app_container_name
     end
 
-    def login
-      ensure_setup
-      cmd = (ARGV || []).join(' ')
-      exec "docker exec -ti #{app_container_name} #{cmd}"
-    end
-
     def show
       ensure_setup
       cmd = ARGV.shift
