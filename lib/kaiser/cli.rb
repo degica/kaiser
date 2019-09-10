@@ -36,6 +36,7 @@ module Kaiser
     end
 
     def self.register(name, klass)
+      puts "#{name}: #{klass}"
       @subcommands ||= {}
       @subcommands[name] = klass.new
     end

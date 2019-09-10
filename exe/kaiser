@@ -11,22 +11,23 @@ $LOAD_PATH << "#{__dir__}/../lib"
 
 require "kaiser"
 
-SUB_COMMANDS = %w[
-  init
-  deinit
-  up
-  down
-  shutdown
-  db_save
-  db_load
-  db_reset
-  db_reset_hard
-  logs
-  attach
-  login
-  show
-  set
-].freeze
+SUB_COMMANDS = {
+  init: Kaiser::CMD::Init,
+  deinit: Kaiser::CMD::Deinit,
+  up: Kaiser::CMD::Up,
+  shutdown: Kaiser::CMD::Shutdown,
+  db_save: Kaiser::CMD::DbSave,
+  db_load: Kaiser::CMD::DbLoad,
+  db_reset: Kaiser::CMD::DbReset,
+  db_reset_hard: Kaiser::CMD::DbResetHard,
+  logs: Kaiser::CMD::Logs,
+  attach: Kaiser::CMD::Attach,
+  login: Kaiser::CMD::Login,
+  show: Kaiser::CMD::Show,
+  set: Kaiser::CMD::Set
+}.freeze
+
+sub_command_strings = SUB_COMMANDS.keys.map { |cmd| cmd.to_s }
 
 opts = Optimist.options do
   version "Kaiser v#{Kaiser::VERSION}"
@@ -35,15 +36,15 @@ opts = Optimist.options do
 #{version}
 
 Subcommands:
-#{SUB_COMMANDS.join ' '}
+#{sub_command_strings.join ' '}
   BANNER
   opt :verbose, "Show Kaiser's debug output", short: '-v'
   opt :quiet, 'Suppress all output', short: '-q'
 
-  stop_on SUB_COMMANDS
+  stop_on sub_command_strings
 end
 
-commands = SUB_COMMANDS & ARGV
+commands = sub_command_strings & ARGV
 cmd = commands.first
 ARGV.shift
 
@@ -63,19 +64,7 @@ cli = Kaiser::Config.load(
   info_output: info_out
 )
 
-Kaiser::Cli.register(:init, Kaiser::CMD::Init)
-Kaiser::Cli.register(:deinit, Kaiser::CMD::Deinit)
-Kaiser::Cli.register(:up, Kaiser::CMD::Up)
-Kaiser::Cli.register(:shutdown, Kaiser::CMD::Shutdown)
-Kaiser::Cli.register(:db_save, Kaiser::CMD::DbSave)
-Kaiser::Cli.register(:db_load, Kaiser::CMD::DbLoad)
-Kaiser::Cli.register(:db_reset, Kaiser::CMD::DbReset)
-Kaiser::Cli.register(:db_reset_hard, Kaiser::CMD::DbResetHard)
-Kaiser::Cli.register(:logs, Kaiser::CMD::Logs)
-Kaiser::Cli.register(:attach, Kaiser::CMD::Attach)
-Kaiser::Cli.register(:login, Kaiser::CMD::Login)
-Kaiser::Cli.register(:show, Kaiser::CMD::Show)
-Kaiser::Cli.register(:set, Kaiser::CMD::Set)
+SUB_COMMANDS.each { |k,v| Kaiser::Cli.register(k,v) }
 
 Kaiser::Cli.run_command(:"#{cmd}")
 
