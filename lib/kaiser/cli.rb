@@ -58,14 +58,6 @@ module Kaiser
       killrm app_container_name
     end
 
-    def db_reset_hard
-      ensure_setup
-      if File.exist?(db_image_path('.default'))
-        FileUtils.rm db_image_path('.default')
-      end
-      setup_db
-    end
-
     def attach
       ensure_setup
       cmd = (ARGV || []).join(' ')
@@ -88,10 +80,6 @@ module Kaiser
 
       Config.out.puts 'Cleaning up...'
       start_app
-    end
-
-    def logs
-      exec "docker logs -f #{app_container_name}"
     end
 
     def login

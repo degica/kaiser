@@ -14,6 +14,8 @@ require 'kaiser/cmds/shutdown'
 require 'kaiser/cmds/db_save'
 require 'kaiser/cmds/db_load'
 require 'kaiser/cmds/db_reset'
+require 'kaiser/cmds/db_reset_hard'
+require 'kaiser/cmds/logs'
 
 # Kaiser
 module Kaiser
