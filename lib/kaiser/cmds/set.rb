@@ -3,15 +3,19 @@ module Kaiser
     class Set < Cli
 
       def usage
-      #TODO: Explain in more detail.
-      #TODO: Incorp help messages already defined in kaiser_cli.rb
       <<EOS
-Subcommand to help you set up https. Run the `help` or `help-https` subcommands for more information.
+This command lets you set up special variables that configure kaiser's behavior for you.
+
+Available subcommands:
+
+http-suffix - Sets the domain suffix for the reverse proxy to use (defaults to lvh.me)
+cert-url    - Sets up a URL from which HTTPS certificates can be downloaded.
+cert-folder - Sets up a folder from which HTTPS certificates can be copied.
+help-https  - Shows the HTTPS notes.
 
 USAGE: kaiser set cert-url
        kaiser set cert-folder
        kaiser set http-suffix
-       kaiser set help
        kaiser set help-https
 EOS
       end
@@ -29,48 +33,34 @@ EOS
         elsif cmd == 'http-suffix'
           Config.config[:http_suffix] = ARGV.shift
         elsif cmd == 'help-https'
-          Optimist.die <<-SET_HELP
-            Notes on HTTPS:
+          puts <<-SET_HELP
+Notes on HTTPS:
 
-            You need to set suffix and either cert-url or cert-folder to enable HTTPS.
+You need to set suffix and either cert-url or cert-folder to enable HTTPS.
 
-            cert-url and cert-folder are mutually exclusive. If you set one of them the other will be erased.
+cert-url and cert-folder are mutually exclusive. If you set one of them the other will be erased.
 
-            The cert-url and cert-folder must satisfy the following requirements to work:
+The cert-url and cert-folder must satisfy the following requirements to work:
 
-            The strings must be the root of certificates named after the suffix. For example,
+The strings must be the root of certificates named after the suffix. For example,
 
-              if cert-url is https://mydomain.com/certs and your suffix is local.mydomain.com, the following
-              url need to be the certificate files:
+  if cert-url is https://mydomain.com/certs and your suffix is local.mydomain.com, the following
+  url need to be the certificate files:
 
-              https://mydomain.com/certs/local.mydomain.com.chain.pem
-              https://mydomain.com/certs/local.mydomain.com.crt
-              https://mydomain.com/certs/local.mydomain.com.key
+  https://mydomain.com/certs/local.mydomain.com.chain.pem
+  https://mydomain.com/certs/local.mydomain.com.crt
+  https://mydomain.com/certs/local.mydomain.com.key
 
-            Another example:
+Another example:
 
-              If you use suffix of localme.com and cert-folder is /home/me/https, The following files need to exist:
+  If you use suffix of localme.com and cert-folder is /home/me/https, The following files need to exist:
 
-              /home/me/https/localme.com.chain.pem
-              /home/me/https/localme.com.crt
-              /home/me/https/localme.com.key
-
-          SET_HELP
+  /home/me/https/localme.com.chain.pem
+  /home/me/https/localme.com.crt
+  /home/me/https/localme.com.key
+SET_HELP
         else
-          Optimist.die <<-SET_HELP
-            kaiser set <subcommand>
-
-            This command lets you set up special variables that configure kaiser's behavior for you.
-
-            Available subcommands:
-
-            http-suffix - Sets the domain suffix for the reverse proxy to use (defaults to lvh.me)
-            cert-url    - Sets up a URL from which HTTPS certificates can be downloaded.
-            cert-folder - Sets up a folder from which HTTPS certificates can be copied.
-            help        - Shows this help message.
-            help-https  - Shows the HTTPS notes.
-
-          SET_HELP
+          Optimist.die "Unknown subcommand: '#{cmd}'"
         end
         save_config
       end
