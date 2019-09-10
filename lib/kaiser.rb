@@ -9,6 +9,7 @@ require 'kaiser/config'
 require 'kaiser/cmds/init'
 require 'kaiser/cmds/deinit'
 require 'kaiser/cmds/up'
+require 'kaiser/cmds/down'
 
 # Kaiser
 module Kaiser

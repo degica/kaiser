@@ -17,17 +17,6 @@ EOS
         save_config
       end
 
-      def down
-        stop_db
-        stop_app
-        delete_db_volume
-      end
-
-      def stop_app
-        Config.info_out.puts 'Stopping application'
-        killrm app_container_name
-      end
-
     end
   end
 end

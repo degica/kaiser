@@ -46,6 +46,17 @@ module Kaiser
       cmd.execute
     end
 
+    def down
+      stop_db
+      stop_app
+      delete_db_volume
+    end
+
+    def stop_app
+      Config.info_out.puts 'Stopping application'
+      killrm app_container_name
+    end
+
     def shutdown
       Config.config[:shared_names].each do |_, container_name|
         killrm container_name
