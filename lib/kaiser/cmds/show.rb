@@ -6,7 +6,7 @@ module Kaiser
       <<EOS
 Subcommand that shows information about the environment such as the TCP ports or the certificate used for HTTPS.
 
-Usage: kaiser show ports
+USAGE: kaiser show ports
        kaiser show cert-source
        kaiser show http-suffix
 EOS

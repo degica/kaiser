@@ -6,7 +6,7 @@ module Kaiser
       <<EOS
 Removes the Kaiser environment from `~/.kaiser/.config.yml`. This however does not delete the `~/.kaiser/databases/<ENV_NAME>` directory.
 
-Usage: kaiser init ENV_NAME
+USAGE: kaiser init ENV_NAME
 EOS
       end
 

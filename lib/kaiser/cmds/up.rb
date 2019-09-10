@@ -8,7 +8,7 @@ Boots up the application in docker as defined in the `Kaiserfile` in its source 
 
 A backup of the default database is created and saved to `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz`. This can be restored at any time using the `db_reset` command.
 
-Usage: kaiser up
+USAGE: kaiser up
 EOS
       end
 

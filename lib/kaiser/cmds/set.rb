@@ -8,7 +8,7 @@ module Kaiser
       <<EOS
 Subcommand to help you set up https. Run the `help` or `help-https` subcommands for more information.
 
-Usage: kaiser set cert-url
+USAGE: kaiser set cert-url
        kaiser set cert-folder
        kaiser set http-suffix
        kaiser set help

@@ -7,7 +7,7 @@ module Kaiser
         <<EOS
 Initializes a Kaiser environment and assigns ports for it in `~/.kaiser/.config.yml`. When running `kaiser up` later the directory `~/.kaiser/databases/<ENV_NAME>`  will get created.
 
-Usage: kaiser init ENV_NAME
+USAGE: kaiser init ENV_NAME
 EOS
       end
 

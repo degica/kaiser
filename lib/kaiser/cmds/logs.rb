@@ -6,7 +6,7 @@ module Kaiser
       <<EOS
 Continuously monitors the application container's logs.
 
-Usage: kaiser logs
+USAGE: kaiser logs
 EOS
       end
 

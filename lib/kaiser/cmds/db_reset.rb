@@ -8,7 +8,7 @@ Shuts down the database docker container, *replaces* the database with the defau
 
 This is the same as running `kaiser db_load` with no arguments.
 
-Usage: kaiser db_reset
+USAGE: kaiser db_reset
 EOS
       end
 

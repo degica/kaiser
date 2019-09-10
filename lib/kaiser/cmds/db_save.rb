@@ -10,7 +10,7 @@ The database will be saved as a tarball to `~/.kaiser/<ENV_NAME>/<current_github
 
 Alternatively you can also save it to your current directory.
 
-Usage: kaiser db_save DB_BACKUP_FILENAME
+USAGE: kaiser db_save DB_BACKUP_FILENAME
        kaiser db_save ./my_database.tar.bz
 EOS
       end

@@ -6,7 +6,7 @@ module Kaiser
            <<EOS
 Shuts down and *deletes* the containers that were started using `kaiser up`.
 
-Usage: kaiser down
+USAGE: kaiser down
 EOS
       end
 

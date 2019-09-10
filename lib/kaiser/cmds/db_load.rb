@@ -12,7 +12,7 @@ Alternatively you can also load it from your current directory.
 
 If no database name was provided, the default database stored at `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz` will be used.
 
-Usage: kaiser db_load DB_BACKUP_FILENAME
+USAGE: kaiser db_load DB_BACKUP_FILENAME
        kaiser db_load ./my_database.tar.bz
 EOS
       end
