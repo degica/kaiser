@@ -75,6 +75,7 @@ Kaiser::Cli.register(:logs, Kaiser::CMD::Logs)
 Kaiser::Cli.register(:attach, Kaiser::CMD::Attach)
 Kaiser::Cli.register(:login, Kaiser::CMD::Login)
 Kaiser::Cli.register(:show, Kaiser::CMD::Show)
+Kaiser::Cli.register(:set, Kaiser::CMD::Set)
 
 Kaiser::Cli.run_command(:"#{cmd}")
 

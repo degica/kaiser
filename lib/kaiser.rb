@@ -19,6 +19,7 @@ require 'kaiser/cmds/logs'
 require 'kaiser/cmds/attach'
 require 'kaiser/cmds/login'
 require 'kaiser/cmds/show'
+require 'kaiser/cmds/set'
 
 # Kaiser
 module Kaiser
