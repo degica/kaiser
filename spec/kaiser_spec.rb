@@ -10,10 +10,19 @@ RSpec.describe Kaiser do
     let(:args) { "" }
 
     it "prints the full usage" do
-      SUB_COMMANDS.values.each { |cmd|
-        usage = cmd.new.usage
+      unwrapped_output = cmd_output.gsub("\n", " ")
 
-        expect(cmd_output).to include("init\n----")
+      SUB_COMMANDS.each { |name, klass|
+        # We need to remove all newlines before testing because Optimist wordwraps
+        # depending on terminal size.
+        usage = klass.new.usage
+        unwrapped_usage = usage.gsub("\n", " ")
+
+        name_with_line = "#{name} #{name.to_s.gsub(/./, "-")}"
+        unwrapped_usage = klass.new.usage.gsub("\n", " ")
+
+        expect(unwrapped_output).to include(name_with_line)
+        expect(unwrapped_output).to include unwrapped_usage
       }
     end
   end
