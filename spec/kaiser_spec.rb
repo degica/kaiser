@@ -3,22 +3,6 @@ RSpec.describe Kaiser do
     expect(Kaiser::VERSION).not_to be nil
   end
 
-  SUB_COMMANDS = {
-    init: Kaiser::CMD::Init,
-    deinit: Kaiser::CMD::Deinit,
-    up: Kaiser::CMD::Up,
-    shutdown: Kaiser::CMD::Shutdown,
-    db_save: Kaiser::CMD::DbSave,
-    db_load: Kaiser::CMD::DbLoad,
-    db_reset: Kaiser::CMD::DbReset,
-    db_reset_hard: Kaiser::CMD::DbResetHard,
-    logs: Kaiser::CMD::Logs,
-    attach: Kaiser::CMD::Attach,
-    login: Kaiser::CMD::Login,
-    show: Kaiser::CMD::Show,
-    set: Kaiser::CMD::Set
-  }.freeze
-
   let(:cmd) { "#{Dir.pwd}/exe/kaiser #{args}" }
   let(:cmd_output) { `#{cmd}` }
 
