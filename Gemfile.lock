@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kaiser (0.3.1)
+    kaiser (0.4.0)
       optimist
 
 GEM
@@ -90,4 +90,4 @@ DEPENDENCIES
   rspec (~> 3.0)
 
 BUNDLED WITH
-   2.0.1
+   2.0.2
