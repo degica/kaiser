@@ -24,19 +24,19 @@ require 'kaiser/cmds/show'
 require 'kaiser/cmds/set'
 
 SUB_COMMANDS = {
-  init: Kaiser::CMD::Init,
-  deinit: Kaiser::CMD::Deinit,
-  up: Kaiser::CMD::Up,
-  shutdown: Kaiser::CMD::Shutdown,
-  db_save: Kaiser::CMD::DbSave,
-  db_load: Kaiser::CMD::DbLoad,
-  db_reset: Kaiser::CMD::DbReset,
-  db_reset_hard: Kaiser::CMD::DbResetHard,
-  logs: Kaiser::CMD::Logs,
-  attach: Kaiser::CMD::Attach,
-  login: Kaiser::CMD::Login,
-  show: Kaiser::CMD::Show,
-  set: Kaiser::CMD::Set
+  init: Kaiser::Cmds::Init,
+  deinit: Kaiser::Cmds::Deinit,
+  up: Kaiser::Cmds::Up,
+  shutdown: Kaiser::Cmds::Shutdown,
+  db_save: Kaiser::Cmds::DbSave,
+  db_load: Kaiser::Cmds::DbLoad,
+  db_reset: Kaiser::Cmds::DbReset,
+  db_reset_hard: Kaiser::Cmds::DbResetHard,
+  logs: Kaiser::Cmds::Logs,
+  attach: Kaiser::Cmds::Attach,
+  login: Kaiser::Cmds::Login,
+  show: Kaiser::Cmds::Show,
+  set: Kaiser::Cmds::Set
 }.freeze
 
 # Kaiser

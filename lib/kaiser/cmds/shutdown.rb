@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Kaiser
-  module CMD
+  module Cmds
     class Shutdown < Cli
       def usage
         # TODO: Explain a bit more about what these containers do and what shutting

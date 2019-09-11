@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Kaiser
-  module CMD
+  module Cmds
     class DbReset < Cli
       def usage
         <<~EOS

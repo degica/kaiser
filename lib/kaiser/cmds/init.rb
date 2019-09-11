@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Kaiser
-  module CMD
+  module Cmds
     class Init < Cli
       # TODO: Add explanation for the Already initialized error.
       def usage
