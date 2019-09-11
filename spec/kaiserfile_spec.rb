@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'kaiser/kaiserfile'
 
 RSpec.describe Kaiser::Kaiserfile, fixture_dir: 'kaiserfile' do

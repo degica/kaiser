@@ -1,15 +1,16 @@
+# frozen_string_literal: true
+
 module Kaiser
   module CMD
     class Shutdown < Cli
-
       def usage
-      #TODO: Explain a bit more about what these containers do and what shutting
-      #      them down really means for an end user.
-      <<EOS
-Shuts down all the containers used internally by Kaiser.
+        # TODO: Explain a bit more about what these containers do and what shutting
+        #      them down really means for an end user.
+        <<~EOS
+          Shuts down all the containers used internally by Kaiser.
 
-USAGE: kaiser shutdown
-EOS
+          USAGE: kaiser shutdown
+        EOS
       end
 
       def execute
@@ -20,7 +21,6 @@ EOS
         CommandRunner.run Config.out, "docker network rm #{Config.config[:networkname]}"
         CommandRunner.run Config.out, "docker volume rm #{Config.config[:shared_names][:certs]}"
       end
-
     end
   end
 end

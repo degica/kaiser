@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'kaiser/version'
 require 'kaiser/kaiserfile'
 require 'kaiser/cli'

@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'kaiser/command_runner'
 
 module Kaiser
-
   # The commandline
   class Cli
     def initialize
@@ -28,9 +29,9 @@ module Kaiser
       # the scope to Optimist::Parser. We can still reference variables but we can't
       # call instance methods of a Kaiser::Cli class.
       u = usage
-      Optimist::options {
+      Optimist.options do
         banner u
-      }
+      end
     end
 
     def self.register(name, klass)
@@ -66,9 +67,9 @@ module Kaiser
     end
 
     def self.all_subcommands_usage
-      output = ""
+      output = ''
 
-      @subcommands.each { |name, klass|
+      @subcommands.each do |name, klass|
         name_s = name.to_s
 
         output += name_s + "\n"
@@ -76,7 +77,7 @@ module Kaiser
         output += "\n"
         output += klass.usage
         output += "\n\n"
-      }
+      end
 
       output
     end
@@ -509,7 +510,6 @@ module Kaiser
     def save_config
       File.write(Config.config_file, Config.config.to_yaml)
     end
-
 
     def killrm(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)

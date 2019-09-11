@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kaiser
   # Prints dots for every line printed
   class Dotter

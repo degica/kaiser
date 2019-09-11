@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'optimist'
 require 'fileutils'
@@ -9,11 +10,11 @@ require 'erb'
 
 $LOAD_PATH << "#{__dir__}/../lib"
 
-require "kaiser"
+require 'kaiser'
 
-sub_command_strings = SUB_COMMANDS.keys.map { |cmd| cmd.to_s }
+sub_command_strings = SUB_COMMANDS.keys.map(&:to_s)
 
-SUB_COMMANDS.each { |k,v| Kaiser::Cli.register(k,v) }
+SUB_COMMANDS.each { |k, v| Kaiser::Cli.register(k, v) }
 
 opts = Optimist.options do
   version "Kaiser v#{Kaiser::VERSION}"
@@ -49,7 +50,7 @@ Subcommands
 #{Kaiser::Cli.all_subcommands_usage}
 Global Parameters
 =================
-BANNER
+  BANNER
   opt :verbose, "Show Kaiser's debug output", short: '-v'
   opt :quiet, 'Suppress all output', short: '-q'
 

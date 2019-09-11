@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kaiser
   # Prints properly after a dotter prints
   class AfterDotter

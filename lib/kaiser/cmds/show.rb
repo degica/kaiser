@@ -1,15 +1,16 @@
+# frozen_string_literal: true
+
 module Kaiser
   module CMD
     class Show < Cli
-
       def usage
-      <<EOS
-Subcommand that shows information about the environment such as the TCP ports or the certificate used for HTTPS.
+        <<~EOS
+          Subcommand that shows information about the environment such as the TCP ports or the certificate used for HTTPS.
 
-USAGE: kaiser show ports
-       kaiser show cert-source
-       kaiser show http-suffix
-EOS
+          USAGE: kaiser show ports
+                 kaiser show cert-source
+                 kaiser show http-suffix
+        EOS
       end
 
       def execute
@@ -33,7 +34,6 @@ EOS
           Config.info_out.puts http_suffix
         end
       end
-
     end
   end
 end

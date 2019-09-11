@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This is the command runner
 module Kaiser
   # Make running easy
@@ -32,8 +34,8 @@ module Kaiser
       print_and_return_status
     rescue Errno::EIO
       print_and_return_status
-    rescue PTY::ChildExited => ex
-      print_and_return_status(ex.status)
+    rescue PTY::ChildExited => e
+      print_and_return_status(e.status)
     end
   end
 end

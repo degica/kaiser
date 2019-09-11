@@ -1,14 +1,15 @@
+# frozen_string_literal: true
 
 module Kaiser
   module CMD
     class Init < Cli
-      #TODO: Add explanation for the Already initialized error.
+      # TODO: Add explanation for the Already initialized error.
       def usage
-      <<EOS
-Initializes a Kaiser environment and assigns ports for it in `~/.kaiser/.config.yml`. When running `kaiser up` later the directory `~/.kaiser/databases/<ENV_NAME>`  will get created.
+        <<~EOS
+          Initializes a Kaiser environment and assigns ports for it in `~/.kaiser/.config.yml`. When running `kaiser up` later the directory `~/.kaiser/databases/<ENV_NAME>`  will get created.
 
-USAGE: kaiser init ENV_NAME
-EOS
+          USAGE: kaiser init ENV_NAME
+        EOS
       end
 
       def execute
@@ -33,7 +34,6 @@ EOS
       def largest_port
         Config.config[:largest_port]
       end
-
     end
   end
 end

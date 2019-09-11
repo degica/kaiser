@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kaiser
   class Config
     class << self
@@ -31,7 +33,6 @@ module Kaiser
           largest_port: 9000
         }
 
-
         @out = debug_output
         @info_out = info_output
         load_config
@@ -49,7 +50,6 @@ module Kaiser
           shared_names: { **(config_shared_names || {}), **(loaded_shared_names || {}) }
         }
       end
-
     end
   end
 end
