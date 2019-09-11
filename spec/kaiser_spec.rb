@@ -21,7 +21,7 @@ RSpec.describe Kaiser do
         name_with_line = "#{name} #{name.to_s.gsub(/./, "-")}"
         unwrapped_usage = klass.new.usage.gsub("\n", " ")
 
-        expect(unwrapped_output).to include(name_with_line)
+        expect(unwrapped_output).to include name_with_line
         expect(unwrapped_output).to include unwrapped_usage
       }
     end
@@ -29,7 +29,13 @@ RSpec.describe Kaiser do
 
   SUB_COMMANDS.each { |name, klass|
     describe name do
-      subject { klass }
+      subject { klass.new }
+
+      it "has a help message defined" do
+        expect(subject.methods).to include :usage
+        expect(subject.usage).not_to be_nil
+        expect(subject.usage).not_to be_empty
+      end
 
       context "with -h" do
         let(:args) { "#{name} -h" }
@@ -40,7 +46,7 @@ RSpec.describe Kaiser do
 
           # Remove all newlines because Optimist will wordwrap according to terminal size
           unwrapped_output.gsub!("\n", " ")
-          unwrapped_usage = subject.new.usage.gsub("\n", " ")
+          unwrapped_usage = subject.usage.gsub("\n", " ")
 
           # Now we can check is it's the same as usage.
           expect(unwrapped_output).to eq unwrapped_usage
