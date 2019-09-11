@@ -16,7 +16,17 @@ sub_command_strings = SUB_COMMANDS.keys.map(&:to_s)
 
 SUB_COMMANDS.each { |k, v| Kaiser::Cli.register(k, v) }
 
-opts = Optimist.options do
+# It was difficult to allow global arguments like -v and -q to be typed both before and after cmds
+# and still support `kaiser -h` for full help messages and `kaiser subcmd -h` for focused messages.
+# Putting the global options in an array, using an Optimist::Parser and basically everything up to
+# the 'end parser hacks' comment are all hacks to marry the above two behaviours.
+
+global_opts = [
+  [:verbose, "Show Kaiser's debug output", short: '-v'],
+  [:quiet, 'Suppress all output', short: '-q']
+]
+
+parser = Optimist::Parser.new do
   version "Kaiser v#{Kaiser::VERSION}"
 
   banner <<~BANNER
@@ -51,18 +61,21 @@ opts = Optimist.options do
     Global Parameters
     =================
   BANNER
-  opt :verbose, "Show Kaiser's debug output", short: '-v'
-  opt :quiet, 'Suppress all output', short: '-q'
 
-  stop_on sub_command_strings
+  global_opts.each { |o| opt *o }
 end
 
 commands = sub_command_strings & ARGV
+
+if commands.empty?
+  Optimist::with_standard_exception_handling parser do
+    raise Optimist::HelpNeeded
+  end
+end
+
 cmd = commands.first
-ARGV.shift
+## end parser hacks ##
 
-Optimist.educate unless cmd && SUB_COMMANDS.keys.include?(cmd.to_sym)
-
-Kaiser::Cli.run_command(:"#{cmd}", opts)
+Kaiser::Cli.run_command(:"#{cmd}", global_opts)
 
 puts ''

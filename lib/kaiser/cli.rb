@@ -24,13 +24,15 @@ module Kaiser
     # a command is run. We can't just run the constructor at that point because
     # we need each Cli class to be constructed in the beginning so we can add their
     # usage text to the output of `kaiser -h`.
-    def define_options
+    def define_options(global_opts = [])
       # We can't just call usage within the options block because that actually shifts
       # the scope to Optimist::Parser. We can still reference variables but we can't
       # call instance methods of a Kaiser::Cli class.
       u = usage
       Optimist.options do
         banner u
+
+        global_opts.each { |o| opt *o }
       end
     end
 
@@ -39,9 +41,9 @@ module Kaiser
       @subcommands[name] = klass.new
     end
 
-    def self.run_command(name, opts)
+    def self.run_command(name, global_opts)
       cmd = @subcommands[name]
-      cmd.define_options
+      opts = cmd.define_options(global_opts)
 
       # We do all this work in here instead of the exe/kaiser file because we
       # want -h options to output before we check if a Kaiserfile exists.
