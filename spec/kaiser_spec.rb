@@ -13,9 +13,7 @@ RSpec.describe Kaiser do
   let(:cmd_stdout) { cmd[1].read }
   let(:cmd_stderr) { cmd[2].read }
 
-  context 'without any subcommands' do
-    let(:args) { '' }
-
+  shared_examples 'full help' do
     it 'prints the full help message' do
       unwrapped_output = cmd_stdout.gsub("\n", ' ')
 
@@ -38,6 +36,18 @@ RSpec.describe Kaiser do
         expect(unwrapped_output).to include unwrapped_usage
       end
     end
+  end
+
+  context 'without any subcommands' do
+    let(:args) { '' }
+
+    include_examples 'full help'
+  end
+
+  context 'without a non existing subcommand' do
+    let(:args) { 'joske' }
+
+    include_examples 'full help'
   end
 
   describe 'init' do
