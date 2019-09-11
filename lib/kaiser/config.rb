@@ -3,13 +3,13 @@
 module Kaiser
   class Config
     class << self
-      attr_reader :work_dir
-      attr_reader :config_dir
-      attr_reader :config_file
-      attr_reader :kaiserfile
-      attr_reader :config
-      attr_reader :out
-      attr_reader :info_out
+      attr_reader :work_dir,
+                  :config_dir,
+                  :config_file,
+                  :kaiserfile,
+                  :config,
+                  :out,
+                  :info_out
 
       def load(work_dir, debug_output:, info_output:)
         @work_dir = work_dir
