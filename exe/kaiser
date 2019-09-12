@@ -71,7 +71,7 @@ end
 commands = sub_command_strings & ARGV
 
 if commands.empty?
-  Optimist::with_standard_exception_handling parser do
+  Optimist.with_standard_exception_handling parser do
     raise Optimist::HelpNeeded
   end
 end
