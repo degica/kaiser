@@ -79,6 +79,8 @@ end
 cmd = commands.first
 ## end parser hacks ##
 
+ARGV.shift # Needed for subcommands with more subcommands such as set
+
 Kaiser::Cli.run_command(:"#{cmd}", global_opts)
 
 puts ''
