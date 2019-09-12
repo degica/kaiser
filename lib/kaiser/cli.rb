@@ -5,7 +5,7 @@ require 'kaiser/command_runner'
 module Kaiser
   # The commandline
   class Cli
-    def initialize
+    def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
       # It would be a good idea to deprecate this and make it more abstract.
       @work_dir = Config.work_dir
@@ -64,6 +64,7 @@ module Kaiser
         debug_output: out,
         info_output: info_out
       )
+      cmd.set_config
 
       cmd.execute
     end
