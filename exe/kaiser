@@ -57,7 +57,10 @@ parser = Optimist::Parser.new do
     Subcommands
     ===========
 
-    #{Kaiser::Cli.all_subcommands_usage}
+    - #{SUB_COMMANDS.keys.join("\n- ")}
+
+    Type \`SUB_COMMAND -h\` for help with specific subcommands.
+
     Global Parameters
     =================
   BANNER

@@ -17,23 +17,8 @@ RSpec.describe Kaiser do
     it 'prints the full help message' do
       unwrapped_output = cmd_stdout.gsub("\n", ' ')
 
-      SUB_COMMANDS.each do |name, klass|
-        # We need to remove all newlines before testing because Optimist wordwraps
-        # depending on terminal size.
-        usage = klass.new.usage
-        unwrapped_usage = usage.gsub("\n", ' ')
-
-        # The full help prints each subcommand like so:
-        #
-        # init
-        # ----
-        #
-        # The name_with_line variable is here to tests if that exists
-        name_with_line = "#{name} #{name.to_s.gsub(/./, '-')}"
-        unwrapped_usage = klass.new.usage.gsub("\n", ' ')
-
-        expect(unwrapped_output).to include name_with_line
-        expect(unwrapped_output).to include unwrapped_usage
+      SUB_COMMANDS.keys.each do |name|
+        expect(unwrapped_output).to include "- #{name}"
       end
     end
   end
