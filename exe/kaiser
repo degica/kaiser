@@ -44,11 +44,11 @@ parser = Optimist::Parser.new do
 
     For typical usage you'll want to do the following three commands.
 
-    ```
+    \`\`\`
     kaiser init ENV_NAME
     kaiser up
     kaiser attach
-    ```
+    \`\`\`
 
     This will boot up your application in docker and bind mount your local source directory so you can start doing development. Happy coding!
 
