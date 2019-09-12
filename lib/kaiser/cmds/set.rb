@@ -22,7 +22,8 @@ module Kaiser
       end
 
       def execute
-        cmd = ARGV.shift
+        ARGV.shift # Remove the set command itself
+        cmd = ARGV.shift # Get the subcommand
         if cmd == 'cert-url'
           Config.config[:cert_source] = {
             url: ARGV.shift
