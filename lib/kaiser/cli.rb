@@ -45,6 +45,12 @@ module Kaiser
       cmd = @subcommands[name]
       opts = cmd.define_options(global_opts)
 
+      # The define_options method has stripped all arguments from the cli so now
+      # all that we're left with in ARGV are the subcommand to be run and possibly
+      # its own subcommands. We remove the subcommand here so each subcommand can
+      # easily use ARGV.shift to access its own subcommands.
+      ARGV.shift
+
       # We do all this work in here instead of the exe/kaiser file because we
       # want -h options to output before we check if a Kaiserfile exists.
       # If we do it in exe/kaiser, people won't be able to check help messages
