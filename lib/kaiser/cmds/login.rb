@@ -5,7 +5,7 @@ module Kaiser
     class Login < Cli
       def usage
         <<~EOS
-          Executes a command on the application docker container. By executing the command `sh` you can get a login shell.
+          Executes a command on the application docker container. By executing the command \`sh\` you can get a login shell.
 
           USAGE: kaiser login COMMAND
         EOS

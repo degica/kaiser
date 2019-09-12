@@ -5,9 +5,9 @@ module Kaiser
     class Up < Cli
       def usage
         <<~EOS
-          Boots up the application in docker as defined in the `Kaiserfile` in its source code. Usually this will create two docker containers `<ENV_NAME>-db` and `<ENV_NAME>-app` running your database and application respectively.
+          Boots up the application in docker as defined in the \`Kaiserfile\` in its source code. Usually this will create two docker containers \`<ENV_NAME>-db\` and \`<ENV_NAME>-app\` running your database and application respectively.
 
-          A backup of the default database is created and saved to `~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz`. This can be restored at any time using the `db_reset` command.
+          A backup of the default database is created and saved to \`~/.kaiser/<ENV_NAME>/<current_github_branch_name>/.default.tar.bz\`. This can be restored at any time using the \`db_reset\` command.
 
           USAGE: kaiser up
         EOS
