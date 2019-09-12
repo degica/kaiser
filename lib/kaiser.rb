@@ -27,6 +27,7 @@ SUB_COMMANDS = {
   init: Kaiser::Cmds::Init,
   deinit: Kaiser::Cmds::Deinit,
   up: Kaiser::Cmds::Up,
+  down: Kaiser::Cmds::Down,
   shutdown: Kaiser::Cmds::Shutdown,
   db_save: Kaiser::Cmds::DbSave,
   db_load: Kaiser::Cmds::DbLoad,
