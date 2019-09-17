@@ -8,8 +8,6 @@ require 'json'
 require 'pty'
 require 'erb'
 
-$LOAD_PATH << "#{__dir__}/../lib"
-
 require 'kaiser'
 
 sub_command_strings = Kaiser::SUB_COMMANDS.keys.map(&:to_s)
