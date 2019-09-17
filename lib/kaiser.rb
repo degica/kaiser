@@ -23,23 +23,22 @@ require 'kaiser/cmds/login'
 require 'kaiser/cmds/show'
 require 'kaiser/cmds/set'
 
-SUB_COMMANDS = {
-  init: Kaiser::Cmds::Init,
-  deinit: Kaiser::Cmds::Deinit,
-  up: Kaiser::Cmds::Up,
-  down: Kaiser::Cmds::Down,
-  shutdown: Kaiser::Cmds::Shutdown,
-  db_save: Kaiser::Cmds::DbSave,
-  db_load: Kaiser::Cmds::DbLoad,
-  db_reset: Kaiser::Cmds::DbReset,
-  db_reset_hard: Kaiser::Cmds::DbResetHard,
-  logs: Kaiser::Cmds::Logs,
-  attach: Kaiser::Cmds::Attach,
-  login: Kaiser::Cmds::Login,
-  show: Kaiser::Cmds::Show,
-  set: Kaiser::Cmds::Set
-}.freeze
-
 # Kaiser
 module Kaiser
+  SUB_COMMANDS = {
+    init: Kaiser::Cmds::Init,
+    deinit: Kaiser::Cmds::Deinit,
+    up: Kaiser::Cmds::Up,
+    down: Kaiser::Cmds::Down,
+    shutdown: Kaiser::Cmds::Shutdown,
+    db_save: Kaiser::Cmds::DbSave,
+    db_load: Kaiser::Cmds::DbLoad,
+    db_reset: Kaiser::Cmds::DbReset,
+    db_reset_hard: Kaiser::Cmds::DbResetHard,
+    logs: Kaiser::Cmds::Logs,
+    attach: Kaiser::Cmds::Attach,
+    login: Kaiser::Cmds::Login,
+    show: Kaiser::Cmds::Show,
+    set: Kaiser::Cmds::Set
+  }.freeze
 end

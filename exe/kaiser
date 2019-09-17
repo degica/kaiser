@@ -12,9 +12,9 @@ $LOAD_PATH << "#{__dir__}/../lib"
 
 require 'kaiser'
 
-sub_command_strings = SUB_COMMANDS.keys.map(&:to_s)
+sub_command_strings = Kaiser::SUB_COMMANDS.keys.map(&:to_s)
 
-SUB_COMMANDS.each { |k, v| Kaiser::Cli.register(k, v) }
+Kaiser::SUB_COMMANDS.each { |k, v| Kaiser::Cli.register(k, v) }
 
 # It was difficult to allow global arguments like -v and -q to be typed both before and after cmds
 # and still support `kaiser -h` for full help messages and `kaiser subcmd -h` for focused messages.
@@ -57,7 +57,7 @@ parser = Optimist::Parser.new do
     Subcommands
     ===========
 
-    - #{SUB_COMMANDS.keys.join("\n- ")}
+    - #{Kaiser::SUB_COMMANDS.keys.join("\n- ")}
 
     Type \`SUB_COMMAND -h\` for help with specific subcommands.
 
