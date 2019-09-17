@@ -11,9 +11,7 @@ module Kaiser
 
     def self.run!(out, cmd, &block)
       status = run(out, cmd, &block)
-      if status.to_s != '0' # rubocop:disable Style/GuardClause
-        raise Kaiser::Error, "ERROR\n#{cmd}\n- exited with code #{status}"
-      end
+      raise Kaiser::CmdError.new(cmd, status) if status.to_s != '0'
     end
 
     def self.run_async(out, cmd)
@@ -38,6 +36,7 @@ module Kaiser
         yield line.chomp if block_given?
       end
     rescue Errno::EIO # rubocop:disable Lint/HandleExceptions
+      # Happens when `lines` stream is closed
     end
 
     def run_command(&block)

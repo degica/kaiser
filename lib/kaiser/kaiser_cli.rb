@@ -378,7 +378,7 @@ module Kaiser
       "#{envname}-tmpfiles-vol"
     end
 
-    def create_script_container(script)
+    def run_blocking_script(image, params, script, &block)
       killrm tmp_db_waiter
       killrm tmp_file_container
 
@@ -394,25 +394,19 @@ module Kaiser
         #{tmp_waitscript_name}
         #{tmp_file_container}:/tmpvol/wait.sh"
 
-      yield
+      CommandRunner.run!(
+        @out,
+        "docker run --rm -ti
+          --name #{tmp_db_waiter}
+          --network #{network_name}
+          -v #{tmp_file_volume}:/tmpvol
+          #{params}
+          #{image} sh /tmpvol/wait.sh",
+        &block
+      )
     ensure
       killrm tmp_file_container
       FileUtils.rm(tmp_waitscript_name)
-    end
-
-    def run_blocking_script(image, params, script, &block)
-      create_script_container script do
-        CommandRunner.run!(
-          @out,
-          "docker run --rm -ti
-            --name #{tmp_db_waiter}
-            --network #{network_name}
-            -v #{tmp_file_volume}:/tmpvol
-            #{params}
-            #{image} sh /tmpvol/wait.sh",
-          &block
-        )
-      end
     end
 
     def wait_for_app
@@ -430,8 +424,7 @@ module Kaiser
       SCRIPT
       run_blocking_script('alpine', '', wait_script) do |line|
         if line != '!' && container_dead?(app_container_name)
-          raise Kaiser::Error, 'App container died. ' \
-            "Run `docker logs #{app_container_name}` to see why."
+          raise Kaiser::Error, 'App container died. Run `kaiser logs` to see why.'
         end
       end
       @info_out.puts 'Started.'
