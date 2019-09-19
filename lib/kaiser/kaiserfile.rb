@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kaiser
   # This class is responsible for parsing the Kaiserfile
   class Kaiserfile
@@ -60,6 +62,7 @@ module Kaiser
 
     def type(value)
       raise 'Valid server types are: [:http]' if value != :http
+
       @server_type = value
     end
   end

@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'optimist'
 require 'fileutils'
@@ -9,55 +10,73 @@ require 'erb'
 
 require 'kaiser'
 
-SUB_COMMANDS = %w[
-  init
-  deinit
-  up
-  down
-  shutdown
-  db_load
-  db_save
-  db_reset
-  db_reset_hard
-  logs
-  attach
-  login
-  show
-  set
-].freeze
+sub_command_strings = Kaiser::SUB_COMMANDS.keys.map(&:to_s)
 
-opts = Optimist.options do
-  banner <<-BANNER
-Kaiser v#{Kaiser::VERSION}
+Kaiser::SUB_COMMANDS.each { |k, v| Kaiser::Cli.register(k, v) }
 
-Subcommands:
-#{SUB_COMMANDS.join ' '}
+# It was difficult to allow global arguments like -v and -q to be typed both before and after cmds
+# and still support `kaiser -h` for full help messages and `kaiser subcmd -h` for focused messages.
+# Putting the global options in an array, using an Optimist::Parser and basically everything up to
+# the 'end parser hacks' comment are all hacks to marry the above two behaviours.
+
+global_opts = [
+  [:verbose, "Show Kaiser's debug output", short: '-v'],
+  [:quiet, 'Suppress all output', short: '-q']
+]
+
+parser = Optimist::Parser.new do
+  version "Kaiser v#{Kaiser::VERSION}"
+
+  banner <<~BANNER
+    #{version}
+
+    Kaiser is a tool to make development a lot easier by defining how an application starts using a \`Kaiserfile\` in the source code's root directory.
+
+    Prerequisites
+    =============
+
+    Install docker on your system and make sure the current user has all the rights required to spin up docker containers.
+
+    Usage
+    =====
+
+    For typical usage you'll want to do the following three commands.
+
+    \`\`\`
+    kaiser init ENV_NAME
+    kaiser up
+    kaiser attach
+    \`\`\`
+
+    This will boot up your application in docker and bind mount your local source directory so you can start doing development. Happy coding!
+
+    If any of these commands are giving you trouble, please run them with the \`-v\` flag set. They will show you what exactly is happening so you can debug.
+
+    Subcommands
+    ===========
+
+    - #{Kaiser::SUB_COMMANDS.keys.join("\n- ")}
+
+    Type \`SUB_COMMAND -h\` for help with specific subcommands.
+
+    Global Parameters
+    =================
   BANNER
-  opt :verbose, "Show Kaiser's debug output", short: '-v'
-  opt :quiet, 'Suppress all output', short: '-q'
+
+  global_opts.each { |o| opt *o }
 end
 
-commands = SUB_COMMANDS & ARGV
+commands = sub_command_strings & ARGV
+
+if commands.empty?
+  Optimist.with_standard_exception_handling parser do
+    raise Optimist::HelpNeeded
+  end
+end
+
 cmd = commands.first
-ARGV.shift
+## end parser hacks ##
 
-Optimist.educate unless SUB_COMMANDS.include?(cmd)
-
-out = Kaiser::Dotter.new
-info_out = Kaiser::AfterDotter.new(dotter: out)
-
-if opts[:quiet]
-  out = File.open(File::NULL, 'w')
-  info_out = File.open(File::NULL, 'w')
-elsif opts[:verbose]
-  out = $stderr
-end
-
-cli = Kaiser::KaiserCli.new(
-  `pwd`.chomp,
-  debug_output: out,
-  info_output: info_out
-)
-cli.send(:"#{cmd}")
+Kaiser::Cli.run_command(:"#{cmd}", global_opts)
 
 puts ''
