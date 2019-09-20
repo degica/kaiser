@@ -120,17 +120,13 @@ module Kaiser
 
       Config.info_out.puts 'Provisioning database'
       killrm "#{envname}-apptemp"
-      status = CommandRunner.run Config.out, "docker run -ti
+      CommandRunner.run! Config.out, "docker run -ti
         --rm
         --name #{envname}-apptemp
         --network #{Config.config[:networkname]}
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{db_reset_command}"
 
-      if status != 0
-        Config.info_out.puts "#{envname} db provision failed"
-        exit!
-      end
       save_db('.default')
     end
 
