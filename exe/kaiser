@@ -63,7 +63,7 @@ parser = Optimist::Parser.new do
     =================
   BANNER
 
-  global_opts.each { |o| opt *o }
+  global_opts.each { |o| opt(*o) }
 end
 
 commands = sub_command_strings & ARGV
@@ -77,6 +77,11 @@ end
 cmd = commands.first
 ## end parser hacks ##
 
-Kaiser::Cli.run_command(:"#{cmd}", global_opts)
-
+begin
+  Kaiser::Cli.run_command(:"#{cmd}", global_opts)
+rescue Kaiser::Error => err
+  puts
+  puts err.message
+  exit 1
+end
 puts ''

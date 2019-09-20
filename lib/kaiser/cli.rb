@@ -219,7 +219,7 @@ module Kaiser
     def start_app
       Config.info_out.puts 'Starting up application'
       killrm app_container_name
-      CommandRunner.run Config.out, "docker run -d
+      CommandRunner.run! Config.out, "docker run -d
         --name #{app_container_name}
         --network #{network_name}
         --dns #{ip_of_container(Config.config[:shared_names][:dns])}
@@ -255,29 +255,32 @@ module Kaiser
 
     def run_blocking_script(image, params, script)
       killrm tmp_db_waiter
-
       killrm tmp_file_container
+
       create_if_volume_not_exist tmp_file_volume
 
-      CommandRunner.run Config.out, "docker create
+      CommandRunner.run! Config.out, "docker create
         -v #{tmp_file_volume}:/tmpvol
         --name #{tmp_file_container} alpine"
 
       File.write(tmp_waitscript_name, script)
 
-      CommandRunner.run Config.out, "docker cp
+      CommandRunner.run! Config.out, "docker cp
         #{tmp_waitscript_name}
         #{tmp_file_container}:/tmpvol/wait.sh"
 
-      CommandRunner.run Config.out, "docker run --rm -ti
-        --name #{tmp_db_waiter}
-        --network #{network_name}
-        -v #{tmp_file_volume}:/tmpvol
-        #{params}
-        #{image} sh /tmpvol/wait.sh"
-
+      CommandRunner.run!(
+        Config.out,
+        "docker run --rm -ti
+          --name #{tmp_db_waiter}
+          --network #{network_name}
+          -v #{tmp_file_volume}:/tmpvol
+          #{params}
+          #{image} sh /tmpvol/wait.sh",
+        &block
+      )
+    ensure
       killrm tmp_file_container
-
       FileUtils.rm(tmp_waitscript_name)
     end
 
@@ -285,14 +288,20 @@ module Kaiser
       return unless server_type == :http
 
       Config.info_out.puts 'Waiting for server to start...'
-      run_blocking_script('alpine', '', <<-SCRIPT)
+      wait_script = <<-SCRIPT
         apk update
         apk add curl
         until $(curl --output /dev/null --silent --head --fail http://#{app_container_name}:#{app_expose}); do
             echo 'o'
             sleep 1
         done
+        echo '!'
       SCRIPT
+      run_blocking_script('alpine', '', wait_script) do |line|
+        if line != '!' && container_dead?(app_container_name)
+          raise Kaiser::Error, 'App container died. Run `kaiser logs` to see why.'
+        end
+      end
       Config.info_out.puts 'Started.'
     end
 
@@ -399,13 +408,13 @@ module Kaiser
 
     def copy_keyfile(file)
       if Config.config[:cert_source][:folder]
-        CommandRunner.run Config.out, "docker run --rm
+        CommandRunner.run! Config.out, "docker run --rm
           -v #{Config.config[:shared_names][:certs]}:/certs
           -v #{Config.config[:cert_source][:folder]}:/cert_source
           alpine cp /cert_source/#{file} /certs/#{file}"
 
       elsif Config.config[:cert_source][:url]
-        CommandRunner.run Config.out, "docker run --rm
+        CommandRunner.run! Config.out, "docker run --rm
           -v #{Config.config[:shared_names][:certs]}:/certs
           alpine wget #{Config.config[:cert_source][:url]}/#{file}
             -O /certs/#{file}"
@@ -483,25 +492,29 @@ module Kaiser
       `docker network inspect #{Config.config[:networkname]} 2>/dev/null`
     end
 
-    def if_container_dead(container, &block)
+    def container_dead?(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
-      return unless x.length.zero? || x[0]['State']['Running'] == false
+      return true if x.length.zero? || x[0]['State']['Running'] == false
+    end
 
-      yield if block
+    def if_container_dead(container)
+      return unless container_dead?(container)
+
+      yield if block_given?
     end
 
     def create_if_volume_not_exist(vol)
       x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
       return unless x.length.zero?
 
-      CommandRunner.run Config.out, "docker volume create #{vol}"
+      CommandRunner.run! Config.out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
       x = JSON.parse(`docker inspect #{net} 2>/dev/null`)
       return unless x.length.zero?
 
-      CommandRunner.run Config.out, "docker network create #{net}"
+      CommandRunner.run! Config.out, "docker network create #{net}"
     end
 
     def run_if_dead(container, command)
