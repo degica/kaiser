@@ -465,14 +465,6 @@ module Kaiser
           redis:alpine"
       )
       run_if_dead(
-        Config.config[:shared_names][:chrome],
-        "docker run -d
-          -p 5900:5900
-          --name #{Config.config[:shared_names][:chrome]}
-          --network #{Config.config[:networkname]}
-          selenium/standalone-chrome-debug"
-      )
-      run_if_dead(
         Config.config[:shared_names][:nginx],
         "docker run -d
           -p 80:80
@@ -494,6 +486,16 @@ module Kaiser
           davidsiaw/docker-dns
           --domain #{http_suffix}
           --record :#{ip_of_container(Config.config[:shared_names][:nginx])}"
+      )
+      run_if_dead(
+        @config[:shared_names][:chrome],
+        "docker run -d
+          -p 5900:5900
+          --name #{Config.config[:shared_names][:chrome]}
+          --network #{Config.config[:networkname]}
+          --dns #{ip_of_container(Config.config[:shared_names][:dns])}
+          --dns-search #{http_suffix}
+          selenium/standalone-chrome-debug"
       )
     end
 
