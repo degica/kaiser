@@ -242,7 +242,7 @@ module Kaiser
     def start_app
       Config.info_out.puts 'Starting up application'
       killrm app_container_name
-      CommandRunner.run Config.out, "docker run -d
+      CommandRunner.run! Config.out, "docker run -d
         --name #{app_container_name}
         --network #{network_name}
         --dns #{ip_of_container(Config.config[:shared_names][:dns])}
@@ -421,13 +421,13 @@ module Kaiser
 
     def copy_keyfile(file)
       if Config.config[:cert_source][:folder]
-        CommandRunner.run Config.out, "docker run --rm
+        CommandRunner.run! Config.out, "docker run --rm
           -v #{Config.config[:shared_names][:certs]}:/certs
           -v #{Config.config[:cert_source][:folder]}:/cert_source
           alpine cp /cert_source/#{file} /certs/#{file}"
 
       elsif Config.config[:cert_source][:url]
-        CommandRunner.run Config.out, "docker run --rm
+        CommandRunner.run! Config.out, "docker run --rm
           -v #{Config.config[:shared_names][:certs]}:/certs
           alpine wget #{Config.config[:cert_source][:url]}/#{file}
             -O /certs/#{file}"
@@ -516,14 +516,14 @@ module Kaiser
       x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
       return unless x.length.zero?
 
-      CommandRunner.run Config.out, "docker volume create #{vol}"
+      CommandRunner.run! Config.out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
       x = JSON.parse(`docker inspect #{net} 2>/dev/null`)
       return unless x.length.zero?
 
-      CommandRunner.run Config.out, "docker network create #{net}"
+      CommandRunner.run! Config.out, "docker network create #{net}"
     end
 
     def run_if_dead(container, command)

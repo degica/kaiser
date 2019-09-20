@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'kaiser/error'
 require 'kaiser/version'
 require 'kaiser/kaiserfile'
 require 'kaiser/cli_options'

@@ -31,7 +31,7 @@ module Kaiser
         Config.info_out.puts 'Setting up application'
         File.write(tmp_dockerfile_name, docker_file_contents)
         build_args = docker_build_args.map { |k, v| "--build-arg #{k}=#{v}" }
-        CommandRunner.run Config.out, "docker build
+        CommandRunner.run! Config.out, "docker build
           -t kaiser:#{envname}-#{current_branch}
           -f #{tmp_dockerfile_name} #{Config.work_dir}
           #{build_args.join(' ')}"
