@@ -3,11 +3,7 @@
 module Kaiser
   module Cmds
     class Up < Cli
-      def initialize
-        @opts = [
-          [:attach, "Bind mount the current source code directory in the app container", short: '-a']
-        ]
-      end
+      option :attach, "Bind mount the current source code directory in the app container", short: '-a'
 
       def usage
         <<~EOS
