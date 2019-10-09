@@ -5,25 +5,20 @@ require 'kaiser/command_runner'
 module Kaiser
   # The commandline
   class Cli
-    @opts = []
+    @options = []
 
     class << self
-      def self.option(*opt)
-        @opts ||= []
-        @opts << opt
+      def option(*option)
+        @options ||= []
+        @options << option
       end
-      alias :opt :option
 
-      def self.options
-        @opts
+      def options
+        @options || []
       end
-      alias :opts :options
     end
 
-    def options
-      self.class.options || []
-    end
-    alias :opts :options
+    attr_reader :opts
 
     def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
@@ -49,7 +44,7 @@ module Kaiser
       # the scope to Optimist::Parser. We can still reference variables but we can't
       # call instance methods of a Kaiser::Cli class.
       u = usage
-      Optimist.options do
+      @opts = Optimist.options do
         banner u
 
         global_opts.each { |o| opt *o }
@@ -63,8 +58,7 @@ module Kaiser
 
     def self.run_command(name, global_opts)
       cmd = @subcommands[name]
-      p cmd.opts
-      opts = cmd.define_options(global_opts + cmd.opts)
+      opts = cmd.define_options(global_opts + cmd.class.options)
 
       # The define_options method has stripped all arguments from the cli so now
       # all that we're left with in ARGV are the subcommand to be run and possibly
@@ -78,7 +72,6 @@ module Kaiser
       # unless they create a Kaiserfile firest.
       out = Kaiser::Dotter.new
       info_out = Kaiser::AfterDotter.new(dotter: out)
-
       if opts[:quiet]
         out = File.open(File::NULL, 'w')
         info_out = File.open(File::NULL, 'w')
