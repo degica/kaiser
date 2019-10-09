@@ -13,30 +13,8 @@ module Kaiser
 
       def execute
         ensure_setup
-        cmd = (ARGV || []).join(' ')
-        killrm app_container_name
-
-        volumes = attach_mounts.map { |from, to| "-v #{`pwd`.chomp}/#{from}:#{to}" }.join(' ')
-
-        system "docker run -ti
-          --name #{app_container_name}
-          --network #{network_name}
-          --dns #{ip_of_container(Config.config[:shared_names][:dns])}
-          --dns-search #{http_suffix}
-          -p #{app_port}:#{app_expose}
-          -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
-          -e VIRTUAL_HOST=#{envname}.#{http_suffix}
-          -e VIRTUAL_PORT=#{app_expose}
-          #{volumes}
-          #{app_params}
-          kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
-
-        Config.out.puts 'Cleaning up...'
+        attach_app
         start_app
-      end
-
-      def attach_mounts
-        Config.kaiserfile.attach_mounts
       end
     end
   end

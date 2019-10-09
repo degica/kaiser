@@ -19,7 +19,12 @@ module Kaiser
         ensure_setup
         setup_app
         setup_db
-        start_app
+
+        if opts[:attach]
+          attach_app
+        else
+          start_app
+        end
       end
 
       def setup_app
