@@ -5,6 +5,12 @@ require 'kaiser/command_runner'
 module Kaiser
   # The commandline
   class Cli
+    attr_reader :opts
+
+    def initialize
+      @opts = []
+    end
+
     def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
       # It would be a good idea to deprecate this and make it more abstract.
@@ -43,7 +49,7 @@ module Kaiser
 
     def self.run_command(name, global_opts)
       cmd = @subcommands[name]
-      opts = cmd.define_options(global_opts)
+      opts = cmd.define_options(global_opts + cmd.opts)
 
       # The define_options method has stripped all arguments from the cli so now
       # all that we're left with in ARGV are the subcommand to be run and possibly
