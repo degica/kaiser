@@ -13,7 +13,7 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         ensure_setup
         cmd = ARGV.shift
         valid_cmds = 'ports cert-source http-suffix'

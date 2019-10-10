@@ -2,6 +2,7 @@
 
 require 'kaiser/version'
 require 'kaiser/kaiserfile'
+require 'kaiser/cli_options'
 require 'kaiser/cli'
 require 'kaiser/after_dotter'
 require 'kaiser/dotter'

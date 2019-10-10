@@ -5,20 +5,7 @@ require 'kaiser/command_runner'
 module Kaiser
   # The commandline
   class Cli
-    @options = []
-
-    class << self
-      def option(*option)
-        @options ||= []
-        @options << option
-      end
-
-      def options
-        @options || []
-      end
-    end
-
-    attr_reader :opts
+    extend Kaiser::CliOptions
 
     def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
@@ -44,7 +31,7 @@ module Kaiser
       # the scope to Optimist::Parser. We can still reference variables but we can't
       # call instance methods of a Kaiser::Cli class.
       u = usage
-      @opts = Optimist.options do
+      Optimist.options do
         banner u
 
         global_opts.each { |o| opt *o }
@@ -86,7 +73,7 @@ module Kaiser
       )
       cmd.set_config
 
-      cmd.execute
+      cmd.execute(opts)
     end
 
     def self.all_subcommands_usage

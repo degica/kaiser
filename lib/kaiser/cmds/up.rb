@@ -15,7 +15,7 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         ensure_setup
         setup_app
         setup_db

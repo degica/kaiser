@@ -11,7 +11,7 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         ensure_setup
         cmd = (ARGV || []).join(' ')
         exec "docker exec -ti #{app_container_name} #{cmd}"

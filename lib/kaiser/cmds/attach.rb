@@ -13,7 +13,7 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         ensure_setup
         attach_app
         start_app

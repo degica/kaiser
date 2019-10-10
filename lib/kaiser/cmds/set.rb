@@ -21,7 +21,7 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         cmd = ARGV.shift
         if cmd == 'cert-url'
           Config.config[:cert_source] = {
