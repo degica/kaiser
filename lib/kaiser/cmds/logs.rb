@@ -11,7 +11,7 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         exec "docker logs -f #{app_container_name}"
       end
     end

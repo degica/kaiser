@@ -13,7 +13,7 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         Config.config[:shared_names].each do |_, container_name|
           killrm container_name
         end

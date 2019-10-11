@@ -11,7 +11,7 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         down
       end
     end

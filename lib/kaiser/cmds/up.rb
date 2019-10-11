@@ -3,6 +3,8 @@
 module Kaiser
   module Cmds
     class Up < Cli
+      option :attach, "Bind mount the current source code directory in the app container (as the \`kaiser attach\` command would)", short: '-a'
+
       def usage
         <<~EOS
           Boots up the application in docker as defined in the \`Kaiserfile\` in its source code. Usually this will create two docker containers \`<ENV_NAME>-db\` and \`<ENV_NAME>-app\` running your database and application respectively.
@@ -13,11 +15,16 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         ensure_setup
         setup_app
         setup_db
-        start_app
+
+        if opts[:attach]
+          attach_app
+        else
+          start_app
+        end
       end
 
       def setup_app

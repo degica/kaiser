@@ -5,6 +5,8 @@ require 'kaiser/command_runner'
 module Kaiser
   # The commandline
   class Cli
+    extend Kaiser::CliOptions
+
     def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
       # It would be a good idea to deprecate this and make it more abstract.
@@ -43,7 +45,7 @@ module Kaiser
 
     def self.run_command(name, global_opts)
       cmd = @subcommands[name]
-      opts = cmd.define_options(global_opts)
+      opts = cmd.define_options(global_opts + cmd.class.options)
 
       # The define_options method has stripped all arguments from the cli so now
       # all that we're left with in ARGV are the subcommand to be run and possibly
@@ -57,7 +59,6 @@ module Kaiser
       # unless they create a Kaiserfile firest.
       out = Kaiser::Dotter.new
       info_out = Kaiser::AfterDotter.new(dotter: out)
-
       if opts[:quiet]
         out = File.open(File::NULL, 'w')
         info_out = File.open(File::NULL, 'w')
@@ -72,7 +73,7 @@ module Kaiser
       )
       cmd.set_config
 
-      cmd.execute
+      cmd.execute(opts)
     end
 
     def self.all_subcommands_usage
@@ -214,6 +215,29 @@ module Kaiser
 
     def default_db_image
       db_image_path('.default')
+    end
+
+    def attach_app
+      cmd = (ARGV || []).join(' ')
+      killrm app_container_name
+
+      attach_mounts = Config.kaiserfile.attach_mounts
+      volumes = attach_mounts.map { |from, to| "-v #{`pwd`.chomp}/#{from}:#{to}" }.join(' ')
+
+      system "docker run -ti
+        --name #{app_container_name}
+        --network #{network_name}
+        --dns #{ip_of_container(Config.config[:shared_names][:dns])}
+        --dns-search #{http_suffix}
+        -p #{app_port}:#{app_expose}
+        -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
+        -e VIRTUAL_HOST=#{envname}.#{http_suffix}
+        -e VIRTUAL_PORT=#{app_expose}
+        #{volumes}
+        #{app_params}
+        kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
+
+      Config.out.puts 'Cleaning up...'
     end
 
     def start_app

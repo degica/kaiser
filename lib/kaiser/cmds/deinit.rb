@@ -11,7 +11,7 @@ module Kaiser
         EOS
       end
 
-      def execute
+      def execute(opts)
         down
         Config.config[:envs].delete(envname)
         Config.config[:envnames].delete(Config.work_dir)
