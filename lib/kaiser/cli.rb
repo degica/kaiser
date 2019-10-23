@@ -375,7 +375,6 @@ module Kaiser
     end
 
     def app_params
-      p Config.kaiserfile.params
       eval_template Config.kaiserfile.params
     end
 
