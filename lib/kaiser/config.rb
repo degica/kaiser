@@ -11,7 +11,10 @@ module Kaiser
                   :out,
                   :info_out
 
-      def load(work_dir, debug_output:, info_output:)
+      attr_writer :out,
+                  :info_out
+
+      def load(work_dir)
         @work_dir = work_dir
         @config_dir = "#{ENV['HOME']}/.kaiser"
 
@@ -30,12 +33,15 @@ module Kaiser
             dns: 'kaiser-dns',
             certs: 'kaiser-certs'
           },
-          largest_port: 9000
+          largest_port: 9000,
+          always_verbose: false
         }
 
-        @out = debug_output
-        @info_out = info_output
         load_config
+      end
+
+      def always_verbose?
+        @config[:always_verbose]
       end
 
       def load_config

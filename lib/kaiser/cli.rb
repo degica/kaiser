@@ -53,24 +53,23 @@ module Kaiser
       # easily use ARGV.shift to access its own subcommands.
       ARGV.shift
 
+      Kaiser::Config.load(Dir.pwd)
+
       # We do all this work in here instead of the exe/kaiser file because we
       # want -h options to output before we check if a Kaiserfile exists.
       # If we do it in exe/kaiser, people won't be able to check help messages
       # unless they create a Kaiserfile firest.
-      out = Kaiser::Dotter.new
-      info_out = Kaiser::AfterDotter.new(dotter: out)
       if opts[:quiet]
-        out = File.open(File::NULL, 'w')
-        info_out = File.open(File::NULL, 'w')
-      elsif opts[:verbose]
-        out = $stderr
+        Config.out = File.open(File::NULL, 'w')
+        Config.info_out = File.open(File::NULL, 'w')
+      elsif opts[:verbose] || Config.always_verbose?
+        Config.out = $stderr
+        Config.info_out = Kaiser::AfterDotter.new(dotter: Kaiser::Dotter.new)
+      else
+        Config.out = Kaiser::Dotter.new
+        Config.info_out = Kaiser::AfterDotter.new(dotter: Config.out)
       end
 
-      Kaiser::Config.load(
-        `pwd`.chomp,
-        debug_output: out,
-        info_output: info_out
-      )
       cmd.set_config
 
       cmd.execute(opts)
