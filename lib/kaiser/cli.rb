@@ -7,6 +7,8 @@ module Kaiser
   class Cli
     extend Kaiser::CliOptions
 
+    DEFAULT_DB_FILE = 'default'
+
     def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
       # It would be a good idea to deprecate this and make it more abstract.
@@ -125,7 +127,7 @@ module Kaiser
         --name #{envname}-apptemp
         --network #{Config.config[:networkname]}
         #{app_params}
-        kaiser:#{envname}-#{current_branch} #{db_reset_command}"
+        kaiser:#{envname} #{db_reset_command}"
 
       save_db('.default')
     end
@@ -194,8 +196,8 @@ module Kaiser
       CommandRunner.run Config.out, "docker volume rm #{db_volume_name}"
     end
 
-    def current_branch_db_image_dir
-      "#{Config.config_dir}/databases/#{envname}/#{current_branch}"
+    def db_image_dir
+      "#{Config.config_dir}/databases/#{envname}/all"
     end
 
     def db_image_path(name)
@@ -204,12 +206,19 @@ module Kaiser
         Config.info_out.puts "Database image path is: #{path}"
         return path
       end
-      FileUtils.mkdir_p current_branch_db_image_dir
-      "#{current_branch_db_image_dir}/#{name}.tar.bz"
+      FileUtils.mkdir_p db_image_dir
+      "#{db_image_dir}/#{name}.tar.bz"
     end
 
     def default_db_image
       db_image_path('.default')
+    end
+
+    def default_volumes
+      <<-VOLUMES
+      -v kaiser_bundle:/usr/local/bundle
+      -v kaiser_gems:/root/.gem/specs
+      VOLUMES
     end
 
     def attach_app
@@ -229,8 +238,9 @@ module Kaiser
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
         #{volumes}
+        #{default_volumes}
         #{app_params}
-        kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
+        kaiser:#{envname} #{cmd}".tr("\n", ' ')
 
       Config.out.puts 'Cleaning up...'
     end
@@ -247,8 +257,9 @@ module Kaiser
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
+        #{default_volumes}
         #{app_params}
-        kaiser:#{envname}-#{current_branch}"
+        kaiser:#{envname}"
       wait_for_app
     end
 
@@ -408,10 +419,6 @@ module Kaiser
 
     def db_container_name
       "#{envname}-db"
-    end
-
-    def current_branch
-      `git branch | grep \\* | cut -d ' ' -f2`.chomp.gsub(/[^\-_0-9a-z]+/, '-')
     end
 
     def ensure_env

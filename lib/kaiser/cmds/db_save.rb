@@ -18,7 +18,7 @@ module Kaiser
 
       def execute(opts)
         ensure_setup
-        name = ARGV.shift || '.default'
+        name = ARGV.shift || DEFAULT_DB_FILE
         save_db(name)
       end
     end
