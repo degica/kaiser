@@ -126,6 +126,8 @@ module Kaiser
         --rm
         --name #{envname}-apptemp
         --network #{Config.config[:networkname]}
+        #{attach_volumes}
+        #{default_volumes}
         #{app_params}
         kaiser:#{envname} #{db_reset_command}"
 
@@ -221,12 +223,14 @@ module Kaiser
       VOLUMES
     end
 
+    def attach_volumes
+      attach_mounts = Config.kaiserfile.attach_mounts
+      attach_mounts.map { |from, to| "-v #{`pwd`.chomp}/#{from}:#{to}" }.join(' ')
+    end
+
     def attach_app
       cmd = (ARGV || []).join(' ')
       killrm app_container_name
-
-      attach_mounts = Config.kaiserfile.attach_mounts
-      volumes = attach_mounts.map { |from, to| "-v #{`pwd`.chomp}/#{from}:#{to}" }.join(' ')
 
       system "docker run -ti
         --name #{app_container_name}
@@ -237,7 +241,7 @@ module Kaiser
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
-        #{volumes}
+        #{attach_volumes}
         #{default_volumes}
         #{app_params}
         kaiser:#{envname} #{cmd}".tr("\n", ' ')
@@ -257,6 +261,7 @@ module Kaiser
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
+        #{attach_volumes}
         #{default_volumes}
         #{app_params}
         kaiser:#{envname}"
