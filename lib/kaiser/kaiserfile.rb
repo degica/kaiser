@@ -3,6 +3,8 @@
 module Kaiser
   # This class is responsible for parsing the Kaiserfile
   class Kaiserfile
+    HOME = ENV['HOME']
+
     attr_accessor :docker_file_contents,
                   :docker_build_args,
                   :database,
