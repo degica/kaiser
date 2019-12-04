@@ -212,14 +212,24 @@ module Kaiser
       "#{db_image_dir}/#{name}.tar.bz"
     end
 
+    def container_ruby_version
+      dockerfile = Config.kaiserfile.docker_file_contents
+      /FROM (?<container_base>[^\s]+)/ =~ dockerfile.each_line.first
+      raise 'INVALID DOCKERFILE?' if container_base.nil?
+
+      `docker run --rm -it #{container_base} ruby -e 'puts RUBY_VERSION'`.chomp
+    end
+
     def default_db_image
       db_image_path('.default')
     end
 
     def default_volumes
+      ruby_version = container_ruby_version.gsub(/[\.\s]/, '-')
+
       <<-VOLUMES
-      -v kaiser_bundle:/usr/local/bundle
-      -v kaiser_gems:/root/.gem/specs
+      -v kaiser-bundle-#{ruby_version}:/usr/local/bundle
+      -v kaiser-gems-#{ruby_version}:/root/.gem/specs
       VOLUMES
     end
 
