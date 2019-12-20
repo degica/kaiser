@@ -227,10 +227,16 @@ module Kaiser
     def default_volumes
       ruby_version = container_ruby_version.gsub(/[\.\s]/, '-')
 
-      <<-VOLUMES
+      volumes = <<-VOLUMES
       -v kaiser-bundle-#{ruby_version}:/usr/local/bundle
       -v kaiser-gems-#{ruby_version}:/root/.gem/specs
       VOLUMES
+
+      shared = "#{ENV['HOME']}/kaisershare"
+
+      volumes += "-v #{shared}:/kaisershare\n" if File.exist?(shared)
+
+      volumes
     end
 
     def attach_volumes
