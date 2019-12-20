@@ -212,6 +212,15 @@ module Kaiser
       db_image_path('.default')
     end
 
+    def default_volumes
+      shared = "#{ENV['HOME']}/kaisershare"
+
+      volumes = []
+      volumes << "-v #{shared}:/kaisershare\n" if File.exist?(shared)
+
+      volumes.join(' ')
+    end
+
     def attach_app
       cmd = (ARGV || []).join(' ')
       killrm app_container_name
@@ -229,6 +238,7 @@ module Kaiser
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
         #{volumes}
+        #{default_volumes}
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
 
@@ -247,6 +257,7 @@ module Kaiser
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
+        #{default_volumes}
         #{app_params}
         kaiser:#{envname}-#{current_branch}"
       wait_for_app
