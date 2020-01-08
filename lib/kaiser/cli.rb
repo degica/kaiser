@@ -47,6 +47,7 @@ module Kaiser
 
     def self.run_command(name, global_opts)
       cmd = @subcommands[name]
+
       opts = cmd.define_options(global_opts + cmd.class.options)
 
       # The define_options method has stripped all arguments from the cli so now

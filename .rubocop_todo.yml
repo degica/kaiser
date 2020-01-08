@@ -10,6 +10,9 @@
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: auto_detection, squiggly, active_support, powerpack, unindent
+AllCops:
+  TargetRubyVersion: 2.5
+
 Layout/IndentHeredoc:
   Exclude:
     - 'exe/kaiser'

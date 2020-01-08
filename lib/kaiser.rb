@@ -19,6 +19,7 @@ require 'kaiser/cmds/db_save'
 require 'kaiser/cmds/db_load'
 require 'kaiser/cmds/db_reset'
 require 'kaiser/cmds/db_reset_hard'
+require 'kaiser/cmds/do'
 require 'kaiser/cmds/logs'
 require 'kaiser/cmds/attach'
 require 'kaiser/cmds/login'
@@ -37,6 +38,7 @@ module Kaiser
     db_load: Kaiser::Cmds::DbLoad,
     db_reset: Kaiser::Cmds::DbReset,
     db_reset_hard: Kaiser::Cmds::DbResetHard,
+    do: Kaiser::Cmds::Do,
     logs: Kaiser::Cmds::Logs,
     attach: Kaiser::Cmds::Attach,
     login: Kaiser::Cmds::Login,
