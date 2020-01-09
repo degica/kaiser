@@ -228,16 +228,19 @@ module Kaiser
     def default_volumes
       ruby_version = container_ruby_version.gsub(/[\.\s]/, '-')
 
-      volumes = <<-VOLUMES
-      -v kaiser-bundle-#{ruby_version}:/usr/local/bundle
-      -v kaiser-gems-#{ruby_version}:/root/.gem/specs
-      VOLUMES
+      volumes = [
+        "-v kaiser-bundle-#{ruby_version}:/usr/local/bundle",
+        "-v kaiser-gems-#{ruby_version}:/root/.gem/specs"
+      ]
 
-      shared = "#{ENV['HOME']}/kaisershare"
+      shared_dir = "#{ENV['HOME']}/kaisershare"
+      volumes << "-v #{shared_dir}:/kaisershare\n" if File.exist?(shared_dir)
 
-      volumes += "-v #{shared}:/kaisershare\n" if File.exist?(shared)
+      if File.exist?(Config.host_shell_rc)
+        volumes << "-v #{Config.host_shell_rc}:#{Config.container_shell_rc}"
+      end
 
-      volumes
+      volumes.join("\n")
     end
 
     def attach_volumes
@@ -247,6 +250,7 @@ module Kaiser
 
     def attach_app
       cmd = (ARGV || []).join(' ')
+      cmd += ' --login' if Config.always_login_shell? && cmd =~ /(ba)?sh/
       killrm app_container_name
 
       system "docker run -ti
@@ -255,6 +259,7 @@ module Kaiser
         --dns #{ip_of_container(Config.config[:shared_names][:dns])}
         --dns-search #{http_suffix}
         -p #{app_port}:#{app_expose}
+        -e KAISER_NAME=#{envname}
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
@@ -275,6 +280,7 @@ module Kaiser
         --dns #{ip_of_container(Config.config[:shared_names][:dns])}
         --dns-search #{http_suffix}
         -p #{app_port}:#{app_expose}
+        -e KAISER_NAME=#{envname}
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}

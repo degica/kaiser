@@ -34,10 +34,13 @@ module Kaiser
             certs: 'kaiser-certs'
           },
           largest_port: 9000,
-          always_verbose: false
+          always_verbose: false,
+          host_shell_rc: "#{ENV['HOME']}/.kaiser_profile",
+          always_login_shell: true
         }
 
         load_config
+        initialize_kaiser_profile
 
         alt_kaiserfile = "#{ENV['HOME']}/kaiserfiles/Kaiserfile.#{@config[:envnames][work_dir]}"
         @kaiserfile = Kaiserfile.new(alt_kaiserfile) if File.exist?(alt_kaiserfile)
@@ -47,6 +50,18 @@ module Kaiser
 
       def always_verbose?
         @config[:always_verbose]
+      end
+
+      def always_login_shell?
+        @config[:always_login_shell]
+      end
+
+      def host_shell_rc
+        @config[:host_shell_rc]
+      end
+
+      def container_shell_rc
+        kaiserfile.shell_rc_path
       end
 
       def load_config
@@ -60,6 +75,13 @@ module Kaiser
           **(loaded || {}),
           shared_names: { **(config_shared_names || {}), **(loaded_shared_names || {}) }
         }
+      end
+
+      def initialize_kaiser_profile
+        return if File.exist?(host_shell_rc)
+
+        default_shell_rc = File.join(__dir__, 'files', 'default_kaiser_profile.bash')
+        FileUtils.cp default_shell_rc, host_shell_rc
       end
     end
   end
