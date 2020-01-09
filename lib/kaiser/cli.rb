@@ -212,8 +212,19 @@ module Kaiser
       db_image_path('.default')
     end
 
+    def default_volumes
+      volumes = []
+
+      if File.exist?(Config.host_shell_rc)
+        volumes << "-v #{Config.host_shell_rc}:#{Config.container_shell_rc}"
+      end
+
+      volumes.join(' ')
+    end
+
     def attach_app
       cmd = (ARGV || []).join(' ')
+      cmd += ' --login' if Config.always_login_shell? && cmd =~ /(ba)?sh/
       killrm app_container_name
 
       attach_mounts = Config.kaiserfile.attach_mounts
@@ -225,9 +236,11 @@ module Kaiser
         --dns #{ip_of_container(Config.config[:shared_names][:dns])}
         --dns-search #{http_suffix}
         -p #{app_port}:#{app_expose}
+        -e KAISER_NAME=#{envname}
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
+        #{default_volumes}
         #{volumes}
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
@@ -244,9 +257,11 @@ module Kaiser
         --dns #{ip_of_container(Config.config[:shared_names][:dns])}
         --dns-search #{http_suffix}
         -p #{app_port}:#{app_expose}
+        -e KAISER_NAME=#{envname}
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
+        #{default_volumes}
         #{app_params}
         kaiser:#{envname}-#{current_branch}"
       wait_for_app
