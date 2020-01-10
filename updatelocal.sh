@@ -2,5 +2,6 @@
 
 set -e
 
-rake build
-rvm default do gem install "$(ls pkg/*.gem | sort -V | tail -n1)"
+bundle install
+bundle exec rake build
+gem install "$(ls pkg/*.gem | sort -V | tail -n1)"
