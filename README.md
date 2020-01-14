@@ -50,10 +50,10 @@ end
 
 ## Usage
 
-You will need to provide a Kaiserfile, and write a Dockerfile for your app (in the app repo's root dir) like so:
+You'll need a Dockerfile and a Kaiserfile. The Kaiserfile should be placed in the project root directory, with contents like this:
 
 ```ruby
-# Example for a Rails app
+# Example Kaiserfile for a Rails app
 
 dockerfile "Dockerfile.kaiser"
 
@@ -96,6 +96,20 @@ open http://myapp.lvh.me
 ```
 
 And enjoy previewing your app!
+
+### Alternative Kaiserfile
+
+If you want change your dev environment for a project, but don't want to overwrite the project's Kaiserfile/Dockerfile,
+you can use an alternative Kaiserfile.
+
+An alternative Kaiserfile is located at `~/kaiserfiles/Kaiserfile.<app name>`,
+where `<app name>` is replaced with the name you provided when calling `kaiser init`.
+
+If Kaiser detects an alternative Kaiserfile, it will use it instead of the Project root one. Some things to watch out for:
+
+- Of course, your app may behave differently if you change your environment from the project's default.
+- The `dockerfile` declaration is still relative to the project root. If you want to use a custom Dockerfile as well, you need to specify the its full path in the Kaiserfile.
+- If the project's Kaiserfile or Dockerfile changes, you'll have to update your custom ones manually.
 
 ### Debugging
 
