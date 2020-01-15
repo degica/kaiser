@@ -41,6 +41,9 @@ RSpec.configure do |config|
 
   config.after :each do |example|
     remove 'app' if example.metadata[:fixture_dir]
-    Aruba::RSpec.teardown
+    begin
+      Aruba::RSpec.teardown
+    rescue StandardError => _e
+    end
   end
 end
