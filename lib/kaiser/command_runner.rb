@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'English'
 
 # This is the command runner
@@ -32,7 +33,7 @@ module Kaiser
         @out.flush
         yield line.chomp if block_given?
       end
-    rescue Errno::EIO # rubocop:disable Lint/HandleExceptions
+    rescue Errno::EIO
       # Happens when `lines` stream is closed
     end
 
@@ -42,8 +43,8 @@ module Kaiser
         Process.wait(pid)
       end
       print_and_return_status $CHILD_STATUS.exitstatus
-    rescue PTY::ChildExited => ex
-      print_and_return_status(ex.status)
+    rescue PTY::ChildExited => e
+      print_and_return_status(e.status)
     end
   end
 end

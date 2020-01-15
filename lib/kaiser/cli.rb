@@ -317,9 +317,7 @@ module Kaiser
         echo '!'
       SCRIPT
       run_blocking_script('alpine', '', wait_script) do |line|
-        if line != '!' && container_dead?(app_container_name)
-          raise Kaiser::Error, 'App container died. Run `kaiser logs` to see why.'
-        end
+        raise Kaiser::Error, 'App container died. Run `kaiser logs` to see why.' if line != '!' && container_dead?(app_container_name)
       end
       Config.info_out.puts 'Started.'
     end
@@ -555,9 +553,7 @@ module Kaiser
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
       return if x.length.zero?
 
-      if x[0]['State'] && x[0]['State']['Running'] == true
-        CommandRunner.run Config.out, "docker kill #{container}"
-      end
+      CommandRunner.run Config.out, "docker kill #{container}" if x[0]['State'] && x[0]['State']['Running'] == true
       CommandRunner.run Config.out, "docker rm #{container}" if x[0]['State']
     end
   end
