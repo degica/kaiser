@@ -208,8 +208,25 @@ module Kaiser
       "#{current_branch_db_image_dir}/#{name}.tar.bz"
     end
 
+    def container_ruby_version
+      dockerfile = Config.kaiserfile.docker_file_contents
+      /FROM (?<container_base>[^\s]+)/ =~ dockerfile.each_line.first
+      raise 'INVALID DOCKERFILE?' if container_base.nil?
+
+      `docker run --rm -it #{container_base} ruby -e 'puts RUBY_VERSION'`.chomp
+    end
+
     def default_db_image
       db_image_path('.default')
+    end
+
+    def default_volumes
+      ruby_version = container_ruby_version.gsub(/[\.\s]/, '-')
+
+      <<-VOLUMES
+      -v kaiser-bundle-#{ruby_version}:/usr/local/bundle
+      -v kaiser-gems-#{ruby_version}:/root/.gem/specs
+      VOLUMES
     end
 
     def attach_app
@@ -229,6 +246,7 @@ module Kaiser
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
         #{volumes}
+        #{default_volumes}
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
 
@@ -247,6 +265,7 @@ module Kaiser
         -e DEV_APPLICATION_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
+        #{default_volumes}
         #{app_params}
         kaiser:#{envname}-#{current_branch}"
       wait_for_app
