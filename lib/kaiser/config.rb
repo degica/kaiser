@@ -56,7 +56,7 @@ module Kaiser
       end
 
       def container_shell_rc
-        kaiserfile.shell_rc_path
+        kaiserfile.shell_rc
       end
 
       def load_config
