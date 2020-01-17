@@ -215,9 +215,9 @@ module Kaiser
     def default_volumes
       volumes = []
 
-      if File.exist?(Config.host_shell_rc)
-        volumes << "-v #{Config.host_shell_rc}:#{Config.container_shell_rc}"
-      end
+      return [] unless File.exist?(Config.host_shell_rc)
+
+      volumes << "-v #{Config.host_shell_rc}:#{Config.container_shell_rc}"
 
       volumes.join(' ')
     end
