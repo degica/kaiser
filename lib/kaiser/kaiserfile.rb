@@ -10,11 +10,13 @@ module Kaiser
                   :params,
                   :database_reset_command,
                   :attach_mounts,
+                  :shell_rc,
                   :server_type
 
     def initialize(filename)
       Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
 
+      @shell_rc = '/etc/profile'
       @databases = {}
       @attach_mounts = []
       @server_type = :unknown
@@ -28,6 +30,10 @@ module Kaiser
 
     def attach_mount(from, to)
       attach_mounts << [from, to]
+    end
+
+    def container_shell_rc(value)
+      self.shell_rc = value
     end
 
     def db(image,
