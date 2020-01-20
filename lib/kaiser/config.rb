@@ -38,6 +38,11 @@ module Kaiser
         }
 
         load_config
+
+        alt_kaiserfile = "#{ENV['HOME']}/kaiserfiles/Kaiserfile.#{@config[:envnames][work_dir]}"
+        @kaiserfile = Kaiserfile.new(alt_kaiserfile) if File.exist?(alt_kaiserfile)
+
+        @config
       end
 
       def always_verbose?
