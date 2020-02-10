@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require 'kaiser/command_runner'
+require 'kaiser/cli/volumes'
 
 module Kaiser
   # The commandline
   class Cli
     extend Kaiser::CliOptions
+    include Volumes
 
     def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
@@ -104,10 +106,6 @@ module Kaiser
 
     private
 
-    def ensure_db_volume
-      create_if_volume_not_exist db_volume_name
-    end
-
     def setup_db
       ensure_db_volume
       start_db
@@ -190,10 +188,6 @@ module Kaiser
       wait_for_db unless db_waitscript.nil?
     end
 
-    def delete_db_volume
-      CommandRunner.run Config.out, "docker volume rm #{db_volume_name}"
-    end
-
     def current_branch_db_image_dir
       "#{Config.config_dir}/databases/#{envname}/#{current_branch}"
     end
@@ -210,15 +204,6 @@ module Kaiser
 
     def default_db_image
       db_image_path('.default')
-    end
-
-    def default_volumes
-      shared = "#{ENV['HOME']}/kaisershare"
-
-      volumes = []
-      volumes << "-v #{shared}:/kaisershare\n" if File.exist?(shared)
-
-      volumes.join(' ')
     end
 
     def attach_app
@@ -277,10 +262,6 @@ module Kaiser
 
     def tmp_file_container
       "#{envname}-tmpfiles"
-    end
-
-    def tmp_file_volume
-      "#{envname}-tmpfiles-vol"
     end
 
     def run_blocking_script(image, params, script, &block)
@@ -426,10 +407,6 @@ module Kaiser
       Config.kaiserfile.port
     end
 
-    def db_volume_name
-      "#{envname}-database"
-    end
-
     def app_container_name
       "#{envname}-app"
     end
@@ -450,34 +427,6 @@ module Kaiser
 
     def http_suffix
       Config.config[:http_suffix] || 'lvh.me'
-    end
-
-    def copy_keyfile(file)
-      if Config.config[:cert_source][:folder]
-        CommandRunner.run! Config.out, "docker run --rm
-          -v #{Config.config[:shared_names][:certs]}:/certs
-          -v #{Config.config[:cert_source][:folder]}:/cert_source
-          alpine cp /cert_source/#{file} /certs/#{file}"
-
-      elsif Config.config[:cert_source][:url]
-        CommandRunner.run! Config.out, "docker run --rm
-          -v #{Config.config[:shared_names][:certs]}:/certs
-          alpine wget #{Config.config[:cert_source][:url]}/#{file}
-            -O /certs/#{file}"
-      end
-    end
-
-    def prepare_cert_volume!
-      create_if_volume_not_exist Config.config[:shared_names][:certs]
-      return unless Config.config[:cert_source]
-
-      %w[
-        chain.pem
-        crt
-        key
-      ].each do |file_ext|
-        copy_keyfile("#{http_suffix}.#{file_ext}")
-      end
     end
 
     def ensure_setup
@@ -547,13 +496,6 @@ module Kaiser
       return unless container_dead?(container)
 
       yield if block_given?
-    end
-
-    def create_if_volume_not_exist(vol)
-      x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
-      return unless x.length.zero?
-
-      CommandRunner.run! Config.out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
