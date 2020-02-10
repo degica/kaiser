@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kaiser (0.4.110)
+    kaiser (0.4.112)
       optimist
 
 GEM

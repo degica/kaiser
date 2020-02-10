@@ -18,7 +18,7 @@ module Kaiser
     def initialize(filename)
       Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
 
-      @shell_rc = '~/.profile'
+      @shell_rc = '/etc/profile'
       @databases = {}
       @attach_mounts = []
       @server_type = :unknown
@@ -34,17 +34,8 @@ module Kaiser
       attach_mounts << [from, to]
     end
 
-    def container_workdir
-      docker_file_contents.each_line do |line|
-        if /WORKDIR (?<workdir>[^\s]+)/ =~ line
-          return workdir
-        end
-      end
-      nil
-    end
-
     def shell_rc_path
-      shell_rc.gsub('~', container_workdir)
+      shell_rc
     end
 
     def container_shell_rc(value)
