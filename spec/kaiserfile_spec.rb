@@ -111,7 +111,7 @@ RSpec.describe Kaiser::Kaiserfile do
 
     it 'records the parameters to the docker container' do
       kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
-      expect(kaiserfile.params).to eq '--user me'
+      expect(kaiserfile.params).to match(/--user me/)
     end
 
     context 'with two calls to app_params' do
@@ -124,7 +124,6 @@ RSpec.describe Kaiser::Kaiserfile do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
         expect(kaiserfile.params).to match(/-e SOMEPARAM=1/)
         expect(kaiserfile.params).to match(/\s-e ANOTHERPARAM=2/)
-        RESULT
       end
     end
   end
