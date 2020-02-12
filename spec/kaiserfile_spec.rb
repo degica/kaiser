@@ -113,6 +113,20 @@ RSpec.describe Kaiser::Kaiserfile do
       kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
       expect(kaiserfile.params).to eq '--user me'
     end
+
+    context 'with two calls to app_params' do
+      let(:kaiserfile) { <<~SCRIPT }
+        app_params "-e SOMEPARAM=1"
+        app_params "-e ANOTHERPARAM=2"
+      SCRIPT
+
+      it 'is additive' do
+        kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
+        expect(kaiserfile.params).to match(/-e SOMEPARAM=1/)
+        expect(kaiserfile.params).to match(/\s-e ANOTHERPARAM=2/)
+        RESULT
+      end
+    end
   end
 
   context '#db_reset_command' do
@@ -142,4 +156,5 @@ RSpec.describe Kaiser::Kaiserfile do
       end
     end
   end
+
 end
