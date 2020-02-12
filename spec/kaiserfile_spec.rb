@@ -155,5 +155,4 @@ RSpec.describe Kaiser::Kaiserfile do
       end
     end
   end
-
 end
