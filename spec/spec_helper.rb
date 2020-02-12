@@ -43,7 +43,8 @@ RSpec.configure do |config|
     remove 'app' if example.metadata[:fixture_dir]
     begin
       Aruba::RSpec.teardown
-    rescue StandardError => _e
+    rescue StandardError => e
+      puts e
     end
   end
 end
