@@ -7,7 +7,6 @@ module Kaiser
                   :docker_build_args,
                   :database,
                   :port,
-                  :params,
                   :database_reset_command,
                   :attach_mounts,
                   :server_type
@@ -17,6 +16,7 @@ module Kaiser
 
       @databases = {}
       @attach_mounts = []
+      @params_array = []
       @server_type = :unknown
       instance_eval File.read(filename), filename
     end
@@ -53,7 +53,11 @@ module Kaiser
     end
 
     def app_params(value)
-      @params = value
+      @params_array << value
+    end
+
+    def params
+      @params_array.join(' ')
     end
 
     def db_reset_command(value)
