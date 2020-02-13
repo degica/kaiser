@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kaiser
   class Cli
     module Volumes
@@ -31,9 +33,9 @@ module Kaiser
         return unless Config.config[:cert_source]
 
         %w[
-        chain.pem
-        crt
-        key
+          chain.pem
+          crt
+          key
         ].each do |file_ext|
           copy_keyfile("#{http_suffix}.#{file_ext}")
         end
