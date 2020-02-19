@@ -77,9 +77,6 @@ RSpec.describe Kaiser::Kaiserfile do
 
       it 'sets up the database variable with waitscript commands' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
-        expect(kaiserfile.database[:image]).to eq 'somedb:version'
-        expect(kaiserfile.database[:data_dir]).to eq '/var/lib/dbdb'
-        expect(kaiserfile.database[:port]).to eq 1414
         expect(kaiserfile.database[:waitscript]).to eq 'sh wait_for_db.sh'
       end
     end
@@ -95,10 +92,6 @@ RSpec.describe Kaiser::Kaiserfile do
 
       it 'sets up the database variable with waitscript command params' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
-        expect(kaiserfile.database[:image]).to eq 'somedb:version'
-        expect(kaiserfile.database[:data_dir]).to eq '/var/lib/dbdb'
-        expect(kaiserfile.database[:port]).to eq 1414
-        expect(kaiserfile.database[:waitscript]).to eq 'sh wait_for_db.sh'
         expect(kaiserfile.database[:waitscript_params]).to eq '-e PORT=1414'
       end
     end
