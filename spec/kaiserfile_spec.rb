@@ -63,9 +63,6 @@ RSpec.describe Kaiser::Kaiserfile do
 
       it 'sets up the database variable with commands' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
-        expect(kaiserfile.database[:image]).to eq 'somedb:version'
-        expect(kaiserfile.database[:data_dir]).to eq '/var/lib/dbdb'
-        expect(kaiserfile.database[:port]).to eq 1414
         expect(kaiserfile.database[:commands]).to eq 'start_db'
       end
     end
