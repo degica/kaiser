@@ -15,7 +15,7 @@ RSpec.describe Kaiser do
 
   shared_examples 'full help' do
     it 'prints the full help message' do
-      unwrapped_output = cmd_stdout.gsub("\n", ' ')
+      unwrapped_output = cmd_stdout.tr("\n", ' ')
 
       Kaiser::SUB_COMMANDS.keys.each do |name|
         expect(unwrapped_output).to include "- #{name}"
@@ -68,8 +68,8 @@ RSpec.describe Kaiser do
             unwrapped_output = lines[0, args_line].join
 
             # Remove all newlines because Optimist will wordwrap according to terminal size
-            unwrapped_output.gsub!("\n", ' ')
-            unwrapped_usage = subject.usage.gsub("\n", ' ')
+            unwrapped_output.tr!("\n", ' ')
+            unwrapped_usage = subject.usage.tr("\n", ' ')
 
             # Now we can check is it's the same as usage.
             expect(unwrapped_output).to eq unwrapped_usage
