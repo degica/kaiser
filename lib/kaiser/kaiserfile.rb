@@ -14,11 +14,19 @@ module Kaiser
     def initialize(filename)
       Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
 
+      @plugins = {}
       @databases = {}
       @attach_mounts = []
       @params_array = []
       @server_type = :unknown
+
       instance_eval File.read(filename), filename
+    end
+
+    def plugin(name)
+      raise "Plugin #{name} is not loaded." unless Plugin.all_plugins.key?(name)
+
+      Plugin.all_plugins[name].new(self).on_init
     end
 
     def dockerfile(name, options = {})
