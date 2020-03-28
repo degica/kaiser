@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Kaiser
-  # To implement a Kaiser plugin inherit you must inherit from this class.
+  # To implement a Kaiser plugin you must inherit from this class.
   # For example,
   #
   #   class MyPlugin < Plugin
