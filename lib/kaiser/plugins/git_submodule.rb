@@ -10,7 +10,7 @@ module Kaiser
         # After that, the status command had removed the - for every submodule.
         # Therefore we just check if there's files in the directory instead.
         dir = line.strip.split(' ')[1]
-        if Dir.empty?(dir) # rubocop:disable Style/Next
+        if !Dir.exist?(dir) || Dir.empty?(dir) # rubocop:disable Style/Next
           puts "Found uninitialized git submodule '#{dir}'"
           puts "please run 'git submodule update --init --recursive'"
           exit 1
