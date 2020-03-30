@@ -1,5 +1,6 @@
 # Kaiser
 
+
 Welcome to Kaiser! Kaiser will mind-control all your monsters and make them even more effective.
 
 Kaiser lets you define how an application starts, so trying out a web application simply reduces to a `kaiser up`
