@@ -14,7 +14,7 @@ RSpec.describe Kaiser::GitSubmodule do
     system <<-GIT_SETUP
     cd #{dummy_app}
     git init --quiet
-    git submodule --quiet add git@github.com:degica/degica.git degica
+    git submodule --quiet add https://github.com/degica/degica.git
     rm -rf degica
     GIT_SETUP
 
