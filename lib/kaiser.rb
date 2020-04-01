@@ -24,6 +24,7 @@ require 'kaiser/cmds/attach'
 require 'kaiser/cmds/login'
 require 'kaiser/cmds/show'
 require 'kaiser/cmds/set'
+require 'kaiser/cmds/root'
 
 # Kaiser
 module Kaiser
@@ -41,6 +42,7 @@ module Kaiser
     attach: Kaiser::Cmds::Attach,
     login: Kaiser::Cmds::Login,
     show: Kaiser::Cmds::Show,
-    set: Kaiser::Cmds::Set
+    set: Kaiser::Cmds::Set,
+    root: Kaiser::Cmds::Root
   }.freeze
 end
