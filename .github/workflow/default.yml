@@ -1,0 +1,48 @@
+---
+name: default
+jobs:
+  rspec:
+    container:
+      image: ruby:2.5
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: vendor/ruby
+        key: "${GITHUB_REF##*/}-vendor/ruby"
+        restore-keys: "${GITHUB_REF##*/}-vendor/ruby"
+    - name: setup
+      run: |-
+        ruby -v
+        which ruby
+        gem install bundler --no-document
+        bundle install --jobs $(nproc) --path vendor "{{ secrets.FLAGS[@] }}"
+    - name: script
+      run: bundle exec rspec
+  rubocop:
+    container:
+      image: ruby:2.5
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: vendor/ruby
+        key: "${GITHUB_REF##*/}-vendor/ruby"
+        restore-keys: "${GITHUB_REF##*/}-vendor/ruby"
+    - name: setup
+      run: |-
+        ruby -v
+        which ruby
+        gem install bundler --no-document
+        bundle install --jobs $(nproc) --path vendor "{{ secrets.FLAGS[@] }}"
+    - name: script
+      run: bundle exec rubocop
+'on':
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
