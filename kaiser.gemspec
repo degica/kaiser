@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Manage your monsters'
   spec.description   = 'Monster management system'
-  spec.homepage      = 'https://kaiser.pages.labs.degica.com'
+  spec.homepage      = 'https://github.com/kaiser'
   spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the
