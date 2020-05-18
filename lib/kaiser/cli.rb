@@ -496,24 +496,31 @@ module Kaiser
       if_container_dead Config.config[:shared_names][:nginx] do
         prepare_cert_volume!
       end
-      run_if_dead(
-        Config.config[:shared_names][:redis],
-        "docker run -d
-          --name #{Config.config[:shared_names][:redis]}
-          --network #{Config.config[:networkname]}
-          redis:alpine"
-      )
-      run_if_dead(
-        Config.config[:shared_names][:chrome],
-        "docker run -d
+      threads = []
+
+      threads << Thread.new do
+        run_if_dead(
+          Config.config[:shared_names][:redis],
+          "docker run -d
+            --name #{Config.config[:shared_names][:redis]}
+            --network #{Config.config[:networkname]}
+            redis:alpine"
+        )
+      end
+      threads << Thread.new do
+        run_if_dead(
+          Config.config[:shared_names][:chrome],
+          "docker run -d
           -p 5900:5900
           --name #{Config.config[:shared_names][:chrome]}
           --network #{Config.config[:networkname]}
           selenium/standalone-chrome-debug"
-      )
-      run_if_dead(
-        Config.config[:shared_names][:nginx],
-        "docker run -d
+        )
+      end
+      threads << Thread.new do
+        run_if_dead(
+          Config.config[:shared_names][:nginx],
+          "docker run -d
           -p 80:80
           -p 443:443
           -v #{Config.config[:shared_names][:certs]}:/etc/nginx/certs
@@ -522,10 +529,10 @@ module Kaiser
           --name #{Config.config[:shared_names][:nginx]}
           --network #{Config.config[:networkname]}
           jwilder/nginx-proxy"
-      )
-      run_if_dead(
-        Config.config[:shared_names][:dns],
-        "docker run -d
+        )
+        run_if_dead(
+          Config.config[:shared_names][:dns],
+          "docker run -d
           --name #{Config.config[:shared_names][:dns]}
           --network #{Config.config[:networkname]}
           --privileged
@@ -533,7 +540,8 @@ module Kaiser
           davidsiaw/docker-dns
           --domain #{http_suffix}
           --record :#{ip_of_container(Config.config[:shared_names][:nginx])}"
-      )
+        )
+      end
     end
 
     def ip_of_container(containername)
