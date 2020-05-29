@@ -1,0 +1,15 @@
+plugin :ruby
+
+dockerfile "Dockerfile.kaiser"
+
+db "mysql:5.6",
+  port: 3306,
+  data_dir: "/var/lib/mysql",
+  params: "-e MYSQL_ROOT_PASSWORD=test123",
+  commands: "",
+  waitscript: ""
+
+app_params "-e DATABASE_URL=mysql2://root:test123@<%= db_container_name %>"
+
+expose "9000"
+db_reset_command "echo 1"
