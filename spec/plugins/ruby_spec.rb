@@ -13,8 +13,6 @@ RSpec.describe Kaiser::Ruby do
     create_file 'Kaiserfile', kaiserfile
     create_file 'Dockerfile.kaiser', dockerfile
 
-    binding.pry
-
     expect(run_command('kaiser up -v'))
       .to include("Found uninitialized git submodule 'degica'")
   end

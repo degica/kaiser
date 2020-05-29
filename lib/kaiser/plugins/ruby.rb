@@ -11,7 +11,7 @@ module Kaiser
     def container_ruby_version
       dockerfile = @kaiserfile.docker_file_contents
       /FROM (?<container_base>[^\s]+)/ =~ dockerfile.each_line.first
-      raise 'Kaiser Ruby plugin cannot parse your Dockerfile' if container_base.nil?
+      raise 'Ruby plugin cannot parse dockerfile' if container_base.nil?
 
       `docker run --rm -it #{container_base} ruby -e 'puts RUBY_VERSION'`.chomp
     end
@@ -19,7 +19,7 @@ module Kaiser
     def default_volumes
       ruby_version = container_ruby_version.gsub(/[\.\s]/, '-')
 
-      <<-VOLUMES
+      <<~VOLUMES
       -v kaiser-bundle-#{ruby_version}:/usr/local/bundle
       -v kaiser-gems-#{ruby_version}:/root/.gem/specs
       VOLUMES

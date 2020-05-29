@@ -2,4 +2,4 @@ FROM ruby:alpine
 
 EXPOSE "3000"
 
-CMD ["ruby -run -ehttpd . -p3000"]
+CMD ["ruby", "-run", "-ehttpd", ".", "-p3000"]

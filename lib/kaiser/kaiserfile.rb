@@ -23,12 +23,10 @@ module Kaiser
 
       instance_eval File.read(filename), filename
 
-      @enabled_plugins.each { |name| Plugin.all_plugins[name].new(self).on_init }
+      @enabled_plugins.each { |name| init_plugin(name) }
     end
 
     def plugin(name)
-      raise "Plugin #{name} is not loaded." unless Plugin.loaded?(name)
-
       @enabled_plugins << name
     end
 
@@ -79,6 +77,14 @@ module Kaiser
       raise 'Valid server types are: [:http]' if value != :http
 
       @server_type = value
+    end
+
+    private
+
+    def init_plugin(name)
+      raise "Plugin #{name} is not loaded." unless Plugin.loaded?(name)
+
+      Plugin.all_plugins[name].new(self).on_init
     end
   end
 end
