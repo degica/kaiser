@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Kaiser::GitSubmodule do
+RSpec.describe Kaiser::Plugins::GitSubmodule do
   let(:kaiserfile) { 'plugin :git_submodule' }
 
   before { setup_dummy_app }
