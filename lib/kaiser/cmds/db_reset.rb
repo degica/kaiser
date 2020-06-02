@@ -13,7 +13,7 @@ module Kaiser
         EOS
       end
 
-      def execute(opts)
+      def execute(_opts)
         ensure_setup
         load_db(DEFAULT_DB_FILE)
       end

@@ -79,9 +79,9 @@ cmd = commands.first
 
 begin
   Kaiser::Cli.run_command(:"#{cmd}", global_opts)
-rescue Kaiser::Error => err
+rescue Kaiser::Error => e
   puts ''
-  puts err.message
+  puts e.message
 end
 
 puts ''

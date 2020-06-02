@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kaiser
   # Base class for Kaiser-related errors.
   class Error < StandardError

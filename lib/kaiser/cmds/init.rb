@@ -12,7 +12,7 @@ module Kaiser
         EOS
       end
 
-      def execute(opts)
+      def execute(_opts)
         return Optimist.die "Already initialized as #{envname}" if envname
 
         name = ARGV.shift

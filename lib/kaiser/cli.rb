@@ -346,21 +346,38 @@ module Kaiser
       return unless server_type == :http
 
       Config.info_out.puts 'Waiting for server to start...'
+
+      http_code_extractor = "curl -s -o /dev/null -I -w \"\%{http_code}\" http://#{app_container_name}:#{app_expose}"
+      unreachable_test = "#{http_code_extractor} | grep -q 000"
+
+      # This waitscript runs until curl returns a non-unreachable status code
+      # and then checks to see if its 200. If its not, it will raise an error.
       wait_script = <<-SCRIPT
         apk update
         apk add curl
-        until $(curl --output /dev/null --silent --head --fail http://#{app_container_name}:#{app_expose}); do
+        while #{unreachable_test}; do
             echo 'o'
             sleep 1
         done
-        echo '!'
+        echo '#{http_code_extractor}'
+        echo $(#{http_code_extractor})
+        if [ "$(#{http_code_extractor})" != "200" ]; then
+          echo $(#{http_code_extractor})
+        else
+          echo '!'
+        fi
       SCRIPT
       run_blocking_script('alpine', '', wait_script) do |line|
-        if line != '!' && container_dead?(app_container_name)
-          raise Kaiser::Error, 'App container died. Run `kaiser logs` to see why.'
-        end
+        # This script gets run every line that gets output.
+        # The '!' exclamation mark means success
+        # Three numbers means a status code has been returned
+        # If curl returns an error status the script will cut out and
+        # the app container died error will be displayed.
+        raise Kaiser::Error, "Failed with HTTP status: #{line}" if line =~ /^[0-9]{3}$/ && line != '200'
+        raise Kaiser::Error, 'App container died. Run `kaiser logs` to see why.' if line != '!' && container_dead?(app_container_name)
       end
-      Config.info_out.puts 'Started.'
+
+      Config.info_out.puts 'Started successfully!'
     end
 
     def wait_for_db
@@ -598,9 +615,7 @@ module Kaiser
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
       return if x.length.zero?
 
-      if x[0]['State'] && x[0]['State']['Running'] == true
-        CommandRunner.run Config.out, "docker kill #{container}"
-      end
+      CommandRunner.run Config.out, "docker kill #{container}" if x[0]['State'] && x[0]['State']['Running'] == true
       CommandRunner.run Config.out, "docker rm #{container}" if x[0]['State']
     end
   end

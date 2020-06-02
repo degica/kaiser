@@ -11,7 +11,7 @@ module Kaiser
         EOS
       end
 
-      def execute(opts)
+      def execute(_opts)
         ensure_setup
         FileUtils.rm db_image_path('.default') if File.exist?(db_image_path('.default'))
         setup_db

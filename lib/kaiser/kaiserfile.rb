@@ -9,7 +9,6 @@ module Kaiser
                   :docker_build_args,
                   :database,
                   :port,
-                  :params,
                   :database_reset_command,
                   :attach_mounts,
                   :shell_rc,
@@ -21,8 +20,16 @@ module Kaiser
       @shell_rc = '/etc/profile'
       @databases = {}
       @attach_mounts = []
+      @params_array = []
       @server_type = :unknown
+
       instance_eval File.read(filename), filename
+    end
+
+    def plugin(name)
+      raise "Plugin #{name} is not loaded." unless Plugin.loaded?(name)
+
+      Plugin.all_plugins[name].new(self).on_init
     end
 
     def dockerfile(name, options = {})
@@ -65,7 +72,11 @@ module Kaiser
     end
 
     def app_params(value)
-      @params = value
+      @params_array << value
+    end
+
+    def params
+      @params_array.join(' ')
     end
 
     def db_reset_command(value)

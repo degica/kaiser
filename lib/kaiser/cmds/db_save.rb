@@ -16,7 +16,7 @@ module Kaiser
         EOS
       end
 
-      def execute(opts)
+      def execute(_opts)
         ensure_setup
         name = ARGV.shift || DEFAULT_DB_FILE
         save_db(name)

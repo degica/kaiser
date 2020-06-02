@@ -12,14 +12,14 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Manage your monsters'
   spec.description   = 'Monster management system'
-  spec.homepage      = 'https://kaiser.pages.labs.degica.com'
+  spec.homepage      = 'https://github.com/kaiser'
   spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the
   # 'allowed_push_host' to allow pushing to a single host or delete this section
   # to allow pushing to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = 'https://gems.labs.degica.com'
+    spec.metadata['allowed_push_host'] = 'https://rubygems.org'
   else
     raise 'RubyGems 2.0 or newer is required to protect against ' \
       'public gem pushes.'
@@ -35,6 +35,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'aruba'
   spec.add_development_dependency 'aruba-rspec'
   spec.add_development_dependency 'factory_bot', '~> 4.0'
-  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
+  spec.add_development_dependency 'rubocop'
 end
