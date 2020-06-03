@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Kaiser
-  VERSION = '0.4.113'
+  VERSION = '0.5.101'
 end
