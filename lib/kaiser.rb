@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+$LOAD_PATH.unshift '/home/rramsden/Degica/kaiser/lib'
+require 'pry'
 
 require 'kaiser/error'
 require 'kaiser/version'
@@ -28,6 +30,7 @@ require 'kaiser/cmds/root'
 
 require 'kaiser/plugin'
 require 'kaiser/plugins/git_submodule'
+require 'kaiser/plugins/ruby'
 
 # Kaiser
 module Kaiser

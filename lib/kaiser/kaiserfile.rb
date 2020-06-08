@@ -9,7 +9,8 @@ module Kaiser
                   :port,
                   :database_reset_command,
                   :attach_mounts,
-                  :server_type
+                  :server_type,
+                  :enabled_plugins
 
     def initialize(filename)
       Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
@@ -18,14 +19,15 @@ module Kaiser
       @attach_mounts = []
       @params_array = []
       @server_type = :unknown
+      @enabled_plugins = []
 
       instance_eval File.read(filename), filename
+
+      @enabled_plugins.each { |name| init_plugin(name) }
     end
 
     def plugin(name)
-      raise "Plugin #{name} is not loaded." unless Plugin.loaded?(name)
-
-      Plugin.all_plugins[name].new(self).on_init
+      @enabled_plugins << name
     end
 
     def dockerfile(name, options = {})
@@ -75,6 +77,14 @@ module Kaiser
       raise 'Valid server types are: [:http]' if value != :http
 
       @server_type = value
+    end
+
+    private
+
+    def init_plugin(name)
+      raise "Plugin #{name} is not loaded." unless Plugin.loaded?(name)
+
+      Plugin.all_plugins[name].new(self).on_init
     end
   end
 end

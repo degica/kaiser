@@ -8,7 +8,7 @@ require 'json'
 require 'pty'
 require 'erb'
 
-require 'kaiser'
+require_relative '../lib/kaiser'
 
 sub_command_strings = Kaiser::SUB_COMMANDS.keys.map(&:to_s)
 
