@@ -32,6 +32,10 @@ module Kaiser
       instance_eval File.read(filename), filename
     end
 
+    def validate!
+      raise 'No dockerfile specified.' if @docker_file_contents.nil?
+    end
+
     def plugin(name)
       raise "Plugin #{name} is not loaded." unless Plugin.loaded?(name)
 
