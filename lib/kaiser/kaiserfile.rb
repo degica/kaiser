@@ -14,10 +14,20 @@ module Kaiser
     def initialize(filename)
       Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
 
-      @databases = {}
+      @database = {
+        image: 'alpine',
+        port: 1234,
+        data_dir: '/tmp/data',
+        params: '',
+        commands: 'echo "no db"',
+        waitscript: 'echo "no dbwait"',
+        waitscript_params: ''
+      }
       @attach_mounts = []
       @params_array = []
       @server_type = :unknown
+      @database_reset_command = 'echo "no db to reset"'
+      @port = 1234
 
       instance_eval File.read(filename), filename
     end

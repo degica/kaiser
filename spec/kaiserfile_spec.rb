@@ -37,6 +37,21 @@ RSpec.describe Kaiser::Kaiserfile do
   end
 
   context '#db' do
+    context 'with no db script' do
+      let(:kaiserfile) { '' }
+
+      it 'sets up the database variable to defaults' do
+        kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
+        expect(kaiserfile.database[:image]).to eq 'alpine'
+        expect(kaiserfile.database[:data_dir]).to eq '/tmp/data'
+        expect(kaiserfile.database[:port]).to eq 1234
+        expect(kaiserfile.database[:params]).to eq ''
+        expect(kaiserfile.database[:commands]).to eq 'echo "no db"'
+        expect(kaiserfile.database[:waitscript]).to eq 'echo "no dbwait"'
+        expect(kaiserfile.database[:waitscript_params]).to eq ''
+      end
+    end
+
     context 'with a simple db script' do
       let(:kaiserfile) { <<-KAISERFILE }
         db 'somedb:version',
