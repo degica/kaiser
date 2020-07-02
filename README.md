@@ -97,6 +97,33 @@ open http://myapp.lvh.me
 
 And enjoy previewing your app!
 
+#### Anatomy of a Kaiserfile
+
+A Kaiserfile is made up of statements, which are different commands followed by some parameters. Each command is just a ruby method so you can call it that way. Only the `dockerfile` command is required. All the other commands are either not required or have defaults.
+
+- `plugin` - Takes 1 parameter: the name of the plugin you wish to use in this Kaiserfile.
+- `dockerfile` - This command is always required. Takes 1 parameter: the name of the Dockerfile you want to use with this Kaiserfile. You only need to use this command once. Using it multiple times will simply cause the last command to be used.
+- `attach_mount` - Takes 2 parameters: The first parameter is the relative path of a folder or a file outside the container and the second parameter is its absolute path inside the container. This is only used when `kaiser attach` or `kaiser up -a` is used. This will mount the file or folder inside the container and sync their contents. If the file you specified does not exist, Kaiser will create a folder where you specify it and then mount that folder inside the container.
+- `expose` - Takes 1 parameter: The port of the server running inside the container. This port is not exposed on the host, so it will not occupy a port on the computer you run kaiser on. Instead, Kaiser will select a random port on the host computer to forward traffic to and from.
+- `app_params` - Takes 1 parameter: A string of parameters to the `docker run` command to add custom environment variables with. Please refer to the docker documentation to see what kinds of parameters you can pass to the `docker run` command. By default this is just an empty string.
+- `type` - Takes 1 parameter: Right now the only parameter it can take is `:http`. If this parameter is specified, kaiser will poll the application until it receives a 200 status code before it closes when you use `kaiser up` If it doesn't it will close with a status code of 1.
+- `db_reset_command` - Takes 1 parameter: A command to reset the database. This command is optional. By default this parameter is `echo "no db to reset"`
+- `db` - Takes 1 parameter in the form of a hash. The default value of the hash is as follows:
+
+```
+{
+  image: 'alpine',
+  port: 1234,
+  data_dir: '/tmp/data',
+  params: '',
+  commands: 'echo "no db"',
+  waitscript: 'echo "no dbwait"',
+  waitscript_params: ''
+}
+```
+
+You can use this to customize the database that you wish to use with your server.
+
 ### Alternative Kaiserfile
 
 If you want change your dev environment for a project, but don't want to overwrite the project's Kaiserfile/Dockerfile,

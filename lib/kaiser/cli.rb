@@ -17,6 +17,8 @@ module Kaiser
       @config = Config.config
       @out = Config.out
       @info_out = Config.info_out
+
+      @kaiserfile.validate!
     end
 
     # At first I did this in the constructor but the problem with that is Optimist
