@@ -27,7 +27,6 @@ require 'kaiser/cmds/set'
 require 'kaiser/cmds/root'
 
 require 'kaiser/plugin'
-require 'kaiser/plugins/git_submodule'
 
 # Kaiser
 module Kaiser
