@@ -30,7 +30,6 @@ require 'kaiser/cmds/chown'
 require 'kaiser/cmds/sudo'
 
 require 'kaiser/plugin'
-require 'kaiser/plugins/git_submodule'
 
 # Kaiser
 module Kaiser

@@ -27,6 +27,7 @@ module Kaiser
     end
 
     def plugin(name)
+      require "kaiser/plugins/#{name}"
       raise "Plugin #{name} is not loaded." unless Plugin.loaded?(name)
 
       Plugin.all_plugins[name].new(self).on_init
