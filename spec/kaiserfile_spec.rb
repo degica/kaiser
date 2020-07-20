@@ -170,4 +170,39 @@ RSpec.describe Kaiser::Kaiserfile do
       end
     end
   end
+
+  context '#service' do
+    context 'when service is specified' do
+      let(:kaiserfile) { "service 'santaclaus'" }
+
+      it 'adds a service' do
+        kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
+        expect(kaiserfile.services).to eq [
+          { 'santaclaus' => { image: 'santaclaus' } }
+        ]
+      end
+    end
+
+    context 'when service is specified with image name' do
+      let(:kaiserfile) { "service 'santaclaus', image: 'northpole/santaclaus'" }
+
+      it 'adds a service with the image name' do
+        kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
+        expect(kaiserfile.services).to eq [
+          { 'santaclaus' => { image: 'northpole/santaclaus' } }
+        ]
+      end
+    end
+
+    context 'when service is specified with image name and tag' do
+      let(:kaiserfile) { "service 'santaclaus', image: 'northpole/santaclaus:last_christmas'" }
+
+      it 'adds a service with the image name' do
+        kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
+        expect(kaiserfile.services).to eq [
+          { 'santaclaus' => { image: 'northpole/santaclaus:last_christmas' } }
+        ]
+      end
+    end
+  end
 end
