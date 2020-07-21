@@ -56,3 +56,9 @@ module Kaiser
     end
   end
 end
+
+# Little stub to initialize the namespace
+module Kaiser
+  module Plugins
+  end
+end
