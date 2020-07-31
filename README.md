@@ -117,6 +117,21 @@ See further below to find available plugins and their usage
 dockerfile 'Dockerfile'
 ```
 
+- `service` - This command is optional. Use it to define additional containers that should be set up along with your environment,. You can use it multiple times to define multiple services. It takes multiple parameters, a name parameter which is required and optional parameters.
+
+```ruby
+# example that sets up a redis server for your app
+service 'redis'
+```
+
+The following parameters are allowed for this command:
+- image
+
+```ruby
+# example that tells it to use the redis server with the alpine tag from 'myrepo'
+service 'redis', image: 'myrepo/redis:alpine'
+```
+
 - `attach_mount` - Takes 2 parameters: The first parameter is the relative path of a folder or a file outside the container and the second parameter is its absolute path inside the container. This is only used when `kaiser attach` or `kaiser up -a` is used. This will mount the file or folder inside the container and sync their contents. If the file you specified does not exist, Kaiser will create a folder where you specify it and then mount that folder inside the container. You can specify as many of these as you want.
 
 ```ruby

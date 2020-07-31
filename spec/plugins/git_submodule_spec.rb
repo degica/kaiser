@@ -18,7 +18,7 @@ RSpec.describe 'Kaiser::Plugins::GitSubmodule' do
     rm -rf degica
     GIT_SETUP
 
-    expect(run_command('kaiser up -v'))
+    expect(run_cmd('kaiser up -v'))
       .to include("Found uninitialized git submodule 'degica'")
   end
 end

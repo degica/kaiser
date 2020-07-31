@@ -33,9 +33,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport'
   spec.add_dependency 'optimist'
 
-  spec.add_development_dependency 'aruba'
+  spec.add_development_dependency 'aruba', '~> 0.14.6'
   spec.add_development_dependency 'aruba-rspec'
   spec.add_development_dependency 'factory_bot', '~> 4.0'
+  spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop'

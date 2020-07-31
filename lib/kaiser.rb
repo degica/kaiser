@@ -28,6 +28,8 @@ require 'kaiser/cmds/root'
 
 require 'kaiser/plugin'
 
+require 'kaiser/service'
+
 # Kaiser
 module Kaiser
   SUB_COMMANDS = {
