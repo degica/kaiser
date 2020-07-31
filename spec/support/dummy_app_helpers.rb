@@ -4,7 +4,7 @@ require 'open3'
 
 module DummyAppHelpers
   # Run a command with Kaiser
-  def run_command(args)
+  def run_cmd(args)
     gem_root = Dir.pwd
     Dir.chdir(dummy_app) do
       output = Open3.popen3("#{gem_root}/exe/kaiser #{args}")
