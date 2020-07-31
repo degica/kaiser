@@ -29,7 +29,7 @@ module Kaiser
       @server_type = :unknown
       @database_reset_command = 'echo "no db to reset"'
       @port = 1234
-      @services = []
+      @services = {}
 
       instance_eval File.read(filename), filename
     end
@@ -95,7 +95,9 @@ module Kaiser
     end
 
     def service(name, image: name)
-      @services << { name => { image: image } }
+      raise "duplicate service #{name.inspect}" if @services.key?(name)
+
+      @services[name] = { image: image }
     end
   end
 end

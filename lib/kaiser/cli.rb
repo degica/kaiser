@@ -371,7 +371,7 @@ module Kaiser
     end
 
     def services
-      @services ||= Config.kaiserfile.services.map { |info| Service.new(envname, info) }
+      @services ||= Config.kaiserfile.services.map { |name, info| Service.new(envname, name, info) }
     end
 
     def db_port

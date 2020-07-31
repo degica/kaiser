@@ -12,14 +12,14 @@ RSpec.describe Kaiser::Kaiserfile do
 
   before do
     allow(File).to receive(:exist?) { true }
-    allow(File).to receive(:read).with(kaiserfile_name) { kaiserfile }
-    allow(File).to receive(:read).with(dockerfile_name) { dockerfile }
+    allow(File).to receive(:read).with(kaiserfile_name) { kaiserfile_contents }
+    allow(File).to receive(:read).with(dockerfile_name) { dockerfile_contents }
   end
 
   context '#dockerfile' do
     let(:dockerfile_name) { 'Dockerfile.kaiser' }
-    let(:dockerfile) { 'FROM ruby:alpine' }
-    let(:kaiserfile) { 'dockerfile "Dockerfile.kaiser"' }
+    let(:dockerfile_contents) { 'FROM ruby:alpine' }
+    let(:kaiserfile_contents) { 'dockerfile "Dockerfile.kaiser"' }
 
     it 'loads the specified dockerfile' do
       kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
@@ -28,7 +28,7 @@ RSpec.describe Kaiser::Kaiserfile do
   end
 
   context '#attach_mount' do
-    let(:kaiserfile) { 'attach_mount "bin", "/app/bin"' }
+    let(:kaiserfile_contents) { 'attach_mount "bin", "/app/bin"' }
 
     it 'records the required mount attachments' do
       kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
@@ -38,7 +38,7 @@ RSpec.describe Kaiser::Kaiserfile do
 
   context '#db' do
     context 'with no db script' do
-      let(:kaiserfile) { '' }
+      let(:kaiserfile_contents) { '' }
 
       it 'sets up the database variable to defaults' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
@@ -53,7 +53,7 @@ RSpec.describe Kaiser::Kaiserfile do
     end
 
     context 'with a simple db script' do
-      let(:kaiserfile) { <<-KAISERFILE }
+      let(:kaiserfile_contents) { <<-KAISERFILE }
         db 'somedb:version',
            data_dir: '/var/lib/somedb/data',
            port: 1234
@@ -69,7 +69,7 @@ RSpec.describe Kaiser::Kaiserfile do
     end
 
     context 'with a simple db script with a startup command' do
-      let(:kaiserfile) { <<-KAISERFILE }
+      let(:kaiserfile_contents) { <<-KAISERFILE }
         db 'somedb:version',
            data_dir: '/var/lib/dbdb',
            port: 1414,
@@ -83,7 +83,7 @@ RSpec.describe Kaiser::Kaiserfile do
     end
 
     context 'with a simple db script with a waitscript' do
-      let(:kaiserfile) { <<-KAISERFILE }
+      let(:kaiserfile_contents) { <<-KAISERFILE }
         db 'somedb:version',
            data_dir: '/var/lib/dbdb',
            port: 1414,
@@ -97,7 +97,7 @@ RSpec.describe Kaiser::Kaiserfile do
     end
 
     context 'with a simple db script with a waitscript and parameters to the waitscript' do
-      let(:kaiserfile) { <<-KAISERFILE }
+      let(:kaiserfile_contents) { <<-KAISERFILE }
         db 'somedb:version',
            data_dir: '/var/lib/dbdb',
            port: 1414,
@@ -113,7 +113,7 @@ RSpec.describe Kaiser::Kaiserfile do
   end
 
   context '#expose' do
-    let(:kaiserfile) { 'expose 1337' }
+    let(:kaiserfile_contents) { 'expose 1337' }
 
     it 'records the port used by the application' do
       kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
@@ -122,7 +122,7 @@ RSpec.describe Kaiser::Kaiserfile do
   end
 
   context '#app_params' do
-    let(:kaiserfile) { 'app_params "--user me"' }
+    let(:kaiserfile_contents) { 'app_params "--user me"' }
 
     it 'records the parameters to the docker container' do
       kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
@@ -130,7 +130,7 @@ RSpec.describe Kaiser::Kaiserfile do
     end
 
     context 'with two calls to app_params' do
-      let(:kaiserfile) { <<~SCRIPT }
+      let(:kaiserfile_contents) { <<~SCRIPT }
         app_params "-e SOMEPARAM=1"
         app_params "-e ANOTHERPARAM=2"
       SCRIPT
@@ -144,7 +144,7 @@ RSpec.describe Kaiser::Kaiserfile do
   end
 
   context '#db_reset_command' do
-    let(:kaiserfile) { 'db_reset_command "explosion"' }
+    let(:kaiserfile_contents) { 'db_reset_command "explosion"' }
 
     it 'records the database reset command' do
       kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
@@ -154,7 +154,7 @@ RSpec.describe Kaiser::Kaiserfile do
 
   context '#type' do
     context 'when http is specified' do
-      let(:kaiserfile) { 'type :http' }
+      let(:kaiserfile_contents) { 'type :http' }
       it 'sets server type to http' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
         expect(kaiserfile.server_type).to eq :http
@@ -162,7 +162,7 @@ RSpec.describe Kaiser::Kaiserfile do
     end
 
     context 'when anything else specified' do
-      let(:kaiserfile) { 'type :meow' }
+      let(:kaiserfile_contents) { 'type :meow' }
       it 'throws an error' do
         expect do
           Kaiser::Kaiserfile.new('Kaiserfile')
@@ -173,35 +173,29 @@ RSpec.describe Kaiser::Kaiserfile do
 
   context '#service' do
     context 'when service is specified' do
-      let(:kaiserfile) { "service 'santaclaus'" }
+      let(:kaiserfile_contents) { "service 'santaclaus'" }
 
       it 'adds a service' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
-        expect(kaiserfile.services).to eq [
-          { 'santaclaus' => { image: 'santaclaus' } }
-        ]
+        expect(kaiserfile.services).to eq('santaclaus' => { image: 'santaclaus' })
       end
     end
 
     context 'when service is specified with image name' do
-      let(:kaiserfile) { "service 'santaclaus', image: 'northpole/santaclaus'" }
+      let(:kaiserfile_contents) { "service 'santaclaus', image: 'northpole/santaclaus'" }
 
       it 'adds a service with the image name' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
-        expect(kaiserfile.services).to eq [
-          { 'santaclaus' => { image: 'northpole/santaclaus' } }
-        ]
+        expect(kaiserfile.services).to eq('santaclaus' => { image: 'northpole/santaclaus' })
       end
     end
 
     context 'when service is specified with image name and tag' do
-      let(:kaiserfile) { "service 'santaclaus', image: 'northpole/santaclaus:last_christmas'" }
+      let(:kaiserfile_contents) { "service 'santaclaus', image: 'northpole/santaclaus:last_christmas'" }
 
       it 'adds a service with the image name' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
-        expect(kaiserfile.services).to eq [
-          { 'santaclaus' => { image: 'northpole/santaclaus:last_christmas' } }
-        ]
+        expect(kaiserfile.services).to eq('santaclaus' => { image: 'northpole/santaclaus:last_christmas' })
       end
     end
   end

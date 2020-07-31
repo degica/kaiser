@@ -3,13 +3,12 @@
 module Kaiser
   # This class describes an app-specific service
   class Service
-    def initialize(envname, service_info)
-      @envname = envname
-      @service_info = service_info
-    end
+    attr_reader :name
 
-    def name
-      @service_info.keys.first
+    def initialize(envname, name, service_info)
+      @envname = envname
+      @name = name
+      @service_info = service_info
     end
 
     def shared_name
@@ -17,7 +16,7 @@ module Kaiser
     end
 
     def image
-      @service_info.values.first[:image]
+      @service_info[:image]
     end
   end
 end
