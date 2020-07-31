@@ -103,7 +103,7 @@ A Kaiserfile is made up of statements, which are different commands followed by 
 
 - `plugin` - Takes 1 parameter: the name of the plugin you wish to use in this Kaiserfile.
 
-```
+```ruby
 # Example
 plugin :git_submodule
 ```
@@ -112,42 +112,42 @@ See further below to find available plugins and their usage
 
 - `dockerfile` - This command is always required. Takes 1 parameter: the name of the Dockerfile you want to use with this Kaiserfile. You only need to use this command once. Using it multiple times will simply cause the last command to be used. It takes relative paths and the paths are relative to where you run Kaiser.
 
-```
+```ruby
 # Example
 dockerfile 'Dockerfile'
 ```
 
 - `attach_mount` - Takes 2 parameters: The first parameter is the relative path of a folder or a file outside the container and the second parameter is its absolute path inside the container. This is only used when `kaiser attach` or `kaiser up -a` is used. This will mount the file or folder inside the container and sync their contents. If the file you specified does not exist, Kaiser will create a folder where you specify it and then mount that folder inside the container. You can specify as many of these as you want.
 
-```
+```ruby
 # Example to mount the `app` directory into the container's `/srv/files/app`
 attach_mount 'app', '/srv/files/app'
 ```
 
 - `expose` - Takes 1 parameter: The port of the server running inside the container. This port is not exposed on the host, so it will not occupy a port on the computer you run kaiser on. Instead, Kaiser will select a random port on the host computer to forward traffic to and from. You can only use this statement once. If you have multiple of these statements the last one will be used.
 
-```
+```ruby
 # Example to expose the port 3636
 expose 3636
 ```
 
 - `app_params` - Takes 1 parameter: A string of parameters to the `docker run` command to add custom environment variables with. Please refer to the docker documentation to see what kinds of parameters you can pass to the `docker run` command. By default this is just an empty string. You can only pass one of these. Any newline characters in the string will be converted into spaces.
 
-```
+```ruby
 # Example
 app_params '-e INTERACTIVE=no'
 ```
 
 - `type` - Takes 1 parameter: Right now the only parameter it can take is `:http`. If this parameter is specified, kaiser will poll the application until it receives a 200 status code before it closes when you use `kaiser up` If it doesn't it will close with a status code of 1.
 
-```
+```ruby
 # Example
 type :http
 ```
 
 - `db_reset_command` - Takes 1 parameter: A command to reset the database. This command is optional. By default this parameter is `echo "no db to reset"`. You can only specify one of these. If you have multiple of these commands only the last one will be used.
 
-```
+```ruby
 # Example if running this command drops the db and recreates it.
 db_reset_command 'rake db:reset'
 ```
@@ -156,7 +156,7 @@ db_reset_command 'rake db:reset'
 
 (You do not have to use this strictly, see the Database Plugin below to see an easier way to include MySQL and Postgres in your environment)
 
-```
+```ruby
 # Default settings
 {
   image: 'alpine',
@@ -342,7 +342,7 @@ This plugin ensures that any submodules your repo has are checked out. If they a
 
 Usage:
 
-```
+```ruby
 plugin :git_submodule
 ```
 
@@ -354,7 +354,7 @@ This plugin allows you to specify well known DBs (MySQL and PostgresSQL) with de
 
 Usage:
 
-```
+```ruby
 # Simplest usage
 plugin :database
 
@@ -363,7 +363,7 @@ def_db :mysql
 
 If for example you wish to use a different root password, simply go
 
-```
+```ruby
 plugin :database
 
 def_db mysql: { root_password: 'extremesecret' }
@@ -371,7 +371,7 @@ def_db mysql: { root_password: 'extremesecret' }
 
 Sometimes you want to use a specific version for testing. You can set up the version by going
 
-```
+```ruby
 plugin :database
 
 def_db postgres: { version: '9.4' }
@@ -379,7 +379,7 @@ def_db postgres: { version: '9.4' }
 
 You can also pass startup parameters to your database server:
 
-```
+```ruby
 plugin :database
 
 def_db mysql: { parameters: '--verbose' }
