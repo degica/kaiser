@@ -12,18 +12,34 @@ module Kaiser
                   :database_reset_command,
                   :attach_mounts,
                   :shell_rc,
-                  :server_type
+                  :server_type,
+                  :services
 
     def initialize(filename)
       Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
 
       @shell_rc = '/etc/profile'
-      @databases = {}
+      @database = {
+        image: 'alpine',
+        port: 1234,
+        data_dir: '/tmp/data',
+        params: '',
+        commands: 'echo "no db"',
+        waitscript: 'echo "no dbwait"',
+        waitscript_params: ''
+      }
       @attach_mounts = []
       @params_array = []
       @server_type = :unknown
+      @database_reset_command = 'echo "no db to reset"'
+      @port = 1234
+      @services = {}
 
       instance_eval File.read(filename), filename
+    end
+
+    def validate!
+      raise 'No dockerfile specified.' if @docker_file_contents.nil?
     end
 
     def plugin(name)
@@ -88,6 +104,12 @@ module Kaiser
       raise 'Valid server types are: [:http]' if value != :http
 
       @server_type = value
+    end
+
+    def service(name, image: name)
+      raise "duplicate service #{name.inspect}" if @services.key?(name)
+
+      @services[name] = { image: image }
     end
   end
 end

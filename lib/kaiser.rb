@@ -31,6 +31,8 @@ require 'kaiser/cmds/sudo'
 
 require 'kaiser/plugin'
 
+require 'kaiser/service'
+
 # Kaiser
 module Kaiser
   SUB_COMMANDS = {

@@ -19,6 +19,8 @@ module Kaiser
       @config = Config.config
       @out = Config.out
       @info_out = Config.info_out
+
+      @kaiserfile.validate!
     end
 
     # At first I did this in the constructor but the problem with that is Optimist
@@ -94,15 +96,30 @@ module Kaiser
       output
     end
 
-    def down
-      stop_db
-      stop_app
-      delete_db_volume
-    end
-
     def stop_app
       Config.info_out.puts 'Stopping application'
       killrm app_container_name
+      stop_services
+    end
+
+    def start_services
+      services.each do |service|
+        Config.info_out.puts "Starting service: #{service.name}"
+        run_if_dead(
+          service.shared_name,
+          "docker run -d
+            --name #{service.shared_name}
+            --network #{Config.config[:networkname]}
+            #{service.image}"
+        )
+      end
+    end
+
+    def stop_services
+      services.each do |service|
+        Config.info_out.puts "Stopping service: #{service.name}"
+        killrm service.shared_name
+      end
     end
 
     private
@@ -272,6 +289,8 @@ module Kaiser
     end
 
     def start_app
+      start_services
+
       Config.info_out.puts 'Starting up application'
       killrm app_container_name
       CommandRunner.run! Config.out, "docker run -d
@@ -388,6 +407,10 @@ module Kaiser
 
     def network_name
       Config.config[:networkname]
+    end
+
+    def services
+      @services ||= Config.kaiserfile.services.map { |name, info| Service.new(envname, name, info) }
     end
 
     def db_port
