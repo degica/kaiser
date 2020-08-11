@@ -7,18 +7,42 @@ module Kaiser
                   :docker_build_args,
                   :database,
                   :port,
-                  :params,
                   :database_reset_command,
                   :attach_mounts,
-                  :server_type
+                  :server_type,
+                  :services
 
     def initialize(filename)
       Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
 
-      @databases = {}
+      @database = {
+        image: 'alpine',
+        port: 1234,
+        data_dir: '/tmp/data',
+        params: '',
+        commands: 'echo "no db"',
+        waitscript: 'echo "no dbwait"',
+        waitscript_params: ''
+      }
       @attach_mounts = []
+      @params_array = []
       @server_type = :unknown
+      @database_reset_command = 'echo "no db to reset"'
+      @port = 1234
+      @services = {}
+
       instance_eval File.read(filename), filename
+    end
+
+    def validate!
+      raise 'No dockerfile specified.' if @docker_file_contents.nil?
+    end
+
+    def plugin(name)
+      require "kaiser/plugins/#{name}"
+      raise "Plugin #{name} is not loaded." unless Plugin.loaded?(name)
+
+      Plugin.all_plugins[name].new(self).on_init
     end
 
     def dockerfile(name, options = {})
@@ -53,7 +77,11 @@ module Kaiser
     end
 
     def app_params(value)
-      @params = value
+      @params_array << value
+    end
+
+    def params
+      @params_array.join(' ')
     end
 
     def db_reset_command(value)
@@ -64,6 +92,12 @@ module Kaiser
       raise 'Valid server types are: [:http]' if value != :http
 
       @server_type = value
+    end
+
+    def service(name, image: name)
+      raise "duplicate service #{name.inspect}" if @services.key?(name)
+
+      @services[name] = { image: image }
     end
   end
 end

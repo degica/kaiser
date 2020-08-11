@@ -12,7 +12,9 @@ module Kaiser
       end
 
       def execute(_opts)
-        down
+        stop_db
+        stop_app
+        delete_db_volume
       end
     end
   end
