@@ -330,6 +330,7 @@ module Kaiser
       CommandRunner.run! Config.out, "docker cp .after_start_script #{app_container_name}:/tmp"
       CommandRunner.run! Config.out, "docker exec -t --user=root #{app_container_name} chmod +x /tmp/.after_start_script"
       CommandRunner.run! Config.out, "docker exec -t #{app_container_name} /tmp/.after_start_script"
+      CommandRunner.run! Config.out, "rm .after_start_script"
 
       Config.info_out.puts 'Started successfully!'
     end
