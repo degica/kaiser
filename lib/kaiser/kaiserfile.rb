@@ -10,7 +10,8 @@ module Kaiser
                   :database_reset_command,
                   :attach_mounts,
                   :server_type,
-                  :services
+                  :services,
+                  :after_start_script
 
     def initialize(filename)
       Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
@@ -30,6 +31,7 @@ module Kaiser
       @database_reset_command = 'echo "no db to reset"'
       @port = 1234
       @services = {}
+      @after_start_script = ''
 
       instance_eval File.read(filename), filename
     end
@@ -92,6 +94,10 @@ module Kaiser
       raise 'Valid server types are: [:http]' if value != :http
 
       @server_type = value
+    end
+
+    def after_start(script)
+      @after_start_script = script
     end
 
     def service(name, image: name)
