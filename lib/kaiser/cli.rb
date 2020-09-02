@@ -229,14 +229,14 @@ module Kaiser
       db_image_path('.default')
     end
 
-    def attach_app
+    def attach_app(additional_params = '')
       cmd = (ARGV || []).join(' ')
       killrm app_container_name
 
       attach_mounts = Config.kaiserfile.attach_mounts
       volumes = attach_mounts.map { |from, to| "-v #{`pwd`.chomp}/#{from}:#{to}" }.join(' ')
 
-      system "docker run -ti
+      command = "docker run -ti
         --name #{app_container_name}
         --network #{network_name}
         --dns #{ip_of_container(Config.config[:shared_names][:dns])}
@@ -247,12 +247,17 @@ module Kaiser
         -e VIRTUAL_PORT=#{app_expose}
         #{volumes}
         #{app_params}
+        #{additional_params}
         kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
+
+      Config.info_out.puts "> #{command}"
+
+      system command
 
       Config.out.puts 'Cleaning up...'
     end
 
-    def start_app
+    def start_app(additional_params = '')
       start_services
 
       Config.info_out.puts 'Starting up application'
@@ -267,6 +272,7 @@ module Kaiser
         -e VIRTUAL_HOST=#{envname}.#{http_suffix}
         -e VIRTUAL_PORT=#{app_expose}
         #{app_params}
+        #{additional_params}
         kaiser:#{envname}-#{current_branch}"
       wait_for_app
     end
