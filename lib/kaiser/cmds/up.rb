@@ -4,6 +4,8 @@ module Kaiser
   module Cmds
     class Up < Cli
       option :attach, "Bind mount the current source code directory in the app container (as the \`kaiser attach\` command would)", short: '-a'
+      option :volume, "Attach a volume to the app container", type: :string, multi: true
+      option :volumesfrom, "Attach a containers volumes to the app container", type: :string, multi: true
 
       def usage
         <<~EOS
@@ -21,10 +23,18 @@ module Kaiser
         setup_db
 
         if opts[:attach]
-          attach_app
+          attach_app("#{volume_params(opts)} #{volumesfrom_params(opts)}")
         else
-          start_app
+          start_app("#{volume_params(opts)} #{volumesfrom_params(opts)}")
         end
+      end
+
+      def volume_params(opts)
+        (opts[:volume] || []).map { |x| "-v #{x}" }.join(' ')
+      end
+
+      def volumesfrom_params(opts)
+        (opts[:volumesfrom] || []).map { |x| "--volumes-from #{x}" }.join(' ')
       end
 
       def setup_app
