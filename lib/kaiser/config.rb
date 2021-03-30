@@ -53,7 +53,7 @@ module Kaiser
 
       def migrate_dotted_config_files
         if File.exists?("#{@config_dir}/.config.yml")
-          `find #{@config_dir} -type f -name '.*' -execdir sh -c 'mv -i "$0" "./${0#./.}"' {} \;`
+          `find #{@config_dir} -type f -name '.*' -execdir sh -c 'mv -i "$0" "./${0#./.}"' {} \\;`
         end
       end
 
