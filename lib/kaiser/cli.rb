@@ -83,7 +83,7 @@ module Kaiser
       @subcommands.each do |name, klass|
         name_s = name.to_s
 
-        output += name_s + "\n"
+        output += "#{name_s}\n"
         output += name_s.gsub(/./, '-')
         output += "\n"
         output += klass.usage
@@ -186,7 +186,7 @@ module Kaiser
         -v #{file}:#{file}
         ruby:alpine
         tar xvjf #{file} -C #{db_data_directory}
-          --strip #{db_data_directory.scan(%r{\/}).count}"
+          --strip #{db_data_directory.scan(%r{/}).count}"
     end
 
     def stop_db
