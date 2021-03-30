@@ -18,8 +18,10 @@ module Kaiser
         @work_dir = work_dir
         @config_dir = "#{ENV['HOME']}/.kaiser"
 
+        migrate_dotted_config_files
+
         FileUtils.mkdir_p @config_dir
-        @config_file = "#{@config_dir}/.config.yml"
+        @config_file = "#{@config_dir}/config.yml"
         @kaiserfile = Kaiserfile.new("#{@work_dir}/Kaiserfile")
 
         @config = {
@@ -47,6 +49,12 @@ module Kaiser
 
       def always_verbose?
         @config[:always_verbose]
+      end
+
+      def migrate_dotted_config_files
+        if File.exists?("#{@config_dir}/.config.yml")
+          `find #{@config_dir} -type f -name '.*' -execdir sh -c 'mv -i "$0" "./${0#./.}"' {} \;`
+        end
       end
 
       def load_config
