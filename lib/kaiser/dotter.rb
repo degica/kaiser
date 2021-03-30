@@ -12,6 +12,7 @@ module Kaiser
     end
 
     # rubocop:disable Lint/UselessMethodDefinition
+    # If we remove this method rubocop complains about it not existing instead.
     def respond_to_missing?(name)
       super
     end
