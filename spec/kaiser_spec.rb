@@ -17,7 +17,7 @@ RSpec.describe Kaiser do
     it 'prints the full help message' do
       unwrapped_output = cmd_stdout.tr("\n", ' ')
 
-      Kaiser::SUB_COMMANDS.keys.each do |name|
+      Kaiser::SUB_COMMANDS.each_key do |name|
         expect(unwrapped_output).to include "- #{name}"
       end
     end

@@ -3,7 +3,7 @@
 module Kaiser
   # Prints properly after a dotter prints
   class AfterDotter
-    def initialize(channel: $stderr, dotter:)
+    def initialize(dotter:, channel: $stderr)
       @channel = channel
       @dotter = dotter
     end

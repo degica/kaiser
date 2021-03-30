@@ -20,8 +20,8 @@ Kaiser::SUB_COMMANDS.each { |k, v| Kaiser::Cli.register(k, v) }
 # the 'end parser hacks' comment are all hacks to marry the above two behaviours.
 
 global_opts = [
-  [:verbose, "Show Kaiser's debug output", short: '-v'],
-  [:quiet, 'Suppress all output', short: '-q']
+  [:verbose, "Show Kaiser's debug output", { short: '-v' }],
+  [:quiet, 'Suppress all output', { short: '-q' }]
 ]
 
 parser = Optimist::Parser.new do

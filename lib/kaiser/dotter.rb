@@ -11,8 +11,10 @@ module Kaiser
       super unless @dotted
     end
 
+    # rubocop:disable Lint/UselessMethodDefinition
     def respond_to_missing?(name)
       super
     end
+    # rubocop:enable Lint/UselessMethodDefinition
   end
 end
