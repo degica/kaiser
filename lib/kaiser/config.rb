@@ -56,10 +56,10 @@ module Kaiser
       # Kaiser 0.5.2 started using non-dotted files instead. This method renames the old
       # files in case you have just upgraded from an older version.
       def migrate_dotted_config_files
-        if File.exists?("#{@config_dir}/.config.yml")
-          # This shell one-liner recursively finds all files that start with a dot and removes said dot
-          `find #{@config_dir} -type f -name '.*' -execdir sh -c 'mv -i "$0" "./${0#./.}"' {} \\;`
-        end
+        return unless File.exist?("#{@config_dir}/.config.yml")
+
+        # This shell one-liner recursively finds all files that start with a dot and removes said dot
+        `find #{@config_dir} -type f -name '.*' -execdir sh -c 'mv -i "$0" "./${0#./.}"' {} \\;`
       end
 
       def load_config
