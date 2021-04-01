@@ -16,8 +16,10 @@ module Kaiser
         @work_dir = work_dir
         @config_dir = "#{ENV['HOME']}/.kaiser"
 
+        migrate_dotted_config_files
+
         FileUtils.mkdir_p @config_dir
-        @config_file = "#{@config_dir}/.config.yml"
+        @config_file = "#{@config_dir}/config.yml"
         @kaiserfile = Kaiserfile.new("#{@work_dir}/Kaiserfile")
 
         @config = {
@@ -45,6 +47,19 @@ module Kaiser
 
       def always_verbose?
         @config[:always_verbose]
+      end
+
+      # Up until version 0.5.1, kaiser used dotfiles for all of it configuration.
+      # It makes sense of hide the configuration directory itself but hiding the files
+      # inside of it just causes confusion.
+      #
+      # Kaiser 0.5.2 started using non-dotted files instead. This method renames the old
+      # files in case you have just upgraded from an older version.
+      def migrate_dotted_config_files
+        return unless File.exist?("#{@config_dir}/.config.yml")
+
+        # This shell one-liner recursively finds all files that start with a dot and removes said dot
+        `find #{@config_dir} -type f -name '.*' -execdir sh -c 'mv -i "$0" "./${0#./.}"' {} \\;`
       end
 
       def load_config

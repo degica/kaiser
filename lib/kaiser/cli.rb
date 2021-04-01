@@ -144,7 +144,7 @@ module Kaiser
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{db_reset_command}"
 
-      save_db('.default')
+      save_db('default')
     end
 
     def save_db(name)
@@ -226,7 +226,7 @@ module Kaiser
     end
 
     def default_db_image
-      db_image_path('.default')
+      db_image_path('default')
     end
 
     def attach_app
@@ -272,11 +272,11 @@ module Kaiser
     end
 
     def tmp_waitscript_name
-      "#{Config.config_dir}/.#{envname}-dbwaitscript"
+      "#{Config.config_dir}/#{envname}-dbwaitscript"
     end
 
     def tmp_dockerfile_name
-      "#{Config.config_dir}/.#{envname}-dockerfile"
+      "#{Config.config_dir}/#{envname}-dockerfile"
     end
 
     def tmp_db_waiter
