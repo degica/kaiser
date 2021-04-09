@@ -4,3 +4,15 @@ Metrics/BlockLength:
   Exclude:
     - kaiser.gemspec
     - 'spec/**/*.rb'
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'spec/plugin_spec.rb'
+
+Layout/EmptyLineBetweenDefs:
+  Exclude:
+    - 'spec/plugin_spec.rb'
+
+Naming/VariableNumber:
+  Exclude:
+    - 'spec/plugin_spec.rb'

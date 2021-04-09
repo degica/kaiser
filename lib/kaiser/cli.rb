@@ -86,7 +86,7 @@ module Kaiser
       @subcommands.each do |name, klass|
         name_s = name.to_s
 
-        output += name_s + "\n"
+        output += "#{name_s}\n"
         output += name_s.gsub(/./, '-')
         output += "\n"
         output += klass.usage
@@ -149,7 +149,7 @@ module Kaiser
         #{app_params}
         kaiser:#{envname} #{db_reset_command}"
 
-      save_db('.default')
+      save_db('default')
     end
 
     def save_db(name)
@@ -191,7 +191,7 @@ module Kaiser
         -v #{file}:#{file}
         ruby:alpine
         tar xvjf #{file} -C #{db_data_directory}
-          --strip #{db_data_directory.scan(%r{\/}).count}"
+          --strip #{db_data_directory.scan(%r{/}).count}"
     end
 
     def stop_db
@@ -239,7 +239,7 @@ module Kaiser
     end
 
     def default_db_image
-      db_image_path('.default')
+      db_image_path('default')
     end
 
     def default_volumes
@@ -311,11 +311,11 @@ module Kaiser
     end
 
     def tmp_waitscript_name
-      "#{Config.config_dir}/.#{envname}-dbwaitscript"
+      "#{Config.config_dir}/#{envname}-dbwaitscript"
     end
 
     def tmp_dockerfile_name
-      "#{Config.config_dir}/.#{envname}-dockerfile"
+      "#{Config.config_dir}/#{envname}-dockerfile"
     end
 
     def tmp_db_waiter
