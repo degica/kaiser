@@ -50,7 +50,6 @@ module Kaiser
     attach: Kaiser::Cmds::Attach,
     login: Kaiser::Cmds::Login,
     show: Kaiser::Cmds::Show,
-    set: Kaiser::Cmds::Set,
     chown: Kaiser::Cmds::Chown,
     sudo: Kaiser::Cmds::Sudo,
     set: Kaiser::Cmds::Set,
