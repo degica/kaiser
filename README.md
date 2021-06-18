@@ -31,6 +31,7 @@ Simply clone the repo and run
 
 ```
 cd kaiser
+bundle
 docker build -t degica/kaiser . 
 ```
 
