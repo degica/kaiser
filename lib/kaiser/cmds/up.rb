@@ -34,6 +34,7 @@ module Kaiser
         CommandRunner.run! Config.out, "docker build
           -t kaiser:#{envname}-#{current_branch}
           -f #{tmp_dockerfile_name} #{Config.work_dir}
+          --platform=linux/amd64
           #{build_args.join(' ')}"
         FileUtils.rm(tmp_dockerfile_name)
       end

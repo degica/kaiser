@@ -142,6 +142,7 @@ module Kaiser
         --name #{envname}-apptemp
         --network #{Config.config[:networkname]}
         #{app_params}
+        --platform=linux/amd64
         kaiser:#{envname}-#{current_branch} #{db_reset_command}"
 
       save_db('default')
@@ -201,6 +202,7 @@ module Kaiser
         -v #{db_volume_name}:#{db_data_directory}
         --name #{db_container_name}
         --network #{network_name}
+        --platform=linux/amd64
         #{db_params}
         #{db_image}
         #{db_commands}"
@@ -526,6 +528,7 @@ module Kaiser
           --privileged
           --name #{Config.config[:shared_names][:nginx]}
           --network #{Config.config[:networkname]}
+          --platform=linux/amd64
           jwilder/nginx-proxy"
       )
       run_if_dead(
