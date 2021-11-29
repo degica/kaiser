@@ -97,6 +97,16 @@ open http://myapp.lvh.me
 
 And enjoy previewing your app!
 
+## More documentation
+
+You can find even more documentation in the [docs/pages/index.md] folder. If you wish to read a HTML version of this documentation you can go:
+
+```
+cd docs
+bundle install
+bundle exec weaver
+```
+
 #### Anatomy of a Kaiserfile
 
 A Kaiserfile is made up of statements, which are different commands followed by some parameters. Each command is just a ruby method so you can call it that way. Only the `dockerfile` command is required. All the other commands are either not required or have defaults.

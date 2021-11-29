@@ -1,0 +1,51 @@
+require 'yaml'
+require 'redcarpet'
+
+include 'renderer.rb'
+include 'main.rb'
+
+filenames = Dir['pages/*'].sort
+
+options = {
+  fenced_code_blocks: true,
+  highlight: true
+}
+
+renderer = CustomRender.new(render_options = {})
+markdown = Redcarpet::Markdown.new(renderer, options)
+
+basenames = filenames.map do |x|
+	x.sub(%r{^pages/}, '').sub(/\.md$/, '')
+end
+
+files = basenames.map do |basename|
+	path = basename
+	if basename == 'index'
+		path = ''
+	end
+
+	path
+end
+
+unpacked_files = filenames.zip(files).map do |filename, path|
+	content = File.read(filename)
+
+	text = content.split('---', 2)[1]
+
+	{
+		content: markdown.render(text),
+		info: YAML.load_file(filename),
+		filename: filename,
+		path: path
+	}
+end
+
+unpacked_files.each do |x|
+	title = x[:info]['title']
+	create_page(title, x[:path] , unpacked_files) do
+		br
+		ibox do
+			text x[:content]
+		end
+	end
+end
