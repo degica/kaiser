@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<!-- Generated using weaver: https://github.com/davidsiaw/weaver -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kaiser Docs - Home</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="css/plugins/iCheck/custom.css" rel="stylesheet">
+
+    	<link href="css/style.css" rel="stylesheet">
+
+
+    <link href="css/animate.css" rel="stylesheet">
+
+
+
+
+
+</head>
+
+<body class=' fixed-sidebar'>
+
+<div id="background" style="z-index: -999; position:absolute; left:0px; right:0px; width:100%; height:100%">
+
+</div>
+
+<div id="content" style="z-index: 0">
+
+	<div id="wrapper">
+
+		<nav class="navbar-default navbar-static-side" role="navigation">
+			<div class="sidebar-collapse">
+				<ul class="nav" id="side-menu">
+
+
+	                <li>
+	                    <a href="https://tech.degica.com/kaiser/branches/nice-docs/"><i class="fa fa-home"></i> <span class="nav-label">Kaiser Docs</span> <span class="label label-primary pull-right"></span></a>
+	                </li>
+
+<li ><a href="https://tech.degica.com/kaiser/branches/nice-docs/0110-getting_started/"><i class="fa fa-file"></i><span class="nav-label">Getting Started</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/nice-docs/0120-kaiser-commands/"><i class="fa fa-file"></i><span class="nav-label">Kaiser Commands</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/nice-docs/0120-the-kaiserfile/"><i class="fa fa-file"></i><span class="nav-label">The Kaiserfile</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/nice-docs/0130-databases/"><i class="fa fa-file"></i><span class="nav-label">Databases</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/nice-docs/0140-suffixes/"><i class="fa fa-file"></i><span class="nav-label">Suffixes</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/nice-docs/0510-plugins/"><i class="fa fa-file"></i><span class="nav-label">Plugins</span></a></li>
+
+				</ul>
+			</div>
+		</nav>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+		        <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
+					<div class="navbar-header">
+					    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+					</div>
+		            <ul class="nav navbar-top-links navbar-right">
+		                <!-- NAV RIGHT -->
+		            </ul>
+		        </nav>
+	        </div>
+	<div class="row wrapper border-bottom white-bg page-heading" style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <h2>Kaiser Documentation</h2><ol class="breadcrumb"><li>Home</li></ol>
+  </div>
+
+	</div>
+	<div class="row " style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <br  /><div class="ibox float-e-margins"><div class="ibox-content" style="min-height: px"><h1>Kaiser</h1>
+
+<p>This is documentation for Kaiser. This first page contains some text that gives an overview of what Kaiser is, what it isn&#39;t, what it does for you and why we wrote it in the first place.</p>
+
+<p>If you already know it is for you, you can skip to the <a href="0110-getting_started">Getting Started</a> page!</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2>Introduction</h2>
+
+<p>Kaiser is an opinionated tool that will streamline setting up a development environment. In the Kaiser world, all webapps at their most basic consist of a server backend and a database. The server is packaged in an environment fully described by a Dockerfile. Kaiser makes describing and setting these up super easy.</p>
+
+<p>If you have a webapp that has two databases and one server backend, or one database but two server backends, Kaiser is almost certainly not for you.</p>
+
+<p>For everyone else whose webapps and web services follow this pattern, read on!</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2>Developing with Kaiser</h2>
+
+<p>Those of us who package our webapps in a docker image and deploy it to a website, we expect our image to be sent out properly, and run in a way we expect it to be run, and then for all traffic to go into it properly.</p>
+
+<p>Alas, is it truly so? A large number of us developers also simply run our webservers locally, from the commandline on our own machines, and only when we test pushing our code do we realize we forgot to add to the Dockerfile what we <code>brew install</code>ed or <code>apt install</code>&#39;ed on our PCs, forcing us to redo this work again but against our staging environment!</p>
+
+<p>Kaiser is writted (to our best effort) in a way to allow you to run that very container that you built in a containerized environment for you to test it.</p>
+
+<p>It does not matter what language your webapp is written in, or what frameworks or runtimes it uses, as long as you package it in Docker, it will work with Kaiser.</p>
+</div></div>
+  </div>
+
+	</div>
+
+		</div>
+	</div>
+
+</div>
+
+    <!-- Mainly scripts -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/jquery-ui-1.10.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			asciimath2jax: {
+				delimiters: [['$$$MATH$$$','$$$ENDMATH$$$']]
+			}
+		});
+	</script>
+    <script src="js/MathJax/MathJax.js?config=AM_HTMLorMML-full" async></script>
+
+
+
+
+    <!-- Custom and plugin javascript -->
+    <script src="js/weaver.js"></script>
+    <script src='js/plugins/pace/pace.min.js'></script>
+
+    <script>
+
+
+
+$( document ).ready(function() {
+
+
+
+});
+    </script>
+
+
+
+</body>
+
+</html>
+
