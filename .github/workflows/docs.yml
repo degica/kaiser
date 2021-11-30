@@ -1,0 +1,41 @@
+---
+name: docs
+jobs:
+  build:
+    container:
+      image: ruby:2.7
+      env:
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-docgems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: ${{ runner.os }}-docgems-
+    - name: setup
+      run: |
+        cd docs
+        bundle install
+    - name: setkeys
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.DEPLOY_KEY }}
+        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+    - name: build
+      shell: bash
+      run: |
+        if [[ ${GITHUB_REF##*/} == 'master' ]]; then
+            ROOT_DIR=/
+        else
+            ROOT_DIR=/branches/${GITHUB_REF##*/}
+        fi
+        cd docs
+        git config --global user.email "dsiaw+kaiserdocs@degica.com"
+        git config --global user.name "dsiaw+kaiserdocs"
+        bash deploy-docs.sh
+'on':
+  push:
+    branches:
+    - '*'
