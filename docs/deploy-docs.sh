@@ -3,6 +3,8 @@
 rm -rf build
 rm -rf gittemp
 
+echo "This document has been deployed to https://tech.degica.com/kaiser$ROOT_DIR"
+
 git clone git@github.com:degica/kaiser gittemp
 pushd gittemp
 git checkout gh-pages

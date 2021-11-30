@@ -34,7 +34,7 @@ jobs:
         cd docs
         git config --global user.email "dsiaw+kaiserdocs@degica.com"
         git config --global user.name "dsiaw+kaiserdocs"
-        bash deploy-docs.sh
+        ROOT_DIR=$ROOT_DIR bash deploy-docs.sh
 'on':
   push:
     branches:
