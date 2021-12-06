@@ -1,6 +1,8 @@
 def create_page(title, path, files, &block)
 
   sidenav_page path, "Kaiser Docs - #{title}" do
+    request_css 'css/main.css'
+
     brand 'Kaiser Docs'
 
     menu do

@@ -104,3 +104,76 @@ To find out how to set up HTTPS on your server, go to [Suffixes](/0140-suffixes)
 
 To find out more about setting up environment variables, and other features, go to [Kaiserfile](/0120-the-kaiserfile)
 
+---
+
+## Useful Commands
+
+### Run stuff in the container
+
+You can run stuff inside your container by going
+
+```sh
+bundle exec kaiser login sh
+```
+
+And you can do anything inside the container.
+
+If you need root,
+
+```sh
+bundle exec kaiser root sh
+```
+
+### Attach to the container
+
+If you want to run with the container in the foreground simply go
+
+```sh
+bundle exec kaiser attach
+```
+
+This is similar to `kaiser login` but it terminates the running container, whereas `kaiser login` will simply run you in the same container as the running container.
+
+```sh
+bundle exec kaiser attach nano /etc/hosts
+```
+
+### Save database state
+
+```sh
+bundle exec kaiser db_save customer_setup
+```
+
+You can also save your database state to a file in your current dir:
+
+```sh
+bundle exec kaiser db_save ./my_setup.dbimage
+```
+
+### Load database state
+
+```sh
+bundle exec kaiser db_load customer_setup
+```
+
+You can load a previously saved database file that you have
+
+```sh
+bundle exec kaiser db_load ./my_setup.dbimage
+```
+
+### Get ports
+
+Kaiser decides what ports to use on the host. To know them simply go
+
+```sh
+bundle exec kaiser show ports
+```
+
+### Curious?
+
+You can see what Kaiser is doing under the hood with the `-v` flag:
+
+```sh
+bundle exec kaiser -v db_reset 
+```
