@@ -17,6 +17,7 @@
 
     <link href="../css/animate.css" rel="stylesheet">
 
+    <link href="../css/main.css" rel="stylesheet">
 
 
 
@@ -165,6 +166,78 @@ expose '8080'
 <p>To find out how to set up HTTPS on your server, go to <a href="/0140-suffixes">Suffixes</a>.</p>
 
 <p>To find out more about setting up environment variables, and other features, go to <a href="/0120-the-kaiserfile">Kaiserfile</a></p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2>Useful Commands</h2>
+
+<h3>Run stuff in the container</h3>
+
+<p>You can run stuff inside your container by going</p>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser login sh
+</pre></div>
+</div>
+
+<p>And you can do anything inside the container.</p>
+
+<p>If you need root,</p>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser root sh
+</pre></div>
+</div>
+
+<h3>Attach to the container</h3>
+
+<p>If you want to run with the container in the foreground simply go</p>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser attach
+</pre></div>
+</div>
+
+<p>This is similar to <code>kaiser login</code> but it terminates the running container, whereas <code>kaiser login</code> will simply run you in the same container as the running container.</p>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser attach nano /etc/hosts
+</pre></div>
+</div>
+
+<h3>Save database state</h3>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser db_save customer_setup
+</pre></div>
+</div>
+
+<p>You can also save your database state to a file in your current dir:</p>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser db_save ./my_setup.dbimage
+</pre></div>
+</div>
+
+<h3>Load database state</h3>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser db_load customer_setup
+</pre></div>
+</div>
+
+<p>You can load a previously saved database file that you have</p>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser db_load ./my_setup.dbimage
+</pre></div>
+</div>
+
+<h3>Get ports</h3>
+
+<p>Kaiser decides what ports to use on the host. To know them simply go</p>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser show ports
+</pre></div>
+</div>
+
+<h3>Curious?</h3>
+
+<p>You can see what Kaiser is doing under the hood with the <code>-v</code> flag:</p>
+<div class="CodeRay">
+  <div class="code"><pre>bundle exec kaiser -v db_reset 
+</pre></div>
+</div>
 </div></div>
   </div>
 

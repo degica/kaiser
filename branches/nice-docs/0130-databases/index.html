@@ -17,6 +17,7 @@
 
     <link href="../css/animate.css" rel="stylesheet">
 
+    <link href="../css/main.css" rel="stylesheet">
 
 
 
@@ -67,6 +68,63 @@
 	<div class="row " style="">
   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <br  /><div class="ibox float-e-margins"><div class="ibox-content" style="min-height: px"><h2>Setting up a Database for your app</h2>
+
+<p>The easiest way to setup a database for your app to use is add the folliwing to your Kaiserfile:</p>
+<div class="CodeRay">
+  <div class="code"><pre>plugin <span style="color:#A60">:database</span>
+
+def_db <span style="color:#A60">:mysql</span> <span style="color:#777"># or :postgres</span>
+</pre></div>
+</div>
+
+<p>For more information about the database plugin, go to the <a href="/0510-plugins">plugins page</a></p>
+
+<p>Usually at a base level you would want to define your root password and database version at least. That can be done with</p>
+<div class="CodeRay">
+  <div class="code"><pre>plugin <span style="color:#A60">:database</span>
+
+def_db <span style="color:#606">mysql</span>: {
+  <span style="color:#606">version</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">8.0</span><span style="color:#710">'</span></span>,
+  <span style="color:#606">root_password</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">secret</span><span style="color:#710">'</span></span>
+}
+</pre></div>
+</div>
+
+<p>And, in order to provide your application with access to it, simply give the application information about the database.</p>
+
+<p>For example, to give the MySQL details to your Rails application, do the following:</p>
+<div class="CodeRay">
+  <div class="code"><pre>dockerfile <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">Dockerfile</span><span style="color:#710">'</span></span>
+
+plugin <span style="color:#A60">:database</span>
+
+def_db <span style="color:#A60">:mysql</span>: {
+  <span style="color:#606">version</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">8.0</span><span style="color:#710">'</span></span>,
+  <span style="color:#606">root_password</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">secret</span><span style="color:#710">'</span></span>
+}
+
+app_params <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">
+  -e DATABASE_URL=mysql2://root:secret@&lt;%= db_container_name %&gt;
+  ...
+
+</span></span></pre></div>
+</div>
+
+<p>You can also pass information in as separate pieces, like how a PHP application typically expects. Here is an example with postgres:</p>
+<div class="CodeRay">
+  <div class="code"><pre>dockerfile <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">Dockerfile</span><span style="color:#710">'</span></span>
+
+plugin <span style="color:#A60">:database</span>
+def_db <span style="color:#606">postgres</span>: { <span style="color:#606">root_password</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">verysecret</span><span style="color:#710">'</span></span> }
+
+app_params <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">
+    -e DB_USER=postgres
+    -e DB_PASS=verysecret
+    -e DB_NAME=awesome_db
+    -e DB_HOST=&lt;%= db_container_name %&gt;
+    -e DB_PORT=5432
+</span></span></pre></div>
+</div>
 </div></div>
   </div>
 
