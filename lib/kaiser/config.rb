@@ -59,8 +59,7 @@ module Kaiser
         return unless File.exist?("#{@config_dir}/.config.yml")
 
         Dir["#{@config_dir}/**/.*"].each do |x|
-          dest = x.sub(%r{/\.([a-z\.]+)$}, '/\1')
-          #puts "#{x} -> #{dest}"
+          dest = x.sub(%r{/\.([a-z.]+)$}, '/\1')
           FileUtils.mv x, dest
         end
       end
