@@ -58,8 +58,11 @@ module Kaiser
       def migrate_dotted_config_files
         return unless File.exist?("#{@config_dir}/.config.yml")
 
-        # This shell one-liner recursively finds all files that start with a dot and removes said dot
-        `find #{@config_dir} -type f -name '.*' -execdir sh -c 'mv -i "$0" "./${0#./.}"' {} \\;`
+        Dir["#{@config_dir}/**/.*"].each do |x|
+          dest = x.sub(%r{/\.([a-z\.]+)$}, '/\1')
+          #puts "#{x} -> #{dest}"
+          FileUtils.mv x, dest
+        end
       end
 
       def load_config
