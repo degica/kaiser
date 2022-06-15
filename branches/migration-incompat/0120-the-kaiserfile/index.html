@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<!-- Generated using weaver: https://github.com/davidsiaw/weaver -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kaiser Docs - The Kaiserfile</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../css/plugins/iCheck/custom.css" rel="stylesheet">
+
+    	<link href="../css/style.css" rel="stylesheet">
+
+
+    <link href="../css/animate.css" rel="stylesheet">
+
+    <link href="../css/main.css" rel="stylesheet">
+
+
+
+
+</head>
+
+<body class=' fixed-sidebar'>
+
+<div id="background" style="z-index: -999; position:absolute; left:0px; right:0px; width:100%; height:100%">
+
+</div>
+
+<div id="content" style="z-index: 0">
+
+	<div id="wrapper">
+
+		<nav class="navbar-default navbar-static-side" role="navigation">
+			<div class="sidebar-collapse">
+				<ul class="nav" id="side-menu">
+
+
+	                <li>
+	                    <a href="https://tech.degica.com/kaiser/branches/migration-incompat/"><i class="fa fa-home"></i> <span class="nav-label">Kaiser Docs</span> <span class="label label-primary pull-right"></span></a>
+	                </li>
+
+<li ><a href="https://tech.degica.com/kaiser/branches/migration-incompat/0110-getting_started/"><i class="fa fa-file"></i><span class="nav-label">Getting Started</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/migration-incompat/0120-kaiser-commands/"><i class="fa fa-file"></i><span class="nav-label">Kaiser Commands</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/migration-incompat/0120-the-kaiserfile/"><i class="fa fa-file"></i><span class="nav-label">The Kaiserfile</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/migration-incompat/0130-databases/"><i class="fa fa-file"></i><span class="nav-label">Databases</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/migration-incompat/0140-suffixes/"><i class="fa fa-file"></i><span class="nav-label">Suffixes</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/migration-incompat/0510-plugins/"><i class="fa fa-file"></i><span class="nav-label">Plugins</span></a></li>
+
+				</ul>
+			</div>
+		</nav>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+		        <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
+					<div class="navbar-header">
+					    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+					</div>
+		            <ul class="nav navbar-top-links navbar-right">
+		                <!-- NAV RIGHT -->
+		            </ul>
+		        </nav>
+	        </div>
+	<div class="row wrapper border-bottom white-bg page-heading" style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <h2>Kaiser Documentation</h2><ol class="breadcrumb"><li>The Kaiserfile</li></ol>
+  </div>
+
+	</div>
+	<div class="row " style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <br  /><div class="ibox float-e-margins"><div class="ibox-content" style="min-height: px"><h2>The Kaiserfile</h2>
+
+<p>The Kaiserfile a file that you add to your docker-based application. The most basic form a Kaiserfile can take has already been shown in the <a href="/0110-getting_started">Getting Started</a> page:</p>
+<div class="CodeRay">
+  <div class="code"><pre>dockerfile 'Dockerfile'
+
+expose 8080
+</pre></div>
+</div>
+
+<p>But what does this all mean?</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2>Kaiserfile Statements</h2>
+
+<p>A Kaiserfile is made up of statements, which are different commands followed by some parameters. Each command is just a ruby method so you can call it that way. Only the <code>dockerfile</code> command is required. All the other commands are either not required or have defaults.</p>
+
+<ul>
+<li><code>plugin</code> - Takes 1 parameter: the name of the plugin you wish to use in this Kaiserfile.</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># Example</span>
+plugin <span style="color:#A60">:git_submodule</span>
+</pre></div>
+</div>
+
+<p>See <a href="/0510-plugins">plugins</a> to find available plugins and their usage</p>
+
+<ul>
+<li><code>dockerfile</code> - This command is always required. Takes 1 parameter: the name of the Dockerfile you want to use with this Kaiserfile. You only need to use this command once. Using it multiple times will simply cause the last command to be used. It takes relative paths and the paths are relative to where you run Kaiser.</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># Example</span>
+dockerfile <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">Dockerfile</span><span style="color:#710">'</span></span>
+</pre></div>
+</div>
+
+<ul>
+<li><code>service</code> - This command is optional. Use it to define additional containers that should be set up along with your environment,. You can use it multiple times to define multiple services. It takes multiple parameters, a name parameter which is required and optional parameters.</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># example that sets up a redis server for your app</span>
+service <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">redis</span><span style="color:#710">'</span></span>
+</pre></div>
+</div>
+
+<p>The following parameters are allowed for this command:
+- image</p>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># example that tells it to use the redis server with the alpine tag from 'myrepo'</span>
+service <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">redis</span><span style="color:#710">'</span></span>, <span style="color:#606">image</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">myrepo/redis:alpine</span><span style="color:#710">'</span></span>
+</pre></div>
+</div>
+
+<ul>
+<li><code>attach_mount</code> - Takes 2 parameters: The first parameter is the relative path of a folder or a file outside the container and the second parameter is its absolute path inside the container. This is only used when <code>kaiser attach</code> or <code>kaiser up -a</code> is used. This will mount the file or folder inside the container and sync their contents. If the file you specified does not exist, Kaiser will create a folder where you specify it and then mount that folder inside the container. You can specify as many of these as you want.</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># Example to mount the `app` directory into the container's `/srv/files/app`</span>
+attach_mount <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">app</span><span style="color:#710">'</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">/srv/files/app</span><span style="color:#710">'</span></span>
+</pre></div>
+</div>
+
+<ul>
+<li><code>expose</code> - Takes 1 parameter: The port of the server running inside the container. This port is not exposed on the host, so it will not occupy a port on the computer you run kaiser on. Instead, Kaiser will select a random port on the host computer to forward traffic to and from. You can only use this statement once. If you have multiple of these statements the last one will be used.</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># Example to expose the port 3636</span>
+expose <span style="color:#00D">3636</span>
+</pre></div>
+</div>
+
+<ul>
+<li><code>app_params</code> - Takes 1 parameter: A string of parameters to the <code>docker run</code> command to add custom environment variables with. Please refer to the docker documentation to see what kinds of parameters you can pass to the <code>docker run</code> command. By default this is just an empty string. You can only pass one of these. Any newline characters in the string will be converted into spaces.</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># Example</span>
+app_params <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">-e INTERACTIVE=no</span><span style="color:#710">'</span></span>
+</pre></div>
+</div>
+
+<ul>
+<li><code>type</code> - Takes 1 parameter: Right now the only parameter it can take is <code>:http</code>. If this parameter is specified, kaiser will poll the application until it receives a 200 status code before it closes when you use <code>kaiser up</code> If it doesn&#39;t it will close with a status code of 1.</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># Example</span>
+type <span style="color:#A60">:http</span>
+</pre></div>
+</div>
+
+<ul>
+<li><code>db_reset_command</code> - Takes 1 parameter: A command to reset the database. This command is optional. By default this parameter is <code>echo &quot;no db to reset&quot;</code>. You can only specify one of these. If you have multiple of these commands only the last one will be used.</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># Example if running this command drops the db and recreates it.</span>
+db_reset_command <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">rake db:reset</span><span style="color:#710">'</span></span>
+</pre></div>
+</div>
+
+<ul>
+<li><code>db</code> - Takes 1 parameter in the form of a hash. The default value of the hash is as follows:</li>
+</ul>
+
+<p>(You do not have to use this strictly, see the Database <a href="/0510-plugins">plugins</a> to see an easier way to include MySQL and Postgres in your environment)</p>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># Default settings</span>
+{
+  <span style="color:#606">image</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">alpine</span><span style="color:#710">'</span></span>,
+  <span style="color:#606">port</span>: <span style="color:#00D">1234</span>,
+  <span style="color:#606">data_dir</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">/tmp/data</span><span style="color:#710">'</span></span>,
+  <span style="color:#606">params</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#710">'</span></span>,
+  <span style="color:#606">commands</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">echo &quot;no db&quot;</span><span style="color:#710">'</span></span>,
+  <span style="color:#606">waitscript</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">echo &quot;no dbwait&quot;</span><span style="color:#710">'</span></span>,
+  <span style="color:#606">waitscript_params</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#710">'</span></span>
+}
+</pre></div>
+</div>
+
+<p>You can use this to customize the database that you wish to use with your server.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2>Alternative Kaiserfile</h2>
+
+<p>If you want change your dev environment for a project, but don&#39;t want to overwrite the project&#39;s Kaiserfile/Dockerfile,
+you can use an alternative Kaiserfile.</p>
+
+<p>An alternative Kaiserfile is located at <code>~/kaiserfiles/Kaiserfile.&lt;app name&gt;</code>,
+where <code>&lt;app name&gt;</code> is replaced with the name you provided when calling <code>kaiser init</code>.</p>
+
+<p>If Kaiser detects an alternative Kaiserfile, it will use it instead of the Project root one. Some things to watch out for:</p>
+
+<ul>
+<li>Of course, your app may behave differently if you change your environment from the project&#39;s default.</li>
+<li>The <code>dockerfile</code> declaration is still relative to the project root. If you want to use a custom Dockerfile as well, you need to specify the its full path in the Kaiserfile.</li>
+<li>If the project&#39;s Kaiserfile or Dockerfile changes, you&#39;ll have to update your custom ones manually.</li>
+</ul>
+</div></div>
+  </div>
+
+	</div>
+
+		</div>
+	</div>
+
+</div>
+
+    <!-- Mainly scripts -->
+    <script src="../js/jquery-3.1.1.min.js"></script>
+    <script src="../js/jquery-ui-1.10.4.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="../js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			asciimath2jax: {
+				delimiters: [['$$$MATH$$$','$$$ENDMATH$$$']]
+			}
+		});
+	</script>
+    <script src="../js/MathJax/MathJax.js?config=AM_HTMLorMML-full" async></script>
+
+
+
+
+    <!-- Custom and plugin javascript -->
+    <script src="../js/weaver.js"></script>
+    <script src='../js/plugins/pace/pace.min.js'></script>
+
+    <script>
+
+
+
+$( document ).ready(function() {
+
+
+
+});
+    </script>
+
+
+
+</body>
+
+</html>
+
