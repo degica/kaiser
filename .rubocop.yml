@@ -1,18 +1,11 @@
 inherit_from: .rubocop_todo.yml
 
-Metrics/BlockLength:
-  Exclude:
-    - kaiser.gemspec
-    - 'spec/**/*.rb'
-
+# this is the way the test was written
 Lint/ConstantDefinitionInBlock:
   Exclude:
     - 'spec/plugin_spec.rb'
 
-Layout/EmptyLineBetweenDefs:
-  Exclude:
-    - 'spec/plugin_spec.rb'
-
+# this is the way the test was written
 Naming/VariableNumber:
   Exclude:
     - 'spec/plugin_spec.rb'

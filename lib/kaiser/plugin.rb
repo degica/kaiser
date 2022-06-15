@@ -35,6 +35,8 @@ module Kaiser
     def self.inherited(plugin)
       super
 
+      puts "INHERITED #{plugin}"
+
       # underscore class name
       name = plugin.to_s.split('::').last
                    .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
