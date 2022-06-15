@@ -129,6 +129,7 @@ module Kaiser
       ensure_db_volume
       start_db
       return if File.exist?(default_db_image)
+      return unless db_present?
 
       # Some databases keep state around, best to clean it.
       stop_db
@@ -148,12 +149,16 @@ module Kaiser
     end
 
     def save_db(name)
+      return unless db_present?
+
       killrm db_container_name
       save_db_state_from container: db_volume_name, to_file: db_image_path(name)
       start_db
     end
 
     def load_db(name)
+      return unless db_present?
+
       check_db_image_exists(name)
       killrm db_container_name
       CommandRunner.run Config.out, "docker volume rm #{db_volume_name}"
@@ -190,11 +195,15 @@ module Kaiser
     end
 
     def stop_db
+      return unless db_present?
+
       Config.info_out.puts 'Stopping database'
       killrm db_container_name
     end
 
     def start_db
+      return unless db_present?
+
       Config.info_out.puts 'Starting up database'
       run_if_dead db_container_name, "docker run -d
         -p #{db_port}:#{db_expose}
@@ -361,6 +370,8 @@ module Kaiser
     end
 
     def wait_for_db
+      return unless db_present?
+
       Config.info_out.puts 'Waiting for database to start...'
       run_blocking_script(db_image, db_waitscript_params, db_waitscript)
       Config.info_out.puts 'Started.'
@@ -388,6 +399,10 @@ module Kaiser
 
     def db_image
       Config.kaiserfile.database[:image]
+    end
+
+    def db_present?
+      db_image != 'none'
     end
 
     def db_commands
