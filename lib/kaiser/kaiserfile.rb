@@ -16,7 +16,7 @@ module Kaiser
       Optimist.die 'No Kaiserfile in current directory' unless File.exist? filename
 
       @database = {
-        image: 'alpine',
+        image: 'none',
         port: 1234,
         data_dir: '/tmp/data',
         params: '',
