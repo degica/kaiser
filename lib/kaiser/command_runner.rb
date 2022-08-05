@@ -19,14 +19,6 @@ module Kaiser
     def initialize(out, cmd)
       @out = out
       @cmd = cmd.tr "\n", ' '
-
-      if @cmd.start_with? 'docker run' && arm?
-        @cmd.sub! /\A(docker run)/, '\1 --platform linux/amd64,linux/arm64/'
-      end
-    end
-
-    def arm?
-      `uname -a`.include? 'arm64'
     end
 
     def print_and_return_status(status = 0)

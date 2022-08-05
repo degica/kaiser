@@ -398,7 +398,11 @@ module Kaiser
     end
 
     def db_image
-      Config.kaiserfile.database[:image]
+      platform = ''
+      platform = "--platform #{Config.kaiserfile.database[:platform]}" if Config.kaiserfile.database[:platform]&.length
+
+      image = Config.kaiserfile.database[:image]
+      "#{platform} #{image}"
     end
 
     def db_present?
