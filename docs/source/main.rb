@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def create_page(title, path, files, &block)
 
   sidenav_page path, "Kaiser Docs - #{title}" do
@@ -15,7 +17,7 @@ def create_page(title, path, files, &block)
 
     header do
       col 12 do
-        h2 "Kaiser Documentation"
+        h2 'Kaiser Documentation'
         breadcrumb [title]
       end
     end
