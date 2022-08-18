@@ -53,7 +53,8 @@ Metrics/BlockLength:
 # Offense count: 1
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ClassLength:
-  Max: 448
+  Exclude:
+    - 'lib/kaiser/cli.rb'
 
 # Offense count: 1
 # Configuration parameters: IgnoredMethods.
