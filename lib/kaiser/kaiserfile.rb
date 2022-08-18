@@ -58,7 +58,8 @@ module Kaiser
 
     def db(image,
            data_dir:,
-           port:, platform: nil,
+           port:,
+           platform: '',
            params: '',
            commands: '',
            waitscript: nil,
