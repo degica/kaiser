@@ -3,7 +3,8 @@
 module Kaiser
   module Cmds
     class Up < Cli
-      option :attach, "Bind mount the current source code directory in the app container (as the \`kaiser attach\` command would)", short: '-a'
+      option :attach,
+             "Bind mount the current source code directory in the app container (as the \`kaiser attach\` command would)", short: '-a'
 
       def usage
         <<~EOS

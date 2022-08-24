@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'coderay'
 
 class CustomRender < Redcarpet::Render::HTML

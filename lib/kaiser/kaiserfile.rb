@@ -6,6 +6,7 @@ module Kaiser
     attr_accessor :docker_file_contents,
                   :docker_build_args,
                   :database,
+                  :platform,
                   :port,
                   :database_reset_command,
                   :attach_mounts,
@@ -17,6 +18,7 @@ module Kaiser
 
       @database = {
         image: 'none',
+        platform: '',
         port: 1234,
         data_dir: '/tmp/data',
         params: '',
@@ -57,12 +59,14 @@ module Kaiser
     def db(image,
            data_dir:,
            port:,
+           platform: '',
            params: '',
            commands: '',
            waitscript: nil,
            waitscript_params: '')
       @database = {
         image: image,
+        platform: platform,
         port: port,
         data_dir: data_dir,
         params: params,

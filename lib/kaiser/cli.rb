@@ -336,7 +336,7 @@ module Kaiser
 
       Config.info_out.puts 'Waiting for server to start...'
 
-      http_code_extractor = "curl -s -o /dev/null -I -w \"\%{http_code}\" http://#{app_container_name}:#{app_expose}"
+      http_code_extractor = "curl -s -o /dev/null -I -w \"\%<http_code>s\" http://#{app_container_name}:#{app_expose}"
       unreachable_test = "#{http_code_extractor} | grep -q 000"
 
       # This waitscript runs until curl returns a non-unreachable status code
@@ -363,7 +363,11 @@ module Kaiser
         # If curl returns an error status the script will cut out and
         # the app container died error will be displayed.
         raise Kaiser::Error, "Failed with HTTP status: #{line}" if line =~ /^[0-9]{3}$/ && line != '200'
-        raise Kaiser::Error, 'App container died. Run `kaiser logs` to see why.' if line != '!' && container_dead?(app_container_name)
+
+        if line != '!' && container_dead?(app_container_name)
+          raise Kaiser::Error,
+                'App container died. Run `kaiser logs` to see why.'
+        end
       end
 
       Config.info_out.puts 'Started successfully!'
@@ -398,7 +402,11 @@ module Kaiser
     end
 
     def db_image
-      Config.kaiserfile.database[:image]
+      platform = ''
+      platform = "--platform #{Config.kaiserfile.database[:platform]}" if Config.kaiserfile.database[:platform]&.length
+
+      image = Config.kaiserfile.database[:image]
+      "#{platform} #{image}"
     end
 
     def db_present?
