@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'kaiser/command_runner'
+require 'active_support/core_ext/object/blank'
 
 module Kaiser
   # The commandline
