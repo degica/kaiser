@@ -21,6 +21,10 @@ module Kaiser
         EOS
       end
 
+      def initialize
+        @use_kaiserfile = false
+      end
+
       def execute(_opts)
         cmd = ARGV.shift
 

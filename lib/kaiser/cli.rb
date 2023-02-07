@@ -7,6 +7,12 @@ module Kaiser
   # The commandline
   class Cli
     extend Kaiser::CliOptions
+    
+    attr_reader :use_kaiserfile
+
+    def initialize
+      @use_kaiserfile = true
+    end
 
     def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
@@ -19,7 +25,7 @@ module Kaiser
       @out = Config.out
       @info_out = Config.info_out
 
-      @kaiserfile.validate!
+      @kaiserfile.validate! if @use_kaiserfile
     end
 
     # At first I did this in the constructor but the problem with that is Optimist
@@ -56,12 +62,12 @@ module Kaiser
       # easily use ARGV.shift to access its own subcommands.
       ARGV.shift
 
-      Kaiser::Config.load(Dir.pwd)
+      Kaiser::Config.load(Dir.pwd, cmd.use_kaiserfile)
 
       # We do all this work in here instead of the exe/kaiser file because we
       # want -h options to output before we check if a Kaiserfile exists.
       # If we do it in exe/kaiser, people won't be able to check help messages
-      # unless they create a Kaiserfile firest.
+      # unless they create a Kaiserfile first.
       if opts[:quiet]
         Config.out = File.open(File::NULL, 'w')
         Config.info_out = File.open(File::NULL, 'w')

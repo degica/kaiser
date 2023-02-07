@@ -48,6 +48,12 @@ function kaiser
 end
 ```
 
+Confirm it is working by running
+
+```
+kaiser -h
+```
+
 ## Usage
 
 You'll need a Dockerfile and a Kaiserfile. The Kaiserfile should be placed in the project root directory, with contents like this:
