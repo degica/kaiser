@@ -333,8 +333,19 @@ module Kaiser
     end
 
     def wait_for_app
-      return unless server_type == :http
+      wait_for_http if server_type == :http
 
+      # AFTER START SCRIPT
+      File.write('.after_start_script', app_after_start_script)
+      CommandRunner.run! Config.out, "docker cp .after_start_script #{app_container_name}:/tmp"
+      CommandRunner.run! Config.out, "docker exec -t --user=root #{app_container_name} chmod +x /tmp/.after_start_script"
+      CommandRunner.run! Config.out, "docker exec -t #{app_container_name} /tmp/.after_start_script"
+      CommandRunner.run! Config.out, "rm .after_start_script"
+
+      Config.info_out.puts 'Started successfully!'
+    end
+
+    def wait_for_http
       Config.info_out.puts 'Waiting for server to start...'
 
       http_code_extractor = "curl -s -o /dev/null -I -w \"\%<http_code>s\" http://#{app_container_name}:#{app_expose}"
@@ -370,8 +381,6 @@ module Kaiser
                 'App container died. Run `kaiser logs` to see why.'
         end
       end
-
-      Config.info_out.puts 'Started successfully!'
     end
 
     def wait_for_db
@@ -442,6 +451,10 @@ module Kaiser
 
     def app_params
       eval_template Config.kaiserfile.params
+    end
+
+    def app_after_start_script
+      eval_template Config.kaiserfile.after_start_script
     end
 
     def db_reset_command
