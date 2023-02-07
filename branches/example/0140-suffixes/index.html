@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<!-- Generated using weaver: https://github.com/davidsiaw/weaver -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kaiser Docs - Suffixes</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../css/plugins/iCheck/custom.css" rel="stylesheet">
+
+    	<link href="../css/style.css" rel="stylesheet">
+
+
+    <link href="../css/animate.css" rel="stylesheet">
+
+    <link href="../css/main.css" rel="stylesheet">
+
+
+
+
+</head>
+
+<body class=' fixed-sidebar'>
+
+<div id="background" style="z-index: -999; position:absolute; left:0px; right:0px; width:100%; height:100%">
+
+</div>
+
+<div id="content" style="z-index: 0">
+
+	<div id="wrapper">
+
+		<nav class="navbar-default navbar-static-side" role="navigation">
+			<div class="sidebar-collapse">
+				<ul class="nav" id="side-menu">
+
+
+	                <li>
+	                    <a href="https://tech.degica.com/kaiser/branches/example/"><i class="fa fa-home"></i> <span class="nav-label">Kaiser Docs</span> <span class="label label-primary pull-right"></span></a>
+	                </li>
+
+<li ><a href="https://tech.degica.com/kaiser/branches/example/0110-getting_started/"><i class="fa fa-file"></i><span class="nav-label">Getting Started</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/example/0120-kaiser-commands/"><i class="fa fa-file"></i><span class="nav-label">Kaiser Commands</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/example/0120-the-kaiserfile/"><i class="fa fa-file"></i><span class="nav-label">The Kaiserfile</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/example/0130-databases/"><i class="fa fa-file"></i><span class="nav-label">Databases</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/example/0140-suffixes/"><i class="fa fa-file"></i><span class="nav-label">Suffixes</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/example/0510-plugins/"><i class="fa fa-file"></i><span class="nav-label">Plugins</span></a></li>
+
+				</ul>
+			</div>
+		</nav>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+		        <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
+					<div class="navbar-header">
+					    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+					</div>
+		            <ul class="nav navbar-top-links navbar-right">
+		                <!-- NAV RIGHT -->
+		            </ul>
+		        </nav>
+	        </div>
+	<div class="row wrapper border-bottom white-bg page-heading" style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <h2>Kaiser Documentation</h2><ol class="breadcrumb"><li>Suffixes</li></ol>
+  </div>
+
+	</div>
+	<div class="row " style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <br  /><div class="ibox float-e-margins"><div class="ibox-content" style="min-height: px"><h2>Suffixes in Kaiser</h2>
+
+<p>By default, Kaiser starts up an NGINX server on port 80 and 443 on your computer as a reverse proxy to all the applications started on it. It also uses a by default the <code>lvh.me</code> suffix. </p>
+
+<p>This means that if you start an app on Kaiser with the environment name <code>foo</code> then the URL on your computer will be <code>http://foo.lvh.me</code></p>
+
+<p><code>lvh.me</code> is a domain that is set up in such a way that all of its subdomains also point to <code>127.0.0.1</code>.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2>Reverse proxy</h2>
+
+<p>Why does it magically work?</p>
+
+<p>By default kaiser sets up a reverse proxy that puts all your apps on a subdomain of (lvh.me)[lvh.me]. This means all your environments can be accessed like so: <code>envname.lvh.me</code>. Easy.</p>
+
+<p><a href="https://nickjanetakis.com/blog/ngrok-lvhme-nipio-a-trilogy-for-local-development-and-testing#lvh-me">Read more about lvh.me</a></p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2>HTTPS</h2>
+
+<p>If you want to you can create a self-signed HTTPS certificate for lvh.me, trust it and use it to access your dev sites with HTTPS! (Cool! Now you can debug your websites in HTTPS!)</p>
+
+<p>It is easy to do this: Simply run</p>
+<div class="CodeRay">
+  <div class="code"><pre>kaiser set cert-folder /home/me/my-certificate-folder
+</pre></div>
+</div>
+
+<p>As preparation you need to generate <a href="https://gist.github.com/dagjaneiro/dc1e26d87e745b47c4e2596f6b54022c">HTTPS certificates</a>. You should have the following files:</p>
+<div class="CodeRay">
+  <div class="code"><pre>/home/me/my-certificate-folder/lvh.me.crt
+/home/me/my-certificate-folder/lvh.me.key
+/home/me/my-certificate-folder/lvh.me.chain.pem
+</pre></div>
+</div>
+
+<p>Hint: you can create the <code>.chain.pem</code> file by going</p>
+<div class="CodeRay">
+  <div class="code"><pre>cat lvh.me.crt &gt;&gt; lvh.me.key
+cat lvh.me.crt &gt;&gt; lvh.me.crt
+</pre></div>
+</div>
+
+<p>Remember to trust your certificates! Otherwise your browser will give you an error (if it isn&#39;t dodgy).</p>
+
+<p>If you and your colleagues all want to sign using the same certificates, simply put the certificates on a webserver and go:</p>
+<div class="CodeRay">
+  <div class="code"><pre>kaiser set cert-url https://internal-site.com/dev-certificates
+</pre></div>
+</div>
+
+<p>and Kaiser will look for certificates at:</p>
+<div class="CodeRay">
+  <div class="code"><pre>https://internal-site.com/dev-certificates/lvh.me.crt
+https://internal-site.com/dev-certificates/lvh.me.key
+https://internal-site.com/dev-certificates/lvh.me.chain.pem
+</pre></div>
+</div>
+
+<h4>HTTP/HTTPS Your own domain</h4>
+
+<p>If you have a fancy setup where you have your own localhost domain (like local.aweso.me) and you can generate your own SSL certificates (yes, very fancy) then you can set the suffix of your domain like this:</p>
+<div class="CodeRay">
+  <div class="code"><pre>kaiser set http-suffix local.aweso.me
+</pre></div>
+</div>
+
+<p>And your apps will be all <code>envname.local.aweso.me</code></p>
+
+<h4>If you change these settings</h4>
+
+<p>You will need to run</p>
+<div class="CodeRay">
+  <div class="code"><pre>kaiser shutdown
+</pre></div>
+</div>
+
+<p>And run</p>
+<div class="CodeRay">
+  <div class="code"><pre>kaiser up
+</pre></div>
+</div>
+
+<p>Again for changes to take effect.</p>
+</div></div>
+  </div>
+
+	</div>
+
+		</div>
+	</div>
+
+</div>
+
+    <!-- Mainly scripts -->
+    <script src="../js/jquery-3.1.1.min.js"></script>
+    <script src="../js/jquery-ui-1.10.4.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="../js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			asciimath2jax: {
+				delimiters: [['$$$MATH$$$','$$$ENDMATH$$$']]
+			}
+		});
+	</script>
+    <script src="../js/MathJax/MathJax.js?config=AM_HTMLorMML-full" async></script>
+
+
+
+
+    <!-- Custom and plugin javascript -->
+    <script src="../js/weaver.js"></script>
+    <script src='../js/plugins/pace/pace.min.js'></script>
+
+    <script>
+
+
+
+$( document ).ready(function() {
+
+
+
+});
+    </script>
+
+
+
+</body>
+
+</html>
+
