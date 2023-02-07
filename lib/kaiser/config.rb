@@ -12,7 +12,7 @@ module Kaiser
                   :kaiserfile,
                   :config
 
-      def load(work_dir, use_kaiserfile=true)
+      def load(work_dir, use_kaiserfile: true)
         @work_dir = work_dir
         @config_dir = "#{ENV['HOME']}/.kaiser"
 
@@ -37,7 +37,7 @@ module Kaiser
         }
 
         load_config
-        
+
         if use_kaiserfile
           @kaiserfile = Kaiserfile.new("#{@work_dir}/Kaiserfile")
           alt_kaiserfile = "#{ENV['HOME']}/kaiserfiles/Kaiserfile.#{@config[:envnames][work_dir]}"

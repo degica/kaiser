@@ -22,6 +22,7 @@ module Kaiser
       end
 
       def initialize
+        super
         @use_kaiserfile = false
       end
 

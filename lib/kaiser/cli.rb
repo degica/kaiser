@@ -7,7 +7,7 @@ module Kaiser
   # The commandline
   class Cli
     extend Kaiser::CliOptions
-    
+
     attr_reader :use_kaiserfile
 
     def initialize
@@ -43,7 +43,7 @@ module Kaiser
       Optimist.options do
         banner u
 
-        global_opts.each { |o| opt *o }
+        global_opts.each { |o| opt(*o) }
       end
     end
 
@@ -580,7 +580,7 @@ module Kaiser
 
     def container_dead?(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
-      return true if x.length.zero? || x[0]['State']['Running'] == false
+      return true if x.empty? || x[0]['State']['Running'] == false
     end
 
     def if_container_dead(container)
@@ -591,14 +591,14 @@ module Kaiser
 
     def create_if_volume_not_exist(vol)
       x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
-      return unless x.length.zero?
+      return unless x.empty?
 
       CommandRunner.run! Config.out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
       x = JSON.parse(`docker inspect #{net} 2>/dev/null`)
-      return unless x.length.zero?
+      return unless x.empty?
 
       CommandRunner.run! Config.out, "docker network create #{net}"
     end
@@ -621,7 +621,7 @@ module Kaiser
 
     def killrm(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
-      return if x.length.zero?
+      return if x.empty?
 
       CommandRunner.run Config.out, "docker kill #{container}" if x[0]['State'] && x[0]['State']['Running'] == true
       CommandRunner.run Config.out, "docker rm #{container}" if x[0]['State']
