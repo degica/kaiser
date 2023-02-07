@@ -62,7 +62,7 @@ module Kaiser
       # easily use ARGV.shift to access its own subcommands.
       ARGV.shift
 
-      Kaiser::Config.load(Dir.pwd, cmd.use_kaiserfile)
+      Kaiser::Config.load(Dir.pwd, use_kaiserfile: cmd.use_kaiserfile)
 
       # We do all this work in here instead of the exe/kaiser file because we
       # want -h options to output before we check if a Kaiserfile exists.
