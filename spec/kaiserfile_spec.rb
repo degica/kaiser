@@ -42,7 +42,7 @@ RSpec.describe Kaiser::Kaiserfile do
 
       it 'sets up the database variable to defaults' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
-        expect(kaiserfile.database[:image]).to eq 'alpine'
+        expect(kaiserfile.database[:image]).to eq 'none'
         expect(kaiserfile.database[:data_dir]).to eq '/tmp/data'
         expect(kaiserfile.database[:port]).to eq 1234
         expect(kaiserfile.database[:params]).to eq ''

@@ -21,19 +21,26 @@ module Kaiser
         EOS
       end
 
+      def initialize
+        super
+        @use_kaiserfile = false
+      end
+
       def execute(_opts)
         cmd = ARGV.shift
-        if cmd == 'cert-url'
+
+        case cmd
+        when 'cert-url'
           Config.config[:cert_source] = {
             url: ARGV.shift
           }
-        elsif cmd == 'cert-folder'
+        when 'cert-folder'
           Config.config[:cert_source] = {
             folder: ARGV.shift
           }
-        elsif cmd == 'http-suffix'
+        when 'http-suffix'
           Config.config[:http_suffix] = ARGV.shift
-        elsif cmd == 'help-https'
+        when 'help-https'
           puts <<~SET_HELP
             Notes on HTTPS:
 
@@ -63,6 +70,7 @@ module Kaiser
         else
           Optimist.die "Unknown subcommand: '#{cmd}'"
         end
+
         save_config
       end
     end

@@ -11,12 +11,14 @@ module Kaiser
         testpass = @options[:root_password] || 'testpassword'
         parameters = @options[:parameters] || ''
         port = @options[:port] || 3306
+        platform = @options[:platform] || 'linux/amd64'
 
         {
           port: port,
           data_dir: '/var/lib/postgresql/data',
           params: "-e POSTGRES_PASSWORD=#{testpass}",
           commands: parameters,
+          platform: platform,
           waitscript_params: "
             -e PG_HOST=<%= db_container_name %>
             -e PG_USER=postgres

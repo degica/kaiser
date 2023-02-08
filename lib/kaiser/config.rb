@@ -3,24 +3,23 @@
 module Kaiser
   class Config
     class << self
+      attr_accessor :out,
+                    :info_out
+
       attr_reader :work_dir,
                   :config_dir,
                   :config_file,
                   :kaiserfile,
-                  :config,
-                  :out,
-                  :info_out
+                  :config
 
-      attr_writer :out,
-                  :info_out
-
-      def load(work_dir)
+      def load(work_dir, use_kaiserfile: true)
         @work_dir = work_dir
         @config_dir = "#{ENV['HOME']}/.kaiser"
 
+        migrate_dotted_config_files
+
         FileUtils.mkdir_p @config_dir
-        @config_file = "#{@config_dir}/.config.yml"
-        @kaiserfile = Kaiserfile.new("#{@work_dir}/Kaiserfile")
+        @config_file = "#{@config_dir}/config.yml"
 
         @config = {
           envnames: {},
@@ -39,14 +38,32 @@ module Kaiser
 
         load_config
 
-        alt_kaiserfile = "#{ENV['HOME']}/kaiserfiles/Kaiserfile.#{@config[:envnames][work_dir]}"
-        @kaiserfile = Kaiserfile.new(alt_kaiserfile) if File.exist?(alt_kaiserfile)
+        if use_kaiserfile
+          @kaiserfile = Kaiserfile.new("#{@work_dir}/Kaiserfile")
+          alt_kaiserfile = "#{ENV['HOME']}/kaiserfiles/Kaiserfile.#{@config[:envnames][work_dir]}"
+          @kaiserfile = Kaiserfile.new(alt_kaiserfile) if File.exist?(alt_kaiserfile)
+        end
 
         @config
       end
 
       def always_verbose?
         @config[:always_verbose]
+      end
+
+      # Up until version 0.5.1, kaiser used dotfiles for all of it configuration.
+      # It makes sense of hide the configuration directory itself but hiding the files
+      # inside of it just causes confusion.
+      #
+      # Kaiser 0.5.2 started using non-dotted files instead. This method renames the old
+      # files in case you have just upgraded from an older version.
+      def migrate_dotted_config_files
+        return unless File.exist?("#{@config_dir}/.config.yml")
+
+        Dir["#{@config_dir}/**/.*"].each do |x|
+          dest = x.sub(%r{/\.([a-z.]+)$}, '/\1')
+          FileUtils.mv x, dest
+        end
       end
 
       def load_config

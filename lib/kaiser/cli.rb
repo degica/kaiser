@@ -1,11 +1,18 @@
 # frozen_string_literal: true
 
 require 'kaiser/command_runner'
+require 'active_support/core_ext/object/blank'
 
 module Kaiser
   # The commandline
   class Cli
     extend Kaiser::CliOptions
+
+    attr_reader :use_kaiserfile
+
+    def initialize
+      @use_kaiserfile = true
+    end
 
     def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
@@ -18,7 +25,7 @@ module Kaiser
       @out = Config.out
       @info_out = Config.info_out
 
-      @kaiserfile.validate!
+      @kaiserfile.validate! if @use_kaiserfile
     end
 
     # At first I did this in the constructor but the problem with that is Optimist
@@ -36,7 +43,7 @@ module Kaiser
       Optimist.options do
         banner u
 
-        global_opts.each { |o| opt *o }
+        global_opts.each { |o| opt(*o) }
       end
     end
 
@@ -55,12 +62,12 @@ module Kaiser
       # easily use ARGV.shift to access its own subcommands.
       ARGV.shift
 
-      Kaiser::Config.load(Dir.pwd)
+      Kaiser::Config.load(Dir.pwd, use_kaiserfile: cmd.use_kaiserfile)
 
       # We do all this work in here instead of the exe/kaiser file because we
       # want -h options to output before we check if a Kaiserfile exists.
       # If we do it in exe/kaiser, people won't be able to check help messages
-      # unless they create a Kaiserfile firest.
+      # unless they create a Kaiserfile first.
       if opts[:quiet]
         Config.out = File.open(File::NULL, 'w')
         Config.info_out = File.open(File::NULL, 'w')
@@ -83,7 +90,7 @@ module Kaiser
       @subcommands.each do |name, klass|
         name_s = name.to_s
 
-        output += name_s + "\n"
+        output += "#{name_s}\n"
         output += name_s.gsub(/./, '-')
         output += "\n"
         output += klass.usage
@@ -129,6 +136,7 @@ module Kaiser
       ensure_db_volume
       start_db
       return if File.exist?(default_db_image)
+      return unless db_present?
 
       # Some databases keep state around, best to clean it.
       stop_db
@@ -144,16 +152,20 @@ module Kaiser
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{db_reset_command}"
 
-      save_db('.default')
+      save_db('default')
     end
 
     def save_db(name)
+      return unless db_present?
+
       killrm db_container_name
       save_db_state_from container: db_volume_name, to_file: db_image_path(name)
       start_db
     end
 
     def load_db(name)
+      return unless db_present?
+
       check_db_image_exists(name)
       killrm db_container_name
       CommandRunner.run Config.out, "docker volume rm #{db_volume_name}"
@@ -186,15 +198,19 @@ module Kaiser
         -v #{file}:#{file}
         ruby:alpine
         tar xvjf #{file} -C #{db_data_directory}
-          --strip #{db_data_directory.scan(%r{\/}).count}"
+          --strip #{db_data_directory.scan(%r{/}).count}"
     end
 
     def stop_db
+      return unless db_present?
+
       Config.info_out.puts 'Stopping database'
       killrm db_container_name
     end
 
     def start_db
+      return unless db_present?
+
       Config.info_out.puts 'Starting up database'
       run_if_dead db_container_name, "docker run -d
         -p #{db_port}:#{db_expose}
@@ -226,7 +242,7 @@ module Kaiser
     end
 
     def default_db_image
-      db_image_path('.default')
+      db_image_path('default')
     end
 
     def attach_app
@@ -272,11 +288,11 @@ module Kaiser
     end
 
     def tmp_waitscript_name
-      "#{Config.config_dir}/.#{envname}-dbwaitscript"
+      "#{Config.config_dir}/#{envname}-dbwaitscript"
     end
 
     def tmp_dockerfile_name
-      "#{Config.config_dir}/.#{envname}-dockerfile"
+      "#{Config.config_dir}/#{envname}-dockerfile"
     end
 
     def tmp_db_waiter
@@ -327,7 +343,7 @@ module Kaiser
 
       Config.info_out.puts 'Waiting for server to start...'
 
-      http_code_extractor = "curl -s -o /dev/null -I -w \"\%{http_code}\" http://#{app_container_name}:#{app_expose}"
+      http_code_extractor = "curl -s -o /dev/null -I -w \"\%<http_code>s\" http://#{app_container_name}:#{app_expose}"
       unreachable_test = "#{http_code_extractor} | grep -q 000"
 
       # This waitscript runs until curl returns a non-unreachable status code
@@ -354,13 +370,19 @@ module Kaiser
         # If curl returns an error status the script will cut out and
         # the app container died error will be displayed.
         raise Kaiser::Error, "Failed with HTTP status: #{line}" if line =~ /^[0-9]{3}$/ && line != '200'
-        raise Kaiser::Error, 'App container died. Run `kaiser logs` to see why.' if line != '!' && container_dead?(app_container_name)
+
+        if line != '!' && container_dead?(app_container_name)
+          raise Kaiser::Error,
+                'App container died. Run `kaiser logs` to see why.'
+        end
       end
 
       Config.info_out.puts 'Started successfully!'
     end
 
     def wait_for_db
+      return unless db_present?
+
       Config.info_out.puts 'Waiting for database to start...'
       run_blocking_script(db_image, db_waitscript_params, db_waitscript)
       Config.info_out.puts 'Started.'
@@ -387,7 +409,13 @@ module Kaiser
     end
 
     def db_image
-      Config.kaiserfile.database[:image]
+      image = Config.kaiserfile.database[:image]
+      platform = Config.kaiserfile.database[:platform].presence
+      platform ? "--platform #{platform} #{image}" : image
+    end
+
+    def db_present?
+      db_image != 'none'
     end
 
     def db_commands
@@ -552,7 +580,7 @@ module Kaiser
 
     def container_dead?(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
-      return true if x.length.zero? || x[0]['State']['Running'] == false
+      return true if x.empty? || x[0]['State']['Running'] == false
     end
 
     def if_container_dead(container)
@@ -563,14 +591,14 @@ module Kaiser
 
     def create_if_volume_not_exist(vol)
       x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
-      return unless x.length.zero?
+      return unless x.empty?
 
       CommandRunner.run! Config.out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
       x = JSON.parse(`docker inspect #{net} 2>/dev/null`)
-      return unless x.length.zero?
+      return unless x.empty?
 
       CommandRunner.run! Config.out, "docker network create #{net}"
     end
@@ -593,7 +621,7 @@ module Kaiser
 
     def killrm(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
-      return if x.length.zero?
+      return if x.empty?
 
       CommandRunner.run Config.out, "docker kill #{container}" if x[0]['State'] && x[0]['State']['Running'] == true
       CommandRunner.run Config.out, "docker rm #{container}" if x[0]['State']
