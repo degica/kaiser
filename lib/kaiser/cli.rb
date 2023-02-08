@@ -8,6 +8,12 @@ module Kaiser
   class Cli
     extend Kaiser::CliOptions
 
+    attr_reader :use_kaiserfile
+
+    def initialize
+      @use_kaiserfile = true
+    end
+
     def set_config
       # This is here for backwards compatibility since it can be used in Kaiserfiles.
       # It would be a good idea to deprecate this and make it more abstract.
@@ -19,7 +25,7 @@ module Kaiser
       @out = Config.out
       @info_out = Config.info_out
 
-      @kaiserfile.validate!
+      @kaiserfile.validate! if @use_kaiserfile
     end
 
     # At first I did this in the constructor but the problem with that is Optimist
@@ -37,7 +43,7 @@ module Kaiser
       Optimist.options do
         banner u
 
-        global_opts.each { |o| opt *o }
+        global_opts.each { |o| opt(*o) }
       end
     end
 
@@ -56,12 +62,12 @@ module Kaiser
       # easily use ARGV.shift to access its own subcommands.
       ARGV.shift
 
-      Kaiser::Config.load(Dir.pwd)
+      Kaiser::Config.load(Dir.pwd, use_kaiserfile: cmd.use_kaiserfile)
 
       # We do all this work in here instead of the exe/kaiser file because we
       # want -h options to output before we check if a Kaiserfile exists.
       # If we do it in exe/kaiser, people won't be able to check help messages
-      # unless they create a Kaiserfile firest.
+      # unless they create a Kaiserfile first.
       if opts[:quiet]
         Config.out = File.open(File::NULL, 'w')
         Config.info_out = File.open(File::NULL, 'w')
@@ -574,7 +580,7 @@ module Kaiser
 
     def container_dead?(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
-      return true if x.length.zero? || x[0]['State']['Running'] == false
+      return true if x.empty? || x[0]['State']['Running'] == false
     end
 
     def if_container_dead(container)
@@ -585,14 +591,14 @@ module Kaiser
 
     def create_if_volume_not_exist(vol)
       x = JSON.parse(`docker volume inspect #{vol} 2>/dev/null`)
-      return unless x.length.zero?
+      return unless x.empty?
 
       CommandRunner.run! Config.out, "docker volume create #{vol}"
     end
 
     def create_if_network_not_exist(net)
       x = JSON.parse(`docker inspect #{net} 2>/dev/null`)
-      return unless x.length.zero?
+      return unless x.empty?
 
       CommandRunner.run! Config.out, "docker network create #{net}"
     end
@@ -615,7 +621,7 @@ module Kaiser
 
     def killrm(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
-      return if x.length.zero?
+      return if x.empty?
 
       CommandRunner.run Config.out, "docker kill #{container}" if x[0]['State'] && x[0]['State']['Running'] == true
       CommandRunner.run Config.out, "docker rm #{container}" if x[0]['State']
