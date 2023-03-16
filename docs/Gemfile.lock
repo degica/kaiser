@@ -15,7 +15,7 @@ GEM
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     optimist (3.0.1)
-    rack (2.2.3)
+    rack (2.2.6.4)
     rack-protection (2.0.8.1)
       rack
     redcarpet (3.5.1)
