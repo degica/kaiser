@@ -534,7 +534,7 @@ module Kaiser
         "docker run -d
           --name #{Config.config[:shared_names][:redis]}
           --network #{Config.config[:networkname]}
-          redis:alpine"
+          redis:alpine:7"
       )
       run_if_dead(
         Config.config[:shared_names][:chrome],
