@@ -24,7 +24,7 @@ jobs:
   rubocop:
     container:
       image: ruby:2.7
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v1
