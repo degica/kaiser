@@ -1,1 +1,7 @@
 inherit_from: .rubocop_todo.yml
+
+# don't look at blocklength for specs
+# its basically what they do anyway
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'

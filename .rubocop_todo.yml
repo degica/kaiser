@@ -43,7 +43,7 @@ Lint/ConstantDefinitionInBlock:
 # Offense count: 11
 # Configuration parameters: AllowedMethods, AllowedPatterns, IgnoredMethods, CountRepeatedAttributes.
 Metrics/AbcSize:
-  Max: 57
+  Max: 58
 
 # Offense count: 7
 # Configuration parameters: CountComments, CountAsOne, ExcludedMethods, AllowedMethods, AllowedPatterns, IgnoredMethods.

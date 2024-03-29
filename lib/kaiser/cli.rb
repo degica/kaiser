@@ -396,6 +396,10 @@ module Kaiser
       @services ||= Config.kaiserfile.services.map { |name, info| Service.new(envname, name, info) }
     end
 
+    def force_platform
+      Config.kaiserfile.platform || ''
+    end
+
     def db_port
       Config.config[:envs][envname][:db_port]
     end
@@ -520,6 +524,19 @@ module Kaiser
       end
     end
 
+    def selenium_node_image
+      return ENV['OVERRIDE_SELENIUM_NODE_IMAGE'] unless ENV['OVERRIDE_SELENIUM_NODE_IMAGE'].nil?
+
+      if RUBY_PLATFORM.start_with?('arm64') || RUBY_PLATFORM.start_with?('aarch64')
+        # use the seleniarm image because its more stable in arm procs
+        # somehow the x64 image does not do well under qemu under arm
+        return 'seleniarm/standalone-chromium'
+      end
+
+      # default to x64 image
+      'selenium/standalone-chrome-debug'
+    end
+
     def ensure_setup
       ensure_env
 
@@ -540,9 +557,10 @@ module Kaiser
         Config.config[:shared_names][:chrome],
         "docker run -d
           -p 5900:5900
+          --shm-size='2g'
           --name #{Config.config[:shared_names][:chrome]}
           --network #{Config.config[:networkname]}
-          selenium/standalone-chrome-debug"
+          #{selenium_node_image}"
       )
       run_if_dead(
         Config.config[:shared_names][:nginx],
@@ -580,7 +598,7 @@ module Kaiser
 
     def container_dead?(container)
       x = JSON.parse(`docker inspect #{container} 2>/dev/null`)
-      return true if x.empty? || x[0]['State']['Running'] == false
+      x.empty? || x[0]['State']['Running'] == false
     end
 
     def if_container_dead(container)

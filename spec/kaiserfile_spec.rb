@@ -171,6 +171,26 @@ RSpec.describe Kaiser::Kaiserfile do
     end
   end
 
+  context '#force_platform' do
+    context 'when force_platform is specified' do
+      let(:kaiserfile_contents) { "force_platform 'catcpu'" }
+
+      it 'sets platform' do
+        kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
+        expect(kaiserfile.platform).to eq('catcpu')
+      end
+    end
+
+    context 'when force_platform is not specified' do
+      let(:kaiserfile_contents) { '' }
+
+      it 'platform is nil' do
+        kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
+        expect(kaiserfile.platform).to be_nil
+      end
+    end
+  end
+
   context '#service' do
     context 'when service is specified' do
       let(:kaiserfile_contents) { "service 'santaclaus'" }
