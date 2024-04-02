@@ -76,6 +76,10 @@ module Kaiser
       }
     end
 
+    def force_platform(platform_name)
+      @platform = platform_name
+    end
+
     def expose(port)
       @port = port
     end

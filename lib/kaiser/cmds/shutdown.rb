@@ -14,7 +14,7 @@ module Kaiser
       end
 
       def execute(_opts)
-        Config.config[:shared_names].each do |_, container_name|
+        Config.config[:shared_names].each_value do |container_name|
           killrm container_name
         end
 

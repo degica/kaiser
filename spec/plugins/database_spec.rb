@@ -53,7 +53,7 @@ RSpec.describe 'Kaiser::Plugins::Database' do
       kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
       allow(kaiserfile).to receive(:require).with('kaiser/databases/somebase') { true }
 
-      expect(db_class).to receive(:new) { db_driver }.with(hello: :meow)
+      expect(db_class).to receive(:new) { db_driver }.with({ hello: :meow })
       expect(db_driver).to receive(:options_hash) { { port: 1234 } }
       expect(db_driver).to receive(:image_name) { '' }
       expect(kaiserfile).to receive(:db).with('', port: 1234)

@@ -28,14 +28,24 @@ module Kaiser
         end
       end
 
+      def build_cmd
+        platform_args = ''
+        platform_args = "--platform=#{force_platform}" unless force_platform.empty?
+        build_args = docker_build_args.map { |k, v| "--build-arg #{k}=#{v}" }
+        [
+          'docker build',
+          "-t kaiser:#{envname}-#{current_branch}",
+          "-f #{tmp_dockerfile_name} #{Config.work_dir}",
+          platform_args,
+          build_args.join(' ').to_s
+        ]
+      end
+
       def setup_app
         Config.info_out.puts 'Setting up application'
         File.write(tmp_dockerfile_name, docker_file_contents)
-        build_args = docker_build_args.map { |k, v| "--build-arg #{k}=#{v}" }
-        CommandRunner.run! Config.out, "docker build
-          -t kaiser:#{envname}-#{current_branch}
-          -f #{tmp_dockerfile_name} #{Config.work_dir}
-          #{build_args.join(' ')}"
+
+        CommandRunner.run! Config.out, build_cmd.join("\n\t")
         FileUtils.rm(tmp_dockerfile_name)
       end
     end

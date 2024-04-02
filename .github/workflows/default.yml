@@ -3,7 +3,7 @@ name: default
 jobs:
   rspec:
     container:
-      image: ruby:2.7
+      image: ruby:3.0
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
       run: bundle exec rspec
   rubocop:
     container:
-      image: ruby:2.7
+      image: ruby:3.0
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
