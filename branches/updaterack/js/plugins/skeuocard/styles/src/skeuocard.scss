@@ -1,0 +1,190 @@
+@import "util";
+
+/* Sizing is 1em = 20px */
+
+@font-face {
+  font-family: 'ocraregular';
+  src: url('../fonts/ocra-webfont.eot');
+  src: url('../fonts/ocra-webfont.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/ocra-webfont.woff') format('woff'),
+       url('../fonts/ocra-webfont.ttf') format('truetype'),
+       url('../fonts/ocra-webfont.svg#ocraregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*
+
+// small
+$cc-face-width: 15.0em;
+$cc-face-height: 9.43em;
+$flip-tab-width: 8.13em;
+$flip-tab-height: 2.22em;
+*/
+
+$cc-face-width: 24.8em;
+$cc-face-height: 15.6em;
+
+$flip-tab-width: 13em;
+$flip-tab-height: 3.55em;
+
+$cc-label-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$cc-field-family: "ocraregular", "OCR A Std", "OCR A", Courier, "Courier New", monospace;
+
+$color-field-glow: #0096de;
+$color-invalid: #ff655a;
+$color-valid: #00CFA7;
+
+.skeuocard.js {
+  width: $cc-face-width;
+  height: $cc-face-height;
+
+  -webkit-perspective: 1000;
+  -moz-perspective: 1000;
+  -o-perspective: 1000;
+  perspective: 1000;
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .card-body {
+    -moz-transform: perspective(1000px);
+    -moz-transform-style: preserve-3d;
+    position: relative;
+
+    .face {
+      -webkit-backface-visibility: hidden;
+      -moz-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: visible;
+      -webkit-backface-visibility: hidden;
+      
+      @include vendor-prefix(transform-style, preserve-3d);
+      -webkit-transition: -webkit-transform 0.25s ease, background-image 0.25s ease;
+      -ms-transition: -ms-transform 0.25s ease, background-image 0.25s ease;
+      -moz-transition: -moz-transform 0.25s ease, background-image 0.25s ease;
+      -o-transition: -o-transform 0.25s ease, background-image 0.25s ease;
+      transition: transform 0.25s ease, background-image 0.25s ease;
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: $cc-face-width;
+      height: $cc-face-height;
+      -webkit-border-radius: 1.15em;
+      border-radius: 1.15em;
+      background-color: #eee;
+      background-size: cover;
+      border: 1px solid #ddd;
+    }
+
+    .face.front{
+      -webkit-transform: translate3d(0,0,0);
+      z-index: 2;
+    }
+
+    .face.back{
+      -webkit-transform: rotateY(-180deg);
+      -moz-transform: rotateY(-180deg);
+      -o-transform: rotateY(-180deg);
+      -ms-transform: rotateY(-180deg);
+      transform: rotateY(-180deg);
+    }
+  }
+
+  .card-body.flip {
+    .face.back{
+      -webkit-transform: rotateY(0deg);
+      -moz-transform: rotateY(0deg);
+      -o-transform: rotateY(0deg);
+      -ms-transform: rotateY(0deg);
+      transform: rotateY(0deg);
+    }
+
+    .face.front{
+      -webkit-transform: rotateY(180deg);
+      -moz-transform: rotateY(180deg);
+      -o-transform: rotateY(180deg);
+      transform: rotateY(180deg);
+    }
+  }
+
+  .flip-tab{
+    position: absolute;
+    cursor: pointer;
+    width: $flip-tab-width;
+    display: block;
+    background: #666;
+    height: $flip-tab-height;
+    @include vendor-prefix(border-radius, 3.55em);
+    @include vendor-prefix(transition, all 0.25s ease);
+    p{
+      margin: 0.6em;
+      color: #fff;
+      font-size: 1.0em;
+      line-height: 1.2em;
+    }
+    p strong{
+      color: #fff;
+      font-weight: bold;
+    }
+    &.front{
+      right: -1.25em;
+      top: 1em;
+      &:hover{ right: -1.8em; }
+    }
+    &.back{
+      left: -1.25em;
+      top: 1em;
+      &:hover{ left: -1.8em; }
+    }
+  }
+
+  .flip-tab.prompt{
+    background: $color-valid url('../images/card-valid-anim.gif') no-repeat;
+    background-size: 2.3em 2.3em;
+    &.front{
+      background-position: 10.05em 0.6em;
+      p{
+        margin-right: 2.9em;
+        margin-left: 1.25em;
+        margin-top: 0.6em;
+      }
+    }
+    &.back{
+      background-position: 0.6em 0.6em;
+      p{
+        margin-right: 1.25em;
+        margin-left: 2.9em;
+        margin-top: 0.6em;
+      }
+    }
+  }
+  .flip-tab.warn{
+    background: $color-invalid url('../images/card-invalid-indicator.png') no-repeat;
+    background-size: 2.3em 2.3em;
+    &.front{
+      background-position: 10.08em 0.7em;
+      p{
+        margin-right: 2.9em;
+        margin-left: 1.25em;
+        margin-top: 0.6em;
+      }
+    }
+    &.back{
+      background-position: 0.6em 0.6em;
+      p{
+        margin-right: 1.25em;
+        margin-left: 2.9em;
+        margin-top: 0.6em;
+      }
+    }
+  }
+
+}
+
+@import "_cards";
+@import "_browser_hacks";
