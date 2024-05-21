@@ -34,6 +34,7 @@ module Kaiser
         build_args = docker_build_args.map { |k, v| "--build-arg #{k}=#{v}" }
         [
           'docker build',
+          "--progress=plain",
           "-t kaiser:#{envname}-#{current_branch}",
           "-f #{tmp_dockerfile_name} #{Config.work_dir}",
           platform_args,
