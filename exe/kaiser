@@ -5,7 +5,6 @@ require 'optimist'
 require 'fileutils'
 require 'yaml'
 require 'json'
-require 'pty'
 require 'erb'
 
 require 'kaiser'
