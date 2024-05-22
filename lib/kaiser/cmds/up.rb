@@ -34,7 +34,6 @@ module Kaiser
         build_args = docker_build_args.map { |k, v| "--build-arg #{k}=#{v}" }
         [
           'docker build',
-          "--progress=plain",
           "-t kaiser:#{envname}-#{current_branch}",
           "-f #{tmp_dockerfile_name} #{Config.work_dir}",
           platform_args,
@@ -46,7 +45,10 @@ module Kaiser
         Config.info_out.puts 'Setting up application'
         File.write(tmp_dockerfile_name, docker_file_contents)
 
-        CommandRunner.run! Config.out, build_cmd.join("\n\t")
+        CommandRunner.run! Config.out, build_cmd.join("\n\t"), env_vars: {
+          'DOCKER_BUILDKIT' => '1',
+          'BUILDKIT_PROGRESS' => 'plain'
+        }
         FileUtils.rm(tmp_dockerfile_name)
       end
     end
