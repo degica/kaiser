@@ -46,16 +46,6 @@ RSpec.describe Kaiser::CommandRunner do
 
       expect(lines).to eq ['WORLD']
     end
-
-    it 'can capture lines' do
-      lines = []
-      out = StringIO.new
-      described_class.new(out, 'echo hello', {}).run_command do |line|
-        lines << line
-      end
-
-      expect(lines).to eq ['hello']
-    end
   end
 
   describe '.run' do
