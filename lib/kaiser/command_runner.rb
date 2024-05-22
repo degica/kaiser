@@ -9,7 +9,7 @@ module Kaiser
   # PTY and to pass the lines programmatically to the host application
   # as well as to capture the return code at the end.
   class CommandRunner
-    def self.run(out, cmd, env_vars:, &block)
+    def self.run(out, cmd, env_vars: {}, &block)
       out.puts "> #{cmd}"
       CommandRunner.new(out, cmd, env_vars).run_command(&block)
     end
