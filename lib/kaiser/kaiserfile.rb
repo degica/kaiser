@@ -102,10 +102,20 @@ module Kaiser
       @server_type = value
     end
 
-    def service(name, image: name)
+    def service(name,
+      image: name,
+      command: nil,
+      binds: {},
+      env: {})
+
       raise "duplicate service #{name.inspect}" if @services.key?(name)
 
-      @services[name] = { image: image }
+      @services[name] = {
+        image: image,
+        command: command,
+        binds: binds,
+        env: env
+      }
     end
   end
 end

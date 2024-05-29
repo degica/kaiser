@@ -110,11 +110,7 @@ module Kaiser
       services.each do |service|
         Config.info_out.puts "Starting service: #{service.name}"
         run_if_dead(
-          service.shared_name,
-          "docker run -d
-            --name #{service.shared_name}
-            --network #{Config.config[:networkname]}
-            #{service.image}"
+          service.shared_name, service.start_docker_command
         )
       end
     end
@@ -246,6 +242,10 @@ module Kaiser
     end
 
     def attach_app
+      start_services
+
+      puts "Attaching to app..."
+
       cmd = (ARGV || []).join(' ')
       killrm app_container_name
 
@@ -264,6 +264,8 @@ module Kaiser
         #{volumes}
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
+
+      stop_services
 
       Config.out.puts 'Cleaning up...'
     end
