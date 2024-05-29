@@ -34,31 +34,31 @@ RSpec.describe Kaiser::Service do
 
     it 'provides a command with envs' do
       s = Kaiser::Service.new('meow', 'santa', {
-        image: 'np/santa:lol',
-        env: {
-          "HELLO" => "world"
-        }
-      })
+                                image: 'np/santa:lol',
+                                env: {
+                                  'HELLO' => 'world'
+                                }
+                              })
 
       expect(s.start_docker_command).to eq 'docker run -d --name meow-santa --network testnet -e HELLO=world np/santa:lol'
     end
 
     it 'provides a command with binds' do
       s = Kaiser::Service.new('meow', 'santa', {
-        image: 'np/santa:lol',
-        binds: {
-          "/home/user" => "/home/inside/container"
-        }
-      })
+                                image: 'np/santa:lol',
+                                binds: {
+                                  '/home/user' => '/home/inside/container'
+                                }
+                              })
 
       expect(s.start_docker_command).to eq 'docker run -d --name meow-santa --network testnet -v /home/user:/home/inside/container np/santa:lol'
     end
 
     it 'provides a command with command' do
       s = Kaiser::Service.new('meow', 'santa', {
-        image: 'np/santa:lol',
-        command: 'hohoho'
-      })
+                                image: 'np/santa:lol',
+                                command: 'hohoho'
+                              })
 
       expect(s.start_docker_command).to eq 'docker run -d --name meow-santa --network testnet np/santa:lol hohoho'
     end

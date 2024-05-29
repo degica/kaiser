@@ -103,10 +103,10 @@ module Kaiser
     end
 
     def service(name,
-      image: name,
-      command: nil,
-      binds: {},
-      env: {})
+                image: name,
+                command: nil,
+                binds: {},
+                env: {})
 
       raise "duplicate service #{name.inspect}" if @services.key?(name)
 

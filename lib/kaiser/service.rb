@@ -32,18 +32,18 @@ module Kaiser
     end
 
     def start_docker_command
-      envstring = env.map do |k,v|
+      envstring = env.map do |k, v|
         "-e #{k}=#{v}"
       end.join(' ')
 
-      bindstring = binds.map do |k,v|
+      bindstring = binds.map do |k, v|
         "-v #{k}:#{v}"
       end.join(' ')
 
       commandstring = command
 
       cmd_array = [
-        "docker run -d",
+        'docker run -d',
         "--name #{shared_name}",
         "--network #{Config.config[:networkname]}",
         envstring,
@@ -52,9 +52,9 @@ module Kaiser
         commandstring
       ]
 
-      cmd_array.filter! {|x| !x.empty?}
+      cmd_array.filter! { |x| !x.empty? }
 
-      cmd_array.join(" ")
+      cmd_array.join(' ')
     end
   end
 end

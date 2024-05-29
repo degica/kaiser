@@ -198,11 +198,11 @@ RSpec.describe Kaiser::Kaiserfile do
       it 'adds a service' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
         expect(kaiserfile.services).to eq('santaclaus' => {
-          image: 'santaclaus',
-          command: nil,
-          binds: {},
-          env: {}
-        })
+                                            image: 'santaclaus',
+                                            command: nil,
+                                            binds: {},
+                                            env: {}
+                                          })
       end
     end
 
@@ -212,11 +212,11 @@ RSpec.describe Kaiser::Kaiserfile do
       it 'adds a service with the image name' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
         expect(kaiserfile.services).to eq('santaclaus' => {
-          image: 'northpole/santaclaus',
-          command: nil,
-          binds: {},
-          env: {}
-        })
+                                            image: 'northpole/santaclaus',
+                                            command: nil,
+                                            binds: {},
+                                            env: {}
+                                          })
       end
     end
 
@@ -226,11 +226,11 @@ RSpec.describe Kaiser::Kaiserfile do
       it 'adds a service with the image name' do
         kaiserfile = Kaiser::Kaiserfile.new('Kaiserfile')
         expect(kaiserfile.services).to eq('santaclaus' => {
-          image: 'northpole/santaclaus:last_christmas',
-          command: nil,
-          binds: {},
-          env: {}
-        })
+                                            image: 'northpole/santaclaus:last_christmas',
+                                            command: nil,
+                                            binds: {},
+                                            env: {}
+                                          })
       end
     end
   end

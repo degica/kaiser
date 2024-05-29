@@ -244,7 +244,7 @@ module Kaiser
     def attach_app
       start_services
 
-      puts "Attaching to app..."
+      puts 'Attaching to app...'
 
       cmd = (ARGV || []).join(' ')
       killrm app_container_name
