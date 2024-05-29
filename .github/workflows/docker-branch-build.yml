@@ -4,16 +4,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    -
-      name: Login to Docker Hub
+    - name: extract_branch
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
         username: degicadev
         password: ${{ secrets.DOCKERHUB_PAT }}
     - name: setup
       run: |-
-        docker build . -t degicadev/kaiser:branch-${{ github.head_ref }}
-        docker push degicadev/kaiser:branch-${{ github.head_ref }}
+        docker build . -t degicadev/kaiser:branch-${{ steps.extract_branch.outputs.branch }}
+        docker push degicadev/kaiser:branch-${{ steps.extract_branch.outputs.branch }}
 
 'on':
   push:
