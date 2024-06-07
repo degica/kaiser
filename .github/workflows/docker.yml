@@ -1,0 +1,24 @@
+---
+name: docker
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    -
+      name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: degicadev
+        password: ${{ secrets.DOCKERHUB_PAT }}
+    - name: setup
+      run: |-
+        docker build . -t degicadev/kaiser:latest
+        docker push degicadev/kaiser:latest
+        docker build . -t degicadev/kaiser:`bin/version`
+        docker push degicadev/kaiser:`bin/version`
+
+'on':
+  push:
+    branches:
+    - 'master'

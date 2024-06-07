@@ -38,14 +38,14 @@ docker build -t degica/kaiser .
 And then add the following line to your `.bashrc` or `.bash_profile`
 
 ```
-alias kaiser='docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.kaiser:/root/.kaiser -v `pwd`:`pwd` -e CONTEXT_DIR="`pwd`" degica/kaiser'
+alias kaiser='docker run --pull=always --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.kaiser:/root/.kaiser -v `pwd`:`pwd` -e CONTEXT_DIR="`pwd`" degicadev/kaiser'
 ```
 
 Or if you use fish
 
 ```
 function kaiser
-  docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.kaiser:/root/.kaiser -v (pwd):(pwd) -e CONTEXT_DIR=(pwd) degica/kaiser $argv
+  docker run --pull=always --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.kaiser:/root/.kaiser -v (pwd):(pwd) -e CONTEXT_DIR=(pwd) degicadev/kaiser $argv
 end
 ```
 
