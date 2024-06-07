@@ -583,7 +583,7 @@ module Kaiser
           --network #{Config.config[:networkname]}
           --privileged
           -v /var/run/docker.sock:/docker.sock:ro
-          davidsiaw/docker-dns
+          phensley/docker-dns
           --domain #{http_suffix}
           --record :#{ip_of_container(Config.config[:shared_names][:nginx])}"
       )
