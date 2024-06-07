@@ -581,9 +581,10 @@ module Kaiser
         "docker run -d
           --name #{Config.config[:shared_names][:dns]}
           --network #{Config.config[:networkname]}
-          --privileged
-          -v /var/run/docker.sock:/docker.sock:ro
-          phensley/docker-dns
+          --privileged --pull=always
+          -e DOCKER_HOST='unix:///var/run/docker.sock'
+          -v /var/run/docker.sock:/var/run/docker.sock:ro
+          davidsiaw/dockerdns
           --domain #{http_suffix}
           --record :#{ip_of_container(Config.config[:shared_names][:nginx])}"
       )
