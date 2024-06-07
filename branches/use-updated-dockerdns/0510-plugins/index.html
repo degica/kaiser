@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<!-- Generated using weaver: https://github.com/davidsiaw/weaver -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kaiser Docs - Plugins</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../css/plugins/iCheck/custom.css" rel="stylesheet">
+
+    	<link href="../css/style.css" rel="stylesheet">
+
+
+    <link href="../css/animate.css" rel="stylesheet">
+
+    <link href="../css/main.css" rel="stylesheet">
+
+
+
+
+</head>
+
+<body class=' fixed-sidebar'>
+
+<div id="background" style="z-index: -999; position:absolute; left:0px; right:0px; width:100%; height:100%">
+
+</div>
+
+<div id="content" style="z-index: 0">
+
+	<div id="wrapper">
+
+		<nav class="navbar-default navbar-static-side" role="navigation">
+			<div class="sidebar-collapse">
+				<ul class="nav" id="side-menu">
+
+
+	                <li>
+	                    <a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/"><i class="fa fa-home"></i> <span class="nav-label">Kaiser Docs</span> <span class="label label-primary pull-right"></span></a>
+	                </li>
+
+<li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0110-getting_started/"><i class="fa fa-file"></i><span class="nav-label">Getting Started</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0115-command-reference/"><i class="fa fa-file"></i><span class="nav-label">Command Reference</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0120-the-kaiserfile/"><i class="fa fa-file"></i><span class="nav-label">The Kaiserfile</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0130-databases/"><i class="fa fa-file"></i><span class="nav-label">Databases</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0140-suffixes/"><i class="fa fa-file"></i><span class="nav-label">Suffixes</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0510-plugins/"><i class="fa fa-file"></i><span class="nav-label">Plugins</span></a></li>
+
+				</ul>
+			</div>
+		</nav>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+		        <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
+					<div class="navbar-header">
+					    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+					</div>
+		            <ul class="nav navbar-top-links navbar-right">
+		                <!-- NAV RIGHT -->
+		            </ul>
+		        </nav>
+	        </div>
+	<div class="row wrapper border-bottom white-bg page-heading" style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <h2>Kaiser Documentation</h2><ol class="breadcrumb"><li>Plugins</li></ol>
+  </div>
+
+	</div>
+	<div class="row " style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <br  /><div class="ibox float-e-margins"><div class="ibox-content" style="min-height: px"><h1>Plugins</h1>
+
+<p>Kaiser has a plugin system that adds commands to the Kaiserfile to help improve your workflow. Below are a list of built-in plugins that come with Kaiser.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2>Git Submodules Plugin</h2>
+
+<p>This plugin ensures that any submodules your repo has are checked out. If they are not, it will cause Kaiser to exit with a status code of 1.</p>
+
+<p>Usage:</p>
+<div class="CodeRay">
+  <div class="code"><pre>plugin <span style="color:#A60">:git_submodule</span>
+</pre></div>
+</div>
+
+<p>That&#39;s all you need!</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2>Database Plugin</h2>
+
+<p>This plugin allows you to specify well known DBs (MySQL and PostgresSQL) with default values that work generally. You can customize your database however you want it for your own project.</p>
+
+<p>Usage:</p>
+<div class="CodeRay">
+  <div class="code"><pre><span style="color:#777"># Simplest usage</span>
+plugin <span style="color:#A60">:database</span>
+
+def_db <span style="color:#A60">:mysql</span>
+</pre></div>
+</div>
+
+<p>If for example you wish to use a different root password, simply go</p>
+<div class="CodeRay">
+  <div class="code"><pre>plugin <span style="color:#A60">:database</span>
+
+def_db <span style="color:#606">mysql</span>: { <span style="color:#606">root_password</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">extremesecret</span><span style="color:#710">'</span></span> }
+</pre></div>
+</div>
+
+<p>Sometimes you want to use a specific version for testing. You can set up the version by going</p>
+<div class="CodeRay">
+  <div class="code"><pre>plugin <span style="color:#A60">:database</span>
+
+def_db <span style="color:#606">postgres</span>: { <span style="color:#606">version</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">9.4</span><span style="color:#710">'</span></span> }
+</pre></div>
+</div>
+
+<p>You can also pass startup parameters to your database server:</p>
+<div class="CodeRay">
+  <div class="code"><pre>plugin <span style="color:#A60">:database</span>
+
+def_db <span style="color:#606">mysql</span>: { <span style="color:#606">parameters</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">--verbose</span><span style="color:#710">'</span></span> }
+</pre></div>
+</div>
+</div></div>
+  </div>
+
+	</div>
+
+		</div>
+	</div>
+
+</div>
+
+    <!-- Mainly scripts -->
+    <script src="../js/jquery-3.1.1.min.js"></script>
+    <script src="../js/jquery-ui-1.10.4.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="../js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			asciimath2jax: {
+				delimiters: [['$$$MATH$$$','$$$ENDMATH$$$']]
+			}
+		});
+	</script>
+    <script src="../js/MathJax/MathJax.js?config=AM_HTMLorMML-full" async></script>
+
+
+
+
+    <!-- Custom and plugin javascript -->
+    <script src="../js/weaver.js"></script>
+    <script src='../js/plugins/pace/pace.min.js'></script>
+
+    <script>
+
+
+
+$( document ).ready(function() {
+
+
+
+});
+    </script>
+
+
+
+</body>
+
+</html>
+

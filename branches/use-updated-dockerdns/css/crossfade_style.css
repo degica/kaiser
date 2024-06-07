@@ -1,0 +1,19 @@
+.crossfade {
+  position:relative;
+  max-width:100%;
+  margin:0 auto;
+}
+
+.crossfade img {
+  position:absolute;
+  max-width:100%;
+  left:0;
+  -webkit-transition: opacity 1s ease-in-out;
+  -moz-transition: opacity 1s ease-in-out;
+  -o-transition: opacity 1s ease-in-out;
+  transition: opacity 1s ease-in-out;
+}
+
+.crossfade img.top:hover {
+  opacity:0;
+}

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<!-- Generated using weaver: https://github.com/davidsiaw/weaver -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kaiser Docs - Command Reference</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="../css/plugins/iCheck/custom.css" rel="stylesheet">
+
+    	<link href="../css/style.css" rel="stylesheet">
+
+
+    <link href="../css/animate.css" rel="stylesheet">
+
+    <link href="../css/main.css" rel="stylesheet">
+
+
+
+
+</head>
+
+<body class=' fixed-sidebar'>
+
+<div id="background" style="z-index: -999; position:absolute; left:0px; right:0px; width:100%; height:100%">
+
+</div>
+
+<div id="content" style="z-index: 0">
+
+	<div id="wrapper">
+
+		<nav class="navbar-default navbar-static-side" role="navigation">
+			<div class="sidebar-collapse">
+				<ul class="nav" id="side-menu">
+
+
+	                <li>
+	                    <a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/"><i class="fa fa-home"></i> <span class="nav-label">Kaiser Docs</span> <span class="label label-primary pull-right"></span></a>
+	                </li>
+
+<li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0110-getting_started/"><i class="fa fa-file"></i><span class="nav-label">Getting Started</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0115-command-reference/"><i class="fa fa-file"></i><span class="nav-label">Command Reference</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0120-the-kaiserfile/"><i class="fa fa-file"></i><span class="nav-label">The Kaiserfile</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0130-databases/"><i class="fa fa-file"></i><span class="nav-label">Databases</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0140-suffixes/"><i class="fa fa-file"></i><span class="nav-label">Suffixes</span></a></li><li ><a href="https://tech.degica.com/kaiser/branches/use-updated-dockerdns/0510-plugins/"><i class="fa fa-file"></i><span class="nav-label">Plugins</span></a></li>
+
+				</ul>
+			</div>
+		</nav>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+		        <nav class="navbar navbar-static-top  " role="navigation" style="margin-bottom: 0">
+					<div class="navbar-header">
+					    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+					</div>
+		            <ul class="nav navbar-top-links navbar-right">
+		                <!-- NAV RIGHT -->
+		            </ul>
+		        </nav>
+	        </div>
+	<div class="row wrapper border-bottom white-bg page-heading" style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <h2>Kaiser Documentation</h2><ol class="breadcrumb"><li>Command Reference</li></ol>
+  </div>
+
+	</div>
+	<div class="row " style="">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <br  /><div class="ibox float-e-margins"><div class="ibox-content" style="min-height: px"><h2>Command Reference</h2>
+
+<p>This is a reference for commands available in Kaiser. It is sorted by importance but not necessarily by how one would use them.</p>
+
+<h3>Global Options</h3>
+
+<p>These options can be used with any of the commands below.</p>
+
+<h4><code>-v</code> <code>--verbose</code> Verbose mode</h4>
+
+<p>Verbose mode. This tells Kaiser to spit out all the output of the commands it runs so it is clear if something went wrong. By default, Kaiser simply writes a period character for each line of output to avoid being noisy.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser init</code></h2>
+
+<p>This initializes an environment in Kaiser. In reality this assigns your current directory to a particular environment name. For example</p>
+<div class="CodeRay">
+  <div class="code"><pre>kaiser init hats
+</pre></div>
+</div>
+
+<p>Will assign this directory to the name <code>hats</code>.</p>
+
+<p>This is an important first step because this will determine the domain name you can use to access this environment. For example if you start it up the domain will be <code>hats.lvh.me</code> if you did not set the suffix. If you did set the suffix the domain will be <code>hats.&lt;whatever the suffix is&gt;</code>. More info <a href="/0140-suffixes">on suffixes here</a>.</p>
+
+<h3>Errors</h3>
+
+<ul>
+<li>This command requires you be in a directory that has a Kaiserfile. If you don&#39;t have one, you will get the message</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre>Error: No Kaiserfile in current directory.
+Try --help for help.
+</pre></div>
+</div>
+
+<ul>
+<li>If you try to run this command without an environment name you will get</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre>Error: Needs environment name.
+Try --help for help.
+</pre></div>
+</div>
+
+<ul>
+<li>If you already initialized the current directory in Kaiser you will get this message:</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre>Error: Already initialized as hats.
+Try --help for help.
+</pre></div>
+</div>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser up</code></h2>
+
+<p>This command will bring up the app in the current directory, but only if it was initialized using <code>kaiser init</code>.</p>
+
+<p>Usually in user testing we noticed that most people prefer to start up their environment using <code>kaiser up -av</code>.</p>
+
+<h3>Options</h3>
+
+<h4><code>-a</code> <code>--attach</code> Attach</h4>
+
+<p>Attaches to the process after starting up. By default Kaiser will start up the app and run in the background. Using this parameter the process will run in the foreground, which can be useful for debugging or if you are in a GUI where switching terminals is very easy.</p>
+
+<p>If you use this option, and bash <code>exit</code> or Ctrl+C interrupt out and the process you started ends, it will close the process. Unlike if you ran <code>kaiser up</code> without this option, and then ran <code>kaiser attach</code>.</p>
+
+<h3>Parameters</h3>
+
+<p>This command takes a command line as parameters, which means you can go <code>kaiser up -av bash</code>. This will start the application in the foreground and run <code>bash</code>. You can also use it to go <code>kaiser up -av rails c</code> or <code>kaiser up -av sh -c &#39;mylongcommand; andmorestuff&#39;</code> or whatever suits your fancy.</p>
+
+<h3>Errors</h3>
+
+<ul>
+<li>If you try running this command in a directory that has not been initialized, you will get the error:</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre>Error: No environment? Please use kaiser init &lt;name&gt;.
+Try --help for help.
+</pre></div>
+</div>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser login &lt;cmd&gt;</code></h2>
+
+<p>If there already exists a running process that was started by <code>kaiser up</code>, you can simply login from the side using the default user as defined in its Dockerfile this way. Usually you want to provide a parameter, such as <code>kaiser login bash</code> or something. It will always be started in TTY and interactive.</p>
+
+<h3>Errors</h3>
+
+<ul>
+<li>If you try and run this in a dir where the process is not up and running, you will get a message like this:</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre>Error response from daemon: No such container: hats-app
+</pre></div>
+</div>
+
+<p>or one like this:</p>
+<div class="CodeRay">
+  <div class="code"><pre>Error response from daemon: container ceff5f43ca1632294512afd1ed88e30d051bd97438204bb34674fea75e001eab is not running
+</pre></div>
+</div>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser root &lt;cmd&gt;</code></h2>
+
+<p>This command is essentially the same as <code>kaiser login</code> except it forces the login to use the <code>root</code> user. This can sometimes be useful if the container was built with very tight perms on the user, or does not have <code>sudo</code> installed in it.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser show &lt;thing&gt;</code></h2>
+
+<p>This shows special globals that were set using <code>kaiser set</code>. Valid parameters right now are</p>
+
+<ul>
+<li><code>ports</code></li>
+<li><code>cert-source</code></li>
+<li><code>http-suffix</code></li>
+</ul>
+
+<h3>Parameters</h3>
+
+<h4><code>ports</code> Ports reserved for app</h4>
+
+<p>This tells you what ports are reserved for the app. While most traffic should go to the thing through the environment name, sometimes you want the actual port number if you want to connect to it to check stuff. Example output is:</p>
+<div class="CodeRay">
+  <div class="code"><pre>app: 9015
+db: 9016
+</pre></div>
+</div>
+
+<h4><code>cert-source</code> Certificate source</h4>
+
+<p>This tells you the URL from which SSL/HTTPS certificates are downloaded from. You can use this to check if you have it set to the right URL.</p>
+
+<h4><code>http-suffix</code> HTTP Suffix</h4>
+
+<p>This tells you what the HTTP suffix is. See <a href="/0140-suffixes">suffixes</a>. Usually you use this with conjunction with the cert source above so you can request wildcard certificates from domains you own and then tell nginx to serve those suffixes so you can have an SSL setup on your local.</p>
+
+<h3>Errors</h3>
+
+<ul>
+<li>If you do not specify what thing, <code>kaiser</code> will try to be helpful and tell you:</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre>Error: Available things to show: ports cert-source http-suffix.
+Try --help for help.
+</pre></div>
+</div>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser shutdown</code></h2>
+
+<p>This command shuts down all the containers started by Kaiser.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser deinit</code></h2>
+
+<p>This command removes the current environment from the kaiser configuration, and essentially undoes the effects of the <code>kaiser init</code> command.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser db_save</code></h2>
+
+<p>This command saves the current state of the database of the application. By default it saves it in a file in the <code>$HOME/.kaiser</code> directory. But you can also specify a file for it to write to by going <code>kaiser db_save ./mydb.mysql</code>.</p>
+
+<h3>Notes</h3>
+
+<p>The default save file is actually <strong>git branch aware</strong>. What this means is that kaiser checks what git branch it is in right now and keys the file on that branch name.</p>
+
+<p>This means that if you</p>
+
+<ol>
+<li>checked out the <code>main</code> branch</li>
+<li>ran <code>kaiser db_save</code> and then</li>
+<li>checked out <code>mybranch</code> branch and then</li>
+<li>ran <code>kaiser db_save</code></li>
+</ol>
+
+<p>it will save the state to a different file and not overwrite the db state saved when you were in the <code>main</code> branch. How it saves this file is actually an implementation detail and we don&#39;t make any guarantees about how it really works or if it will not change.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser db_load</code></h2>
+
+<p>This command loads the saved state of the database of an application (if one exists), and destroys the previous state. By default it loads the file for the branch you are on. You can provide a parameter to load a file instead, like <code>kaiser db_load ./mydb.mysql</code></p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser db_reset</code></h2>
+
+<p>This command re-runs the command defined in the <code>db_reset_command</code> in the <a href="/0120-the-kaiserfile">Kaiserfile</a>.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser db_reset_hard</code></h2>
+
+<p>Sometimes a db state can become somewhat inconsistent or the command defined by <code>db_reset_command</code> in the <a href="/0120-the-kaiserfile">Kaiserfile</a> does not handle all cases of db consistency. This command actually deletes the current state and re-initializes the database from scratch, and then runs the command defined by <code>db_reset_command</code>. This can be used to work around a messed up database state.</p>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser set &lt;key&gt; &lt;value&gt;</code></h2>
+
+<h3>Parameters</h3>
+
+<p>Valid <code>&lt;key&gt;</code> parameters are:</p>
+
+<ul>
+<li><code>http-suffix</code> - Sets the domain suffix for the reverse proxy to use (defaults to lvh.me)</li>
+<li><code>cert-url</code>    - Sets up a URL from which HTTPS certificates can be downloaded.</li>
+</ul>
+
+<p>For example you can go</p>
+
+<p><code>kaiser set http-suffix local.aweso.me</code> and nginx will serve everything on that suffix, i.e. <code>hats.local.aweso.me</code>.</p>
+
+<h3>Errors</h3>
+
+<ul>
+<li>If you do not provide a key and value it will fail like this:</li>
+</ul>
+<div class="CodeRay">
+  <div class="code"><pre>Error: Unknown subcommand: ''.
+Try --help for help.
+</pre></div>
+</div>
+</div><br><div class="ibox-content" style="min-height: px">
+<h2><code>kaiser attach</code></h2>
+
+<p>If you started kaiser using just <code>kaiser up</code> without the <code>--attach</code> option, you can use this command to &quot;takeover&quot; the process and bring it up to the foreground. This is useful if you intend to apply a breakpoint and interrupt the process, which means you want to be able to make it interactive so you can gracefully unbreakpoint it without having to kill it.</p>
+
+<p>You can also Ctrl+C to interrupt out of this without closing the process, unlike if you used the <code>--attach</code> option, which if you used that would close the process.</p>
+</div></div>
+  </div>
+
+	</div>
+
+		</div>
+	</div>
+
+</div>
+
+    <!-- Mainly scripts -->
+    <script src="../js/jquery-3.1.1.min.js"></script>
+    <script src="../js/jquery-ui-1.10.4.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="../js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			asciimath2jax: {
+				delimiters: [['$$$MATH$$$','$$$ENDMATH$$$']]
+			}
+		});
+	</script>
+    <script src="../js/MathJax/MathJax.js?config=AM_HTMLorMML-full" async></script>
+
+
+
+
+    <!-- Custom and plugin javascript -->
+    <script src="../js/weaver.js"></script>
+    <script src='../js/plugins/pace/pace.min.js'></script>
+
+    <script>
+
+
+
+$( document ).ready(function() {
+
+
+
+});
+    </script>
+
+
+
+</body>
+
+</html>
+
