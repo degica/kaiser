@@ -252,7 +252,7 @@ module Kaiser
       attach_mounts = Config.kaiserfile.attach_mounts
       volumes = attach_mounts.map { |from, to| "-v #{`pwd`.chomp}/#{from}:#{to}" }.join(' ')
 
-      system "docker run -ti
+      cmd = "docker run -ti
         --name #{app_container_name}
         --network #{network_name}
         --dns #{ip_of_container(Config.config[:shared_names][:dns])}
@@ -264,6 +264,9 @@ module Kaiser
         #{volumes}
         #{app_params}
         kaiser:#{envname}-#{current_branch} #{cmd}".tr("\n", ' ')
+
+      puts cmd
+      system cmd
 
       stop_services
 
@@ -556,15 +559,6 @@ module Kaiser
           redis:7-alpine"
       )
       run_if_dead(
-        Config.config[:shared_names][:chrome],
-        "docker run -d
-          -p 5900:5900
-          --shm-size='2g'
-          --name #{Config.config[:shared_names][:chrome]}
-          --network #{Config.config[:networkname]}
-          #{selenium_node_image}"
-      )
-      run_if_dead(
         Config.config[:shared_names][:nginx],
         "docker run -d
           -p 80:80
@@ -576,17 +570,35 @@ module Kaiser
           --network #{Config.config[:networkname]}
           jwilder/nginx-proxy"
       )
+
+      dnsconffile = "#{ENV['HOME']}/.kaiser/dnsconf"
+      File.write(dnsconffile, <<~HOSTS)
+        log-queries
+        no-resolv
+        server=8.8.8.8
+        server=1.1.1.1
+        address=/.#{http_suffix}/#{ip_of_container(Config.config[:shared_names][:nginx])}
+      HOSTS
+
       run_if_dead(
         Config.config[:shared_names][:dns],
         "docker run -d
           --name #{Config.config[:shared_names][:dns]}
           --network #{Config.config[:networkname]}
-          --privileged
-          -e DOCKER_HOST='unix:///var/run/docker.sock'
-          -v /var/run/docker.sock:/var/run/docker.sock:ro
-          davidsiaw/dockerdns
-          --domain #{http_suffix}
-          --record :#{ip_of_container(Config.config[:shared_names][:nginx])}"
+          -v #{dnsconffile}:/etc/dnsmasq.conf:ro
+          degica/dnsmasq
+        "
+      )
+
+      run_if_dead(
+        Config.config[:shared_names][:chrome],
+        "docker run -d
+          -p 5900:5900
+          --shm-size='2g'
+          --name #{Config.config[:shared_names][:chrome]}
+          --network #{Config.config[:networkname]}
+          --dns #{ip_of_container(Config.config[:shared_names][:dns])}
+          #{selenium_node_image}"
       )
     end
 
