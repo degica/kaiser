@@ -571,8 +571,14 @@ module Kaiser
           jwilder/nginx-proxy"
       )
 
-      dnsconffile = "#{ENV['HOME']}/.kaiser/dnsconf"
-      File.write(dnsconffile, <<~HOSTS)
+      homedir_loc = ENV['HOME']
+      if ENV['_KAISER_POS'] == 'docker'
+        homedir_loc = ENV['_KAISER_USER_HOME']
+      end
+
+      innerdnsconffile = "#{ENV['HOME']}/.kaiser/dnsconf"
+      outerdnsconffile = "#{homedir_loc}/.kaiser/dnsconf"
+      File.write(innerdnsconffile, <<~HOSTS)
         log-queries
         no-resolv
         server=8.8.8.8
@@ -585,7 +591,7 @@ module Kaiser
         "docker run -d
           --name #{Config.config[:shared_names][:dns]}
           --network #{Config.config[:networkname]}
-          -v #{dnsconffile}:/etc/dnsmasq.conf:ro
+          -v #{outerdnsconffile}:/etc/dnsmasq.conf:ro
           degica/dnsmasq
         "
       )
