@@ -572,9 +572,7 @@ module Kaiser
       )
 
       homedir_loc = ENV['HOME']
-      if ENV['_KAISER_POS'] == 'docker'
-        homedir_loc = ENV['_KAISER_USER_HOME']
-      end
+      homedir_loc = ENV['_KAISER_USER_HOME'] if ENV['_KAISER_POS'] == 'docker'
 
       innerdnsconffile = "#{ENV['HOME']}/.kaiser/dnsconf"
       outerdnsconffile = "#{homedir_loc}/.kaiser/dnsconf"
