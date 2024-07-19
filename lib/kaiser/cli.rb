@@ -578,7 +578,7 @@ module Kaiser
       )
 
       innerdnsconffile = "#{ENV['HOME']}/.kaiser/dnsconf"
-      outerdnsconffile = "#{homedir_loc}/.kaiser/dnsconf"
+      outerdnsconffile = "#{home_dir_loc}/.kaiser/dnsconf"
       File.write(innerdnsconffile, <<~HOSTS)
         log-queries
         no-resolv
