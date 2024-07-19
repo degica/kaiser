@@ -229,7 +229,7 @@ module Kaiser
 
     def db_image_path(name)
       if name.start_with?('./')
-        path = "#{`pwd`.chomp}/#{name.sub('./', '')}"
+        path = "#{home_dir_loc}/#{name.sub('./', '')}"
         Config.info_out.puts "Database image path is: #{path}"
         return path
       end
@@ -542,6 +542,12 @@ module Kaiser
       'selenium/standalone-chrome-debug'
     end
 
+    def home_dir_loc
+      return ENV['_KAISER_USER_HOME'] if ENV['_KAISER_POS'] == 'docker'
+
+      ENV['HOME']
+    end
+
     def ensure_setup
       ensure_env
 
@@ -570,9 +576,6 @@ module Kaiser
           --network #{Config.config[:networkname]}
           jwilder/nginx-proxy"
       )
-
-      homedir_loc = ENV['HOME']
-      homedir_loc = ENV['_KAISER_USER_HOME'] if ENV['_KAISER_POS'] == 'docker'
 
       innerdnsconffile = "#{ENV['HOME']}/.kaiser/dnsconf"
       outerdnsconffile = "#{homedir_loc}/.kaiser/dnsconf"
